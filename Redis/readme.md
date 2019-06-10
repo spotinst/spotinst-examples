@@ -2,7 +2,10 @@
 
 ## Introduction
 
-Terraform quickstart to use Redis cluster slaves on Spotinst to reducing cloud compute costs up to 80% while leveraging Spotinst Stateful features in order to keep the cluster available.
+In this git we will demonstarte how to run Redis cluster slaves on Spotinst using terraform to reduce cloud compute costs up to 80% while leveraging Spotinst Stateful features in order to keep the cluster available.
+In Spotinst we devoloped Elasigroup That gives you the option to persist the root and data volume and also the private IP of the instance thus enable to run redis cluster slaves.
+
+![Stateful](https://git-quick-start.s3-us-west-2.amazonaws.com/Stateful-Redis.png)
 
 ## Redis cluster architecture
 
