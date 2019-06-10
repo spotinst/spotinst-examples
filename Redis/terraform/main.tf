@@ -56,7 +56,7 @@ resource "spotinst_elastigroup_aws" "redis-slaves-elastigroup" {
   ebs_optimized         = true
   placement_tenancy     = "default"
   spot_percentage       = 100
-  target_group_arns     = [""]
+  target_group_arns     = "${var.target_group_arns}"
 
   instance_types_ondemand       = "r4.large"
   instance_types_spot           = ["r4.xlarge", "r4.2xlarge"]

@@ -40,3 +40,6 @@ variable "spotinst_account" {
 
 }
 
+variable "target_group_arns" {
+  type = "list"
+}
