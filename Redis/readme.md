@@ -20,14 +20,6 @@ Every shard (Master) can have a slave replica that can failover from master when
 
 * This terrafom / Cloudformation template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
 * You have to create Spotinst token  - https://api.spotinst.com/spotinst-api/administration/create-an-api-token/
-* Fill the required fields
-    * Region
-    * Subnet id
-    * Image
-    * Keypair
-    * Security Groups
-    * target_group_arns (Optional) - this is for connecting the redis to LB
-    * instance_types_spot - Add more spot types thus allow to have more sport types
-* Change the Master IP in the user data script
+* Fill the required fields in the exapmple vars
 * Apply the terraform/Cloudformation and wait for the slaves to join
  
