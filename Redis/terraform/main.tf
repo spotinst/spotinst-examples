@@ -1,8 +1,15 @@
-# Configure the Spotinst provider
-provider "spotinst" {
-   token   = ""
-   account = ""
+
+data "aws_ami" "amazon-linux-2" {
+ most_recent = true
+ owners      = ["amazon"]
+ name_regex = "amzn2-ami-hvm-2.0.*-x86_64-gp2$"
+
+  filter {
+    name = "state"
+    values = ["available"]
+  }
 }
+
 
 # Create an Elastigroup
 resource "spotinst_elastigroup_aws" "redis-slaves-elastigroup" {
@@ -15,12 +22,12 @@ resource "spotinst_elastigroup_aws" "redis-slaves-elastigroup" {
   min_size          = 3
   desired_capacity  = 3
 
-  region      = ""
-  subnet_ids  = [""]
+  region      = "${var.region}"
+  subnet_ids  = "${var.subnet_ids}"
 
-  image_id              = ""
-  key_name              = ""
-  security_groups       = [""]
+  image_id              = "${data.aws_ami.amazon-linux-2.id}"
+  key_name              = "${var.keypair}"
+  security_groups       = ["${var.security_groups}"]
   persist_root_device   = true
   persist_private_ip    = true 
     user_data              = <<-EOF
@@ -43,7 +50,7 @@ resource "spotinst_elastigroup_aws" "redis-slaves-elastigroup" {
                             sudo sed -e "s/^bind 127.0.0.1$/bind $$(hostname -I | xargs)/" -e "s/^# cluster-enabled yes$/cluster-enabled yes/" -e "s/^# cluster-config-file nodes-6379.conf$/cluster-config-file nodes-6379.conf/" -e "s/^# cluster-node-timeout 15000$/cluster-node-timeout 15000/"  -e "s/^daemonize no$/daemonize yes/" -e "s/^dir \.\//dir \/var\/lib\/redis\//" -e "s/^loglevel verbose$/loglevel notice/" -e "s/^logfile \"\"$/logfile \/var\/log\/redis.log/" redis.conf | sudo tee ./redisNew.conf
 
                             redis-server ./redisNew.conf
-                            redis-cli --cluster add-node $$(hostname -I | xargs):6379 <Master IP>:6379 --cluster-slave
+                            redis-cli --cluster add-node $$(hostname -I | xargs):6379 ${var.master_ip}:6379 --cluster-slave
                            EOF
   enable_monitoring     = false
   ebs_optimized         = true
@@ -57,16 +64,11 @@ resource "spotinst_elastigroup_aws" "redis-slaves-elastigroup" {
 
   orientation           = "balanced"
   fallback_to_ondemand  = true
-  cpu_credits           = "unlimited"
-
+  
   tags = [
   {
-     key   = "Env"
-     value = "Test"
-  }, 
-  {
-     key   = "Creator"
-     value = "@ben.kiani"
+     key   = "Name"
+     value = "Redis"
   }
  ]
 
