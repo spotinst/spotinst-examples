@@ -3,6 +3,7 @@
 ## Introduction
 
 In this quick start, we’ll demonstrate how to create a Cassandra cluster on Spotinst to reducing cloud compute costs up to 80% while leveraging Spotinst Stateful features in order to keep the cluster available.
+
 When using Spot Instances on stateful application it can be very hard to maintain as they have a 2 minutes notice before termination.
 Elastigroup can run Stateful application on spot instances while keeping high availability and provide full SLA.
 Elasigroup gives you the option to persist the root and data volume and also the private IP of the instance.
