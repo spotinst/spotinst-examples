@@ -25,7 +25,7 @@ Each node accepts reads and writes if the node will not have the data it will fe
 When a node doesn’t have the right data he will fetch it from the other nodes.
 To ensure that that data is up to date the node has to get follow consistency level the recommended is a quorum (the majority of replicas).
 
-![Quick Start Terraform with cassandra](https://git-quick-start.s3-us-west-2.amazonaws.com/Cassandra.pngg)
+![Quick Start Terraform with cassandra](https://git-quick-start.s3-us-west-2.amazonaws.com/Cassandra.png)
 
 ## Step by step guide
 
