@@ -38,7 +38,6 @@ variable "instance_types_preferred_spot" {
   
 }
 
-
 variable "spotinst_token" {
   
 }

@@ -2,6 +2,8 @@
 locals {
   user_data = <<-EOF
     #!/bin/bash
+
+    # Installs Cassandra
     yum update -y
     yum-config-manager --add-repo http://rpm.datastax.com/community
     mkdir ~/.keys
@@ -11,14 +13,23 @@ locals {
     rpm --import repo_key
     yum update && yum upgrade -y
     yum install java dsc30 cassandra30-tools ntp -y
+
+    # Set Cassandra on startup
     systemctl enable cassandra
+
+    # Set host ip
     sed -i -e "s/localhost/$$(hostname -I | xargs)/g" /etc/cassandra/conf/cassandra.yaml
+
+    # Setting the clusers seeds
     sed -i 's/- seeds: "127.0.0.1"/- seeds: "${var.Cassndrd-Node-1-IP},${var.Cassndrd-Node-2-IP},${var.Cassndrd-Node-3-IP}"/g' /etc/cassandra/conf/cassandra.yaml
+
+    # Start Cassandra
     systemctl start cassandra
             EOF
 }
 
 
+# Getting the lastest linux 2 image
 data "aws_ami" "amazon-linux-2" {
  most_recent = true
  owners      = ["amazon"]
@@ -31,9 +42,9 @@ data "aws_ami" "amazon-linux-2" {
 }
 
 # Create an Elastigroup
-resource "spotinst_elastigroup_aws" "Cassndrd-node-1-elastigroup" {
+resource "spotinst_elastigroup_aws" "Cassandra-node-1-elastigroup" {
 
-  name        = "Cassndrd-node-1"
+  name        = "Cassandra-node-1"
   description = "created by Terraform"
   product     = "Linux/UNIX"
 
@@ -69,10 +80,6 @@ resource "spotinst_elastigroup_aws" "Cassndrd-node-1-elastigroup" {
   {
     key   = "Name"
     value = "Cassandra-Node-1"
-  }, 
-  {
-    key   = "Creator"
-    value = "@ben.kiani"
   }
  ]
 
@@ -84,9 +91,9 @@ resource "spotinst_elastigroup_aws" "Cassndrd-node-1-elastigroup" {
 }
 
 
-resource "spotinst_elastigroup_aws" "Cassndrd-node-2-elastigroup" {
+resource "spotinst_elastigroup_aws" "Cassandra-node-2-elastigroup" {
 
-  name        = "Cassndrd-node-2"
+  name        = "Cassandra-node-2"
   description = "created by Terraform"
   product     = "Linux/UNIX"
 
@@ -122,10 +129,6 @@ resource "spotinst_elastigroup_aws" "Cassndrd-node-2-elastigroup" {
   {
     key   = "Name"
     value = "Cassandra-Node-2"
-  }, 
-  {
-    key   = "Creator"
-    value = "@ben.kiani"
   }
  ]
 
@@ -137,9 +140,9 @@ resource "spotinst_elastigroup_aws" "Cassndrd-node-2-elastigroup" {
 }
 
 
-resource "spotinst_elastigroup_aws" "Cassndrd-node-3-elastigroup" {
+resource "spotinst_elastigroup_aws" "Cassandra-node-3-elastigroup" {
 
-  name        = "Cassndrd-node-3"
+  name        = "Cassandra-node-3"
   description = "created by Terraform"
   product     = "Linux/UNIX"
 
@@ -175,10 +178,6 @@ resource "spotinst_elastigroup_aws" "Cassndrd-node-3-elastigroup" {
   {
     key   = "Name"
     value = "Cassandra-Node-3"
-  }, 
-  {
-    key   = "Creator"
-    value = "@ben.kiani"
   }
  ]
 

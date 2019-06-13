@@ -1,3 +1,4 @@
+# Setting the nodes IP
 Cassndrd-Node-1-IP = ""
 Cassndrd-Node-2-IP = ""
 Cassndrd-Node-3-IP = ""
