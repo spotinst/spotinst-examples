@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this quick start, we’ll demonstrate how to create a Cassandra cluster on Spotinst to reducing cloud compute costs up to 80% while leveraging Spotinst Stateful features in order to keep the cluster available.
+In this quick start, we will demonstrate how to create a 3 node Cassandra cluster on Spotinst to reducing cloud compute costs up to 80% while leveraging Spotinst Stateful features in order to keep the cluster available.
 
 When using Spot Instances on stateful application it can be very hard to maintain as they have a 2 minutes notice before termination.
 Elastigroup can run Stateful application on spot instances while keeping high availability and provide full SLA.
@@ -30,8 +30,8 @@ To ensure that that data is up to date the node has to get follow consistency le
 
 ## Step by step guide
 
-* This Terrafom / Cloudformation template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
-* You have to create Spotinst token  - https://api.spotinst.com/spotinst-api/administration/create-an-api-token/
+* This Terrafom template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
+* Create a Spotinst token  - https://api.spotinst.com/spotinst-api/administration/create-an-api-token/
 * Fill the required fields in the exapmple vars
-* Apply the Terraform / Cloudformation
+* Apply the Terraform 
  
