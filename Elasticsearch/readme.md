@@ -34,7 +34,14 @@ There are 2 way to store an index -
 Shard - The primary copy of the index, this copy can be written into and read from.
 Replica - The backup copy of the index.
 
+## Delay shard allocation
 
+When the primary shard turns unavailable his replica takes over and become the primary shard while a new replica is created on differenet node
+In order to reduce the replication of the new replica while the new spot instance in launched use the command above.
+
+```
+curl -XPUT 'localhost:9200/_all/_settings' -H 'Content-Type: application/json' -d '{ "settings": { "index.unassigned.node_left.delayed_timeout": "10m"}}'
+```
 
 ## Step by step guide
 
