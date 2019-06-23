@@ -1,4 +1,4 @@
-# Redis slaves on Spotinst
+# Elasticsearch cluster on Spotinst
 
 ## Introduction
 
