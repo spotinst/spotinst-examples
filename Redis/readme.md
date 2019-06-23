@@ -18,8 +18,8 @@ Every shard (Master) can have a slave replica that can failover from master when
 
 ## Step by step guide
 
-* This Terrafom / Cloudformation template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
+* This Terrafom template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
 * You have to create Spotinst token  - https://api.spotinst.com/spotinst-api/administration/create-an-api-token/
 * Fill the required fields in the exapmple vars
-* Apply the Terraform / Cloudformation and wait for the slaves to join
+* Apply the Terraform and wait for the slaves to join
  
