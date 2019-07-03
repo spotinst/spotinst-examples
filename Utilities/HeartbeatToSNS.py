@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-import mysql.connector
-import csv
 import requests
 import boto3
 import json
