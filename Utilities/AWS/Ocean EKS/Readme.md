@@ -2,8 +2,6 @@ This Cloudformation template will Create an EKS cluster using exsiting VPC and S
 
 Parameters to fill:
 
-Parameters:
-
 * AccessToken - Provide Spotinst API Token
 * AccountID - Provide Spotinst Account ID
 * KeyName - The EC2 Key Pair to allow SSH access to the instances
