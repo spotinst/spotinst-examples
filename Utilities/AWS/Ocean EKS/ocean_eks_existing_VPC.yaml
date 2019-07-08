@@ -1,0 +1,468 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Amazon EKS With Spotinst Ocean Workers'
+
+Parameters:
+
+  AccessToken:
+    Type: String
+    Description: Provide Spotinst API Token
+
+  AccountID:
+    Type: String
+    Description: Provide Spotinst Account ID
+
+  KeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+
+  ResourceLimitsCPU:
+    Type: Number
+    Description: Maximun Amount of CPU cores in the Cluster
+
+  ResourceLimitsMemory:
+    Type: Number
+    Description: Maximun Amount of Memory (Gib) in the Cluster
+
+  AMIID:
+    Type: AWS::EC2::Image::Id
+    Description: AMI id for the node instances (Latest can be found here https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html#eks-launch-workers)
+    Default: ami-0a2abab4107669c1b
+
+  OceanName:
+    Type: String
+    Description: Provide a Name for the Elastigroup
+
+  VPC:
+    Type: "AWS::EC2::VPC::Id"
+    Description: "The VPC for Ocean."
+
+  SubnetIds: 
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: "The subnet IDs for the cluster (must be from the selected VPC)."
+
+  EKSClusterName:
+    Type: String
+    Default: EKS-Cluster
+    Description: Name for EKS Cluster
+
+  EKSVersion:
+    Type: String
+    Default: "1.11"
+    Description: Kubernetes Cluster Version
+
+  EKSRole:
+    Type: String
+    Default: "EKS-Role"
+    Description: Name for EKS Cluster Plane IAM Role (A-Z,a-z,_,-)
+
+  BootstrapArguments:
+    Description: Arguments to pass to the bootstrap script. See files/bootstrap.sh in https://github.com/awslabs/amazon-eks-ami
+    Default: ""
+    Type: String
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "EKS Configuration"
+        Parameters:
+          - EKSClusterName
+          - EKSVersion
+          - EKSRole
+      -
+        Label:
+          default: "EKS Workers VPC Configuration"
+        Parameters:
+          - VPC
+          - SubnetIds
+
+      - 
+        Label:
+          default: Spotinst Configuraiton
+        Parameters:
+          - AccountID
+          - AccessToken
+      -
+        Label:
+          default: "Ocean for Worker Node Configuration"
+        Parameters:
+          - OceanName
+          - AMIID
+          - CapacityTarget
+          - CapacityMin
+          - CapacityMax
+          - OnDemandInstanceType
+          - SpotInstancesType
+          - NodeVolumeSize
+          - KeyName
+          - ClusterOrientation
+          - SpotPercentage
+          - DetailedMonitoring
+          - BootstrapArguments
+
+
+Resources:
+
+  ControlPlaneSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Cluster communication with worker nodes
+      VpcId: !Ref VPC
+
+  EKSIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "eks.amazonaws.com"
+            Action: 
+               - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+      Path: "/"
+      RoleName: !Ref EKSRole
+
+  EKSCluster:
+    Type: "AWS::EKS::Cluster"
+    Properties:
+      Name: !Ref EKSClusterName
+      Version: !Ref EKSVersion
+      RoleArn: !GetAtt EKSIAMRole.Arn 
+      ResourcesVpcConfig:
+        SecurityGroupIds: [ !Ref ControlPlaneSecurityGroup ]
+        SubnetIds: !Ref SubnetIds
+    DependsOn: [ 'EKSIAMRole', 'ControlPlaneSecurityGroup' ]
+
+  NodeInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+      - !Ref NodeInstanceRole
+
+  NodeInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  NodeSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for all nodes in the cluster
+      VpcId:
+        !Ref VPC
+      Tags:
+      - Key: !Sub "kubernetes.io/cluster/${EKSClusterName}"
+        Value: 'owned'
+
+  NodeSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow node to communicate with each other
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: '-1'
+      FromPort: 0
+      ToPort: 65535
+
+  NodeSecurityGroupFromControlPlaneIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow worker Kubelets and pods to receive communication from the cluster control plane
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref ControlPlaneSecurityGroup
+      IpProtocol: tcp
+      FromPort: 1025
+      ToPort: 65535
+
+  ControlPlaneEgressToNodeSecurityGroup:
+    Type: AWS::EC2::SecurityGroupEgress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow the cluster control plane to communicate with worker Kubelet and pods
+      GroupId: !Ref ControlPlaneSecurityGroup
+      DestinationSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 1025
+      ToPort: 65535
+
+  NodeSecurityGroupFromControlPlaneOn443Ingress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow pods running extension API servers on port 443 to receive communication from cluster control plane
+      GroupId: !Ref NodeSecurityGroup
+      SourceSecurityGroupId: !Ref ControlPlaneSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  ControlPlaneEgressToNodeSecurityGroupOn443:
+    Type: AWS::EC2::SecurityGroupEgress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow the cluster control plane to communicate with pods running extension API servers on port 443
+      GroupId: !Ref ControlPlaneSecurityGroup
+      DestinationSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+
+  ControlPlaneSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: NodeSecurityGroup
+    Properties:
+      Description: Allow pods to communicate with the cluster API Server
+      GroupId: !Ref ControlPlaneSecurityGroup
+      SourceSecurityGroupId: !Ref NodeSecurityGroup
+      IpProtocol: tcp
+      ToPort: 443
+      FromPort: 443
+
+  SpotinstOcean:
+    Type: Custom::ocean
+    DependsOn: EKSCluster
+    Properties:
+      ServiceToken: !Sub 'arn:aws:lambda:${AWS::Region}:178579023202:function:spotinst-cloudformation'
+      accessToken: !Ref 'AccessToken'
+      accountId: !Ref 'AccountID'
+      ocean:
+        name: !Ref OceanName
+        controllerClusterId: !Ref 'OceanName'
+        region: !Ref 'AWS::Region'
+        autoScaler:
+          isEnabled: true
+          cooldown: 180
+          resourceLimits:
+            maxMemoryGib: !Ref 'ResourceLimitsMemory'
+            maxVCpu: !Ref 'ResourceLimitsCPU'
+          down:
+            evaluationPeriods: 3
+          headroom:
+            cpuPerUnit: 0
+            memoryPerUnit: 0
+            numOfUnits: 0
+          isAutoConfig: true
+        capacity:
+          minimum: 0
+          maximum: 1000
+          target: 1
+        strategy:
+          spotPercentage: 100
+          fallbackToOd: true
+          utilizeReservedInstances: false
+        compute:
+          subnetIds: !Ref SubnetIds
+          instanceTypes:
+            whitelist:
+              - "c4.8xlarge"
+              - "a1.2xlarge"
+              - "a1.4xlarge"
+              - "a1.4xlarge"
+              - "a1.4xlarge"
+              - "a1.large"
+              - "a1.medium"
+              - "a1.xlarge"
+              - "c3.large"
+              - "c3.xlarge"
+              - "c3.2xlarge"
+              - "c3.4xlarge"
+              - "c3.8xlarge"
+              - "c4.large"
+              - "c4.xlarge"
+              - "c4.2xlarge"
+              - "c4.4xlarge"
+              - "c4.8xlarge"
+              - "c5.large"
+              - "c5.xlarge"
+              - "c5.2xlarge"
+              - "c5.4xlarge"
+              - "c5.9xlarge"
+              - "c5.18xlarge"
+              - "c5d.18xlarge"
+              - "c5d.2xlarge"
+              - "c5d.4xlarge"
+              - "c5d.9xlarge"
+              - "c5d.large"
+              - "c5d.xlarge"
+              - "c5n.18xlarge"
+              - "c5n.2xlarge"
+              - "c5n.4xlarge"
+              - "c5n.9xlarge"
+              - "c5n.large"
+              - "c5n.xlarge"
+              - "d2.xlarge"
+              - "d2.2xlarge"
+              - "d2.4xlarge"
+              - "d2.8xlarge"
+              - "f1.2xlarge"
+              - "g2.2xlarge"
+              - "g2.8xlarge"
+              - "g3.4xlarge"
+              - "g3.8xlarge"
+              - "g3.16xlarge"
+              - "g3s.xlarge"
+              - "h1.16xlarge"
+              - "h1.2xlarge"
+              - "h1.4xlarge"
+              - "h1.8xlarge"
+              - "hs1.8xlarge"
+              - "i2.xlarge"
+              - "i2.2xlarge"
+              - "i2.4xlarge"
+              - "i2.8xlarge"
+              - "i3.large"
+              - "i3.xlarge"
+              - "i3.2xlarge"
+              - "i3.4xlarge"
+              - "i3.8xlarge"
+              - "i3.16xlarge"
+              - "i3.metal"
+              - "m3.medium"
+              - "m3.large"
+              - "m3.xlarge"
+              - "m3.2xlarge"
+              - "m4.large"
+              - "m4.xlarge"
+              - "m4.2xlarge"
+              - "m4.4xlarge"
+              - "m4.10xlarge"
+              - "m4.16xlarge"
+              - "m5.large"
+              - "m5.xlarge"
+              - "m5.2xlarge"
+              - "m5.4xlarge"
+              - "m5.12xlarge"
+              - "m5a.12xlarge"
+              - "m5a.2xlarge"
+              - "m5a.4xlarge"
+              - "m5a.large"
+              - "m5a.xlarge"
+              - "m5d.12xlarge"
+              - "m5d.2xlarge"
+              - "m5d.4xlarge"
+              - "m5d.large"
+              - "m5d.xlarge"
+              - "p2.xlarge"
+              - "p2.8xlarge"
+              - "p2.16xlarge"
+              - "p3.2xlarge"
+              - "p3.8xlarge"
+              - "p3.16xlarge"
+              - "r3.large"
+              - "r3.xlarge"
+              - "r3.2xlarge"
+              - "r3.4xlarge"
+              - "r3.8xlarge"
+              - "r4.large"
+              - "r4.xlarge"
+              - "r4.2xlarge"
+              - "r4.4xlarge"
+              - "r4.8xlarge"
+              - "r4.16xlarge"
+              - "r5.12xlarge"
+              - "r5.2xlarge"
+              - "r5.4xlarge"
+              - "r5.large"
+              - "r5.xlarge"
+              - "r5a.12xlarge"
+              - "r5a.2xlarge"
+              - "r5a.4xlarge"
+              - "r5a.large"
+              - "r5a.xlarge"
+              - "r5d.12xlarge"
+              - "r5d.2xlarge"
+              - "r5d.4xlarge"
+              - "r5d.large"
+              - "r5d.xlarge"
+              - "t2.micro"
+              - "t2.small"
+              - "t2.medium"
+              - "t2.large"
+              - "t2.xlarge"
+              - "t2.2xlarge"
+              - "t3.2xlarge"
+              - "t3.large"
+              - "t3.medium"
+              - "t3.micro"
+              - "t3.nano"
+              - "t3.small"
+              - "t3.xlarge"
+              - "z1d.12xlarge"
+              - "z1d.2xlarge"
+              - "z1d.3xlarge"
+              - "z1d.6xlarge"
+              - "z1d.large"
+              - "z1d.xlarge"
+          launchSpecification:
+            imageId: !Ref 'AMIID'
+            userData:
+              Fn::Base64:
+                !Sub |
+                  #!/bin/bash
+                  set -o xtrace
+                  /etc/eks/bootstrap.sh ${EKSClusterName} ${BootstrapArguments}
+            securityGroupIds: [ !Ref NodeSecurityGroup ]
+            iamInstanceProfile:
+              arn: !GetAtt 'NodeInstanceProfile.Arn'
+            keyPair: !Ref 'KeyName'
+            tags:
+              - tagKey: Name
+                tagValue: !Sub '${EKSClusterName}-${OceanName}-Node'
+              - tagKey: !Sub 'kubernetes.io/cluster/${EKSClusterName}'
+                tagValue: owned
+
+
+Outputs:
+
+
+  SecurityGroups:
+    Description: Security group for the cluster control plane communication with worker nodes
+    Value: !Join [ ",", [ !Ref ControlPlaneSecurityGroup ] ]
+
+  VpcId:
+    Description: The VPC Id
+    Value: !Ref VPC
+
+  NodeInstanceRole:
+    Description: The node instance role
+    Value: !GetAtt NodeInstanceRole.Arn
+
+  EKS:
+    Description: Name of the EKS CLuster
+    Value: !Ref EKSCluster
+
+  EKSarn:
+    Description: ARN of the EKS CLuster
+    Value: !GetAtt EKSCluster.Arn
+
+  EKSca:
+    Description: certificate authority data of the EKS CLuster
+    Value: !GetAtt EKSCluster.CertificateAuthorityData
+
+  EKSendpoint:
+    Description: api endpoint for the EKS CLuster
+    Value: !GetAtt EKSCluster.Endpoint
