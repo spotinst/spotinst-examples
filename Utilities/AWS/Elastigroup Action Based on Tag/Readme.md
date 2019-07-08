@@ -1,4 +1,4 @@
-This script will Puase \ Resume \ Recycle Stateful Instances by the tag that is configured in the Elastigroup.
+This script will Pause \ Resume \ Recycle Stateful Instances by the tag that is configured in the Elastigroup.
 
 The used parameters are:
 * account_id -> insert the account id
