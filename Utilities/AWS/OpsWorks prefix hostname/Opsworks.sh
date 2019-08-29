@@ -73,7 +73,7 @@ function install_opsworks {
     readonly OPSWORKS_ENDPOINT=`curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}'`
   fi
 
-  new_hostname=`curl -s http://169.254.169.254/latest/meta-data/local-hostname | sed "s/.us-west-2.compute.internal//g"`
+  new_hostname=`curl -s http://169.254.169.254/latest/meta-data/instance-id`
 
   log_info "Trying to register the instance to AWS OpsWorks stack: $OPSWORKS_STACK_ID"
   aws opsworks register --infrastructure-class ec2 --use-instance-profile --region $OPSWORKS_ENDPOINT --stack-id $OPSWORKS_STACK_ID --local --override-hostname $HOSTNAME_PREFIX-$new_hostname 
