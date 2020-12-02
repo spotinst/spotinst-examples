@@ -1,4 +1,4 @@
-# Cassandra cluster on Spotinst
+# Cassandra cluster on Spot.io
 
 ## Introduction
 
@@ -27,7 +27,7 @@ To ensure that that data is up to date the node has to get follow consistency le
 ## Step by step guide
 
 * This Terrafom template will create Stateful Elastigroup with persisting the private IP and Data and root volume.
-* Create a Spotinst token  - https://api.spotinst.com/spotinst-api/administration/create-an-api-token/
+* Create a Spotinst token  - https://docs.spot.io/administration/api/create-api-token
 * Fill the required fields in the exapmple vars
 * Apply the Terraform 
  
