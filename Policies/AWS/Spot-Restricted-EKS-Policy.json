@@ -1,0 +1,99 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TerminateStopInstanceswithRestrictions",
+      "Action": [
+        "ec2:StopInstances",
+        "ec2:TerminateInstances"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:ResourceTag/spotinst:aws:ec2:group:createdBy": "spotinst"
+        }
+      },
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "GeneralSpotInstancesAccess",
+      "Action": [
+        "ec2:RequestSpotInstances",
+        "ec2:CancelSpotInstanceRequests",
+        "ec2:CreateSpotDatafeedSubscription",
+        "ec2:Describe*",
+        "ec2:AssociateAddress",
+        "ec2:ConfirmProductInstance",
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DisassociateAddress",
+        "ec2:ModifyImageAttribute",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:MonitorInstances",
+        "ec2:RebootInstances",
+        "ec2:RegisterImage",
+        "ec2:RunInstances",
+        "ec2:StartInstances",
+        "ec2:UnassignPrivateIpAddresses",
+        "ec2:ModifyNetworkInterfaceAttribute"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "AccessELB",
+      "Action": [
+        "elasticloadbalancing:Describe*",
+        "elasticloadbalancing:Deregister*",
+        "elasticloadbalancing:Register*",
+        "elasticloadbalancing:RemoveTags",
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:EnableAvailabilityZonesForLoadBalancer",
+        "elasticloadbalancing:DisableAvailabilityZonesForLoadBalancer"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "AccessIAM",
+      "Action": [
+        "iam:ListInstanceProfiles",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListRoles",
+        "iam:GetInstanceProfile",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "AccessEks",
+      "Action": [
+        "eks:ListClusters"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "AccessAutoScalingGroups",
+      "Action": [
+        "autoscaling:Describe*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}

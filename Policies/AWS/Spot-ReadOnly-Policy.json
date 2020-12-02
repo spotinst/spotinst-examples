@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlySpot",
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:Describe*",
+        "elasticmapreduce:Describe*",
+        "elasticmapreduce:ListClusters",
+        "elasticloadbalancing:Describe*",
+        "ecs:List*",
+        "batch:Describe*",
+        "ecs:Describe*",
+        "elasticbeanstalk:Describe*",
+        "ec2:Describe*",
+        "codedeploy:BatchGetDeployments",
+        "batch:List*",
+        "eks:ListClusters",
+        "codedeploy:List*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
