@@ -8,8 +8,6 @@ When using Spot Instances on stateful application it can be very hard to maintai
 Elastigroup can run Stateful application on spot instances while keeping high availability and provide full SLA.
 Elasigroup gives you the option to persist the root and data volume and also the private IP of the instance.
 
-![Stateful](https://git-quick-start.s3-us-west-2.amazonaws.com/Stateful-Redis.png)
-
 ## Cassandra architecture
 
 Cassandra is a distributed system that has an architecture that enables to stay reliable even when one of the nodes goes down.
@@ -25,8 +23,6 @@ That means if node 1 is the owner of “red” token with a replication factor o
 Each node accepts reads and writes if the node will not have the data it will fetch it from the other nodes.
 When a node doesn’t have the right data he will fetch it from the other nodes.
 To ensure that that data is up to date the node has to get follow consistency level the recommended is a quorum (the majority of replicas).
-
-![Quick Start Terraform with cassandra](https://git-quick-start.s3-us-west-2.amazonaws.com/Cassandra.png)
 
 ## Step by step guide
 
