@@ -1,12 +1,12 @@
 
-# Spostinst resource to create the worker nodes.
+# Spotinst resource to create the worker nodes.
 
 resource "spotinst_ocean_aws" "tf_ocean_cluster" {
   name          = "${var.CLUSTER_NAME}"
   controller_id = "${var.CLUSTER_NAME}"
   region        = "${var.AWS_REGION}"
 
-  max_size         = "999999"
+  max_size         = "100000"
   min_size         = "1"
   desired_capacity = "1"
 
