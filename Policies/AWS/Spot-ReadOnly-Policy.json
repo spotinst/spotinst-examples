@@ -22,6 +22,27 @@
       "Resource": [
         "*"
       ]
+    },
+    {
+      "Sid": "SavingsPlan",
+      "Action": [
+        "savingsplans:Describe*",
+        "savingsplans:List*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "Lambda",
+      "Action": [
+        "lambda:ListFunctions"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
     }
   ]
 }
