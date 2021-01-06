@@ -1,0 +1,3 @@
+Click
+spotinst-sdk2
+requests
