@@ -1,4 +1,0 @@
-
-        [console_scripts]
-        spot-account=spot_account:cli
-    
