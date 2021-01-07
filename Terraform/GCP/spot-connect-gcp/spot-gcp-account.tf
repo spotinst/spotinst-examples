@@ -6,11 +6,14 @@ provider "null" {
     version = "~> 2.1"
 }
 
+#Call the spot module to create a Spot account and link project
 module "spot_account" {
     source = "./spot-account"
-    name = "steven-terraform-gcp"
-    service_account_name = "steven-terraform-gcp"
-    project = "spotinst-labs"
+    #Name of the Spot Account
+    name = "terraform-gcp"
+    #Name of the service Account
+    service_account_name = "spot-terraform"
+    project = "example"
 }
 
 output "spot_account_id" {
