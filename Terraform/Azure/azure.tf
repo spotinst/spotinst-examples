@@ -2,12 +2,12 @@
 provider "azurerm" {
   version = "=2.42.0"
   features {}
-  subscription_id = "b4c2846c-2ef2-4763-8531-eb7c29f63ff4"
+  subscription_id = ""
 }
 
 provider "azuread" {
   version = ">1.0.0"
-  tenant_id = "096eceb6-74f5-4e11-b93f-acfeba4bb507"
+  tenant_id = ""
 }
 
 # Create a random string for the azure app registration
@@ -17,7 +17,7 @@ resource "random_string" "value" {
 }
 
 resource "azuread_application" "spot" {
-  name                        = "spot-steven"
+  name                        = "spot-azure"
   available_to_other_tenants  = false
   oauth2_permissions          = []
   reply_urls                  = ["https://spot.io"]
