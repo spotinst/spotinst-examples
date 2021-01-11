@@ -107,7 +107,6 @@
         "iam:AddRoleToInstanceProfile",
         "iam:ListInstanceProfiles",
         "iam:ListInstanceProfilesForRole",
-        "iam:PassRole",
         "iam:ListRoles",
         "iam:ListAccountAliases",
         "iam:GetPolicyVersion",
