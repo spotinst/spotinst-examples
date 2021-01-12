@@ -68,7 +68,8 @@
         "iam:ListRoles",
         "iam:GetInstanceProfile",
         "iam:GetRolePolicy",
-        "iam:ListRolePolicies"
+        "iam:ListRolePolicies",
+        "iam:PassRole"
       ],
       "Effect": "Allow",
       "Resource": [
