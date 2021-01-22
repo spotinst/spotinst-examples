@@ -16,6 +16,7 @@ provider "random" {
 
 module "spot_account" {
     source = "./spot-account"
+    #Desired Name of the Spot Account
     name = "test-terraform"
 }
 
