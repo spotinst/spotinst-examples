@@ -1,13 +1,17 @@
+variable "subscription_id" {}
+variable "tenant_id" {}
+
+
 # Configure the Azure Provider
 provider "azurerm" {
   version = "=2.42.0"
   features {}
-  subscription_id = ""
+  subscription_id = var.subscription_id
 }
 
 provider "azuread" {
   version = ">1.0.0"
-  tenant_id = ""
+  tenant_id = var.tenant_id
 }
 
 # Create a random string for the azure app registration
