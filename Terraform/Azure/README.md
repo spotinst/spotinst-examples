@@ -21,7 +21,7 @@ On Apply:
 * Assign Role to Application on Subscription
 
 Prints out the following to be entered into the Spot Console:
-* Subscription ID
-* Tenant IT
-* Client Secret ID
 * Application ID
+* Subscription ID
+* Client Secret ID
+* Directory ID
