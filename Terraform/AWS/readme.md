@@ -3,12 +3,14 @@
 ## Introduction
 Example Terraform for Spot.io
 
-## Examples
-* spot-connect-aws
+## Details
+The module will aid in automatically connecting your AWS Account to Spot via terraform.  This will also leverage a python script to call the Spot.io APIs to create a Spot account within your Spot Organization and add the ARN of the created role. 
 
-#spot-connect-gcp
-The module will aid in automatically connecting your AWS Account to Spot via terraform. Please ensure you have a Spot Organization Admin API token. This is required to be added as an environment variable stored in SPOTINST_TOKEN. This will also leverage a python script to create the Spot account. Please ensure you have Python 3 installed. 
+### Pre-Reqs
+* Spot Organization Admin API token. This is required to be added as an environment variable stored in ```SPOTINST_TOKEN```.
+* Python 3 installed
 
+### Run
 This terraform module will do the following:
 
 On Apply:
