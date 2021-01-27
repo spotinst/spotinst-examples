@@ -3,10 +3,10 @@
 ## Introduction
 Example Terraform to connect Azure Subscription to Spot.io
 
-##Details
+## Details
 The module will aid in automatically connecting your Azure Subscription to Spot via terraform. Permissions will be managed by Azure Active Directory with a custom role that will be assigned to the Application. 
 
-#Pre-Reqs
+# Pre-Reqs
 * Subscription ID
 * Azure Active Directory ID
 
