@@ -1,4 +1,4 @@
-# Terraform GCP Examples for Spot.io
+# Terraform AWS Examples for Spot.io
 
 ## Introduction
 Example Terraform for Spot.io
