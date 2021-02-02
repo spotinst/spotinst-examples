@@ -50,8 +50,8 @@
         "s3:Describe*",
         "s3:AbortMultipartUpload"
       ],
-      "Resource": "arn:aws:s3:::CostAndUsageBucket/*"
-    },
+      "Resource": "arn:aws:s3:::<CostAndUsageBucket>/*"
+    }
     
   ]
 }
