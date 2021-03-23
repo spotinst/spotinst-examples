@@ -1,0 +1,11 @@
+[
+    {
+    "classification": "spark-env",
+    "configurations": [
+        {
+            "classification": "export",
+            "properties": {"PYSPARK_PYTHON": "/usr/bin/python3"}
+        }
+    ]
+    }
+]
