@@ -1,3 +1,7 @@
+// This is an example of the configurations file that will be used in the EMR cluster.
+// mrScaler/compute/configurations/file
+// https://docs.spot.io/api/#operation/elastigroupAwsEmrCreate
+
 [
     {
     "classification": "spark-env",
