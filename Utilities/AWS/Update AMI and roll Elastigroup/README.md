@@ -41,13 +41,15 @@ client = SpotinstClient(credentials_file='/path/to/file', profile='my_profile')
 
 5. Fetching from the default location with the default profile.
 
-##Examples to use the cli script:
+## Examples to use the cli script:
 
-####**Get details via help**
+#### **Get details via help:**
 `python3 roll_eg.py --help`
-####**List all EG and their ID**
+
+#### **List all EG and their ID:**
 `python3 roll_eg.py get`
-####**Update AMI and roll EG**
+
+#### **Update AMI and roll EG:**
 `python3 roll_eg.py roll -a ami-e3fdd999 sig-1234567`
 
 ## Documentation
