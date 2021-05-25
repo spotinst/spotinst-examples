@@ -11,10 +11,9 @@ provider "spotinst" {
   account = var.spot_account
 }
 
-
 locals {
   standard_tags = {
-    CreatedBy = "steven.feltner"
+    CreatedBy = "terraform"
     protected = "true"
     weekend = "true"
   }
