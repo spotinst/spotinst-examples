@@ -1,0 +1,1 @@
+# EMR Terraform Example for Spot.io
