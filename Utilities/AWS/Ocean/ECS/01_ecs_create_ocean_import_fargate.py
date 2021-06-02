@@ -12,6 +12,7 @@
 
 ### Parameters ###
 ecs_cluster = ''
+# Can not be empty
 securityGroup_description = ''
 securityGroupName = ''
 vpcId = ''
@@ -26,7 +27,6 @@ subnet_id = ""
 iam_instance_role = ""
 # ECS optimized AMI can be found: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 ecs_ami_id = ""
-keyPair = ""
 ###################
 
 import base64
@@ -117,11 +117,14 @@ except ClientError as e:
                         print(e.response['Error']['Message'] + " - Skipping")
                     else:
                         print("ERROR - Unable to add ingress rule to security group")
+                        print(e.response)
         except ClientError as e:
             print("ERROR - Unable to add rules to existing security group")
+            print(e.response)
             exit()
     else:
         print("ERROR - Unable to create security group")
+        print(e.response)
         exit()
 
 # Add all rules to new security group
@@ -133,6 +136,7 @@ for i in range(len(ip_permissions)):
             print(e.response['Error']['Message'] + " - Skipping")
         else:
             print("ERROR - Unable to add ingress rule to security group")
+            print(e.response)
 
 # get the security group ID and print to screen
 time.sleep(2)
@@ -271,7 +275,6 @@ data = {
                 "iamInstanceProfile": {
                     "arn": iam_instance_role
                 },
-                "keyPair": keyPair,
                 "tags": [
                     {
                         "tagKey": "Name",
@@ -282,7 +285,6 @@ data = {
                         "tagValue": "Spotinst"
                     }
                 ],
-                "associatePublicIpAddress": 'false',
                 "monitoring": 'true',
             }
         }
