@@ -1,3 +1,2 @@
 /.idea/
-*/.DS_Store
-Terraform/Ocean/AWS/EKS/ocean_eks/.DS_Store
+.DS_Store
