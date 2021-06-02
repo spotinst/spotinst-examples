@@ -1,6 +1,6 @@
 ## Create Ocean Cluster in Spot.io and deploy controller pod ##
 module "ocean_eks" {
-  source = "./ocean_eks"
+  source = "ocean_eks"
 
   # Spot.io Credentials
   spotinst_token              = ""

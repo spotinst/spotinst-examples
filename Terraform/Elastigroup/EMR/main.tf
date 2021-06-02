@@ -1,6 +1,6 @@
 ## Create Elastigroup EMR Cluster in Spot.io##
 module "elastigroup_emr" {
-  source = "./elastigroup_emr"
+  source = "elastigroup_emr"
 
   spot_token = "1234567890"
   spot_account = "act-123456789"
