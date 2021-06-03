@@ -8,26 +8,40 @@
 ### Parameters ###
 account_id = ""
 token = ""
-ecs_cluster=""
-region=""
-ocean_id=""
+ecs_cluster = ""
+region = ""
+ocean_id = ""
+profile_name = ''
 ###################
 
-import boto3, json, requests, time, sys
+import json
+import requests
+import sys
+import time
+import boto3
+from botocore.exceptions import ProfileNotFound
+from botocore.exceptions import ClientError
 
 # Creating log file
 log_file = open("spotinst_fargate_import_log.txt", "w+")
 count = 0
 
-service_names=[]
+service_names = []
 
-client = boto3.client('ecs', region_name = region)
-services = client.list_services(cluster=ecs_cluster,maxResults=100)
+try:
+    session = boto3.session.Session(profile_name=profile_name)
+    client = session.client('ecs', region_name=region)
+except ProfileNotFound as e:
+    print(e)
+    print("Trying without profile...")
+    client = boto3.client('ecs', region_name=region)
 
-#Only get services that do not start with sfm or previously imported by spotinst
+services = client.list_services(cluster=ecs_cluster, maxResults=100)
+
+# Only get services that do not start with sfm or previously imported by spotinst
 for i in services['serviceArns']:
     temp = i.split('/')[1]
-    if(temp.startswith('sfm')):
+    if (temp.startswith('sfm')):
         pass
     else:
         print("Service to import: " + temp)
@@ -35,18 +49,19 @@ for i in services['serviceArns']:
 
 print('Importing fargate services...')
 headers = {'Authorization': 'Bearer ' + token}
-url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id +'/fargateMigration?accountId=' + account_id
-data = { "services": service_names, "simpleNewServiceNames": 'true'} 
+url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration?accountId=' + account_id
+data = {"services": service_names, "simpleNewServiceNames": 'true'}
 
 r = requests.post(url, json=data, headers=headers)
-r_text=str(r.text)
+r_text = str(r.text)
 log_file = open("spotinst_fargate_import_log.txt", "a+")
 log_file.write(r_text)
 
 if r.status_code == 200:
     print("Migration started successfully, service creation will take some time")
 else:
-    print("FAILED to Migrate services with status code:", r.status_code, "\nPlease check spotinst_fargate_import_log.txt for more information")
+    print("FAILED to Migrate services with status code:", r.status_code,
+          "\nPlease check spotinst_fargate_import_log.txt for more information")
     sys.exit()
 
 status = ""
@@ -60,9 +75,9 @@ while status != "FINISHED":
         print(temp)
         break
     else:
-        url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/'+ocean_id+'/fargateMigration/status?accountId=' + account_id
+        url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration/status?accountId=' + account_id
         r = requests.get(url, headers=headers)
         r_text = json.loads(r.text)
         status = r_text['response']['items'][0]['state']
-        if(status != prev_status):
+        if (status != prev_status):
             print('Current migration status: ' + status)

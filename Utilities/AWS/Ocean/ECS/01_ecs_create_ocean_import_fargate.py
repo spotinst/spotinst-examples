@@ -27,6 +27,8 @@ subnet_id = ""
 iam_instance_role = ""
 # ECS optimized AMI can be found: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 ecs_ami_id = ""
+# AWS Profile Name (Optional)
+profile_name = ""
 ###################
 
 import base64
@@ -37,6 +39,7 @@ import time
 
 import boto3
 from botocore.exceptions import ClientError
+from botocore.exceptions import ProfileNotFound
 
 
 ####################
@@ -54,7 +57,14 @@ service_list = []
 security_group_ids = []
 ip_permissions = []
 
-client = boto3.client('ecs', region_name=region)
+try:
+    session = boto3.session.Session(profile_name=profile_name)
+    client = session.client('ecs', region_name=region)
+except ProfileNotFound as e:
+    print(e)
+    print("Trying without profile...")
+    client = boto3.client('ecs', region_name=region)
+
 services = client.list_services(cluster=ecs_cluster, maxResults=100)
 
 for i in services['serviceArns']:
