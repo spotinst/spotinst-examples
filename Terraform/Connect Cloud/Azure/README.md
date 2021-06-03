@@ -8,7 +8,8 @@ The module will aid in automatically connecting your Azure Subscription to Spot 
 
 ### Pre-Reqs
 * Spot Organization Admin API token. This is required to be added as an environment variable stored in ```SPOTINST_TOKEN```.
-* Python 3 installed
+* python3 installed
+* pip3 installed
 * Subscription ID
 * Azure Active Directory ID
 
