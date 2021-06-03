@@ -1,6 +1,6 @@
 #Call the spot module to create a Spot account and link Azure
 module "spot_subscription_1" {
-  source = "../../modules/spot.io/spot-account-azure"
+  source = "./spot-account-azure"
   spot_token = ""
   subscription_id = ""
   tenant_id = ""
@@ -11,7 +11,7 @@ output "spot_account_id_1" {
 }
 
 module "spot_subscription_2" {
-  source = "../../modules/spot.io/spot-account-azure"
+  source = "./spot-account-azure"
   spot_token = ""
   subscription_id = ""
   tenant_id = ""
