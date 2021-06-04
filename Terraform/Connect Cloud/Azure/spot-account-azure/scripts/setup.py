@@ -7,7 +7,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'Click',
-        'spotinst-sdk2'
+        'spotinst-sdk2',
+        'requests'
     ],
     entry_points={
         'console_scripts': [
