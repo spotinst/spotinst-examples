@@ -33,6 +33,10 @@ iam_instance_role = ""
 ecs_ami_id = ""
 # AWS credential Profile Name (Optional)
 profile_name = ""
+# AWS credentials (optional)
+ACCESS_KEY = ""
+SECRET_KEY = ""
+SESSION_TOKEN = ""
 ###################
 
 import base64
@@ -67,7 +71,13 @@ try:
 except ProfileNotFound as e:
     print(e)
     print("Trying without profile...")
-    client = boto3.client('ecs', region_name=region)
+    try:
+        client = boto3.client('ecs', region_name=region)
+    except ClientError as e:
+        client = boto3.client('ecs', region_name=region,
+                              aws_access_key_id=ACCESS_KEY,
+                              aws_secret_access_key=SECRET_KEY,
+                              aws_session_token=SESSION_TOKEN)
 
 services = client.list_services(cluster=ecs_cluster, maxResults=100)
 
@@ -103,8 +113,13 @@ try:
 except ProfileNotFound as e:
     print(e)
     print("Trying without profile...")
-    client = boto3.client('ec2', region_name=region)
-
+    try:
+        client = boto3.client('ec2', region_name=region)
+    except ClientError as e:
+        client = boto3.client('ec2', region_name=region,
+                              aws_access_key_id=ACCESS_KEY,
+                              aws_secret_access_key=SECRET_KEY,
+                              aws_session_token=SESSION_TOKEN)
 
 # Get description of all security groups and rules
 for i in range(len(security_group_ids)):
@@ -337,21 +352,27 @@ try:
 except ProfileNotFound as e:
     print(e)
     print("Trying without profile...")
-    client = boto3.client('ecs', region_name=region)
+    try:
+        client = boto3.client('ecs', region_name=region)
+    except ClientError as e:
+        client = boto3.client('ecs', region_name=region,
+                              aws_access_key_id=ACCESS_KEY,
+                              aws_secret_access_key=SECRET_KEY,
+                              aws_session_token=SESSION_TOKEN)
 
 services = client.list_services(cluster=ecs_cluster, maxResults=100)
 
 for i in services['serviceArns']:
     try:
         temp = i.split('/')[2]
-        if (temp.startswith('sfm')):
+        if temp.startswith('sfm'):
             pass
         else:
             service_names.append(temp)
             print("Service to import: " + temp)
     except:
         temp = i.split('/')[1]
-        if (temp.startswith('sfm')):
+        if temp.startswith('sfm'):
             pass
         else:
             service_names.append(temp)
@@ -371,7 +392,6 @@ else:
     print("FAILED to Migrate services with status code:", r.status_code)
     print(r.text)
     sys.exit()
-
 
 status = ""
 print('Waiting for import to complete....')
