@@ -1,33 +1,37 @@
 #########################################
-##  Written by Steven Feltner@spotinst        
+##  Written by steven.feltner@spot.io
 ## This script should be ran BEFORE a spotinst ECS service import.
 ## The script will gather all services and do the following:
-## 1) Describe all Services
+## 1) Describe all services within specified ECS cluster
 ## 2) Gather all SGs for each service
 ## 3) Create new Master SG
 ## 4) Copy all rules from existing SGS into master SG
-## 5) Create Spot Ocean Cluster
-## 6) Migrate all fargate services to EC2 services
-## NOTE: Please use at your own discrection. Not responsible for any damage or accidental deletion of AWS infrastructure.
+## 5) Create a Spot Ocean Cluster
+## 6) Copy/Import all fargate services into EC2 services (This does not remove/delete original fargate services)
+## NOTE: Please use at your own discretion. Not responsible for any damage or accidental deletion of AWS infrastructure.
 
 ### Parameters ###
-ecs_cluster = ''
-# Can not be empty
-securityGroup_description = ''
-securityGroupName = ''
-vpcId = ''
-region = ''
 # Spot Account ID
 account_id = ""
 # Spot API Token
 token = ""
-# Enter one or more subnet seperated with comma
+
+ecs_cluster = ''
+# New Secuirty Group - Can not be empty
+securityGroupName = ''
+# New Secuirty Group Name - Can not be empty
+securityGroup_description = ''
+# Network Details
+region = ''
+vpcId = ''
+# Enter one or more subnet separated with comma
 subnet_id = ""
 # instance profile arn EX: arn:aws:iam::123456789:instance-profile/ecsInstanceRole
+# to create one follow: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
 iam_instance_role = ""
 # ECS optimized AMI can be found: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 ecs_ami_id = ""
-# AWS Profile Name (Optional)
+# AWS credential Profile Name (Optional)
 profile_name = ""
 ###################
 
@@ -83,19 +87,32 @@ x = list(divide_chunks(service_list, n))
 
 # get list of SG IDs for the each services in the cluster
 for i in range(len(x)):
-    services = client.describe_services(cluster=ecs_cluster, services=x[i])
+    try:
+        services = client.describe_services(cluster=ecs_cluster, services=x[i])
+    except ClientError as e:
+        print(e)
 
-    for i in range(len(services['services'])):
-        securityGroups = services['services'][i]['networkConfiguration']['awsvpcConfiguration']['securityGroups']
+    for j in range(len(services['services'])):
+        securityGroups = services['services'][j]['networkConfiguration']['awsvpcConfiguration']['securityGroups']
         for y in range(len(securityGroups)):
             security_group_ids.append(securityGroups[y])
 
-client = boto3.client('ec2', region_name=region)
+try:
+    session = boto3.session.Session(profile_name=profile_name)
+    client = session.client('ec2', region_name=region)
+except ProfileNotFound as e:
+    print(e)
+    print("Trying without profile...")
+    client = boto3.client('ec2', region_name=region)
+
 
 # Get description of all security groups and rules
 for i in range(len(security_group_ids)):
-    securitygroups = client.describe_security_groups(GroupIds=[security_group_ids[i]])
-    ip_permissions.append(securitygroups['SecurityGroups'][0]['IpPermissions'])
+    try:
+        securitygroups = client.describe_security_groups(GroupIds=[security_group_ids[i]])
+        ip_permissions.append(securitygroups['SecurityGroups'][0]['IpPermissions'])
+    except ClientError as e:
+        print(e)
 
 # Create a single security group
 try:
@@ -155,10 +172,6 @@ print("The security group ID: " + GroupId)
 #########################################
 ## The will create an ECS Ocean Cluster:
 #########################################
-
-# Creating log file
-log_file = open("spotinst_ocean_ecs_create_log.txt", "w+")
-count = 0
 
 # Create user data for ocean cluster in base64
 user_data = "#!/bin/bash \necho ECS_CLUSTER=" + ecs_cluster + " >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;"
@@ -302,30 +315,30 @@ data = {
 }
 
 r = requests.post(url, json=data, headers=headers)
-r_text = str(r.text)
-
-log_file = open("spotinst_ocean_ecs_create_log.txt", "a+")
-log_file.write(r_text)
 r_text = json.loads(r.text)
 
 if r.status_code == 200:
     ocean_id = r_text['response']['items'][0]['id']
     print("Created Ocean Cluster successfully, the Ocean ID: " + ocean_id)
 else:
-    print("FAILED to create Ocean Cluster with status code:", r.status_code,
-          "\nPlease check spotinst_ocean_ecs_create_log.txt for more information")
+    print("FAILED to create Ocean Cluster with status code:", r.status_code)
+    print(r.text)
     sys.exit()
 
 #########################################
 # import fargate services 
 #########################################
-# Creating log file
-log_file = open("spotinst_fargate_import_log.txt", "w+")
-count = 0
 
 service_names = []
 
-client = boto3.client('ecs', region_name=region)
+try:
+    session = boto3.session.Session(profile_name=profile_name)
+    client = session.client('ecs', region_name=region)
+except ProfileNotFound as e:
+    print(e)
+    print("Trying without profile...")
+    client = boto3.client('ecs', region_name=region)
+
 services = client.list_services(cluster=ecs_cluster, maxResults=100)
 
 for i in services['serviceArns']:
@@ -345,31 +358,30 @@ for i in services['serviceArns']:
             print("Service to import: " + temp)
 
 print('Importing fargate services...')
+
 headers = {'Authorization': 'Bearer ' + token}
 url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration?accountId=' + account_id
 data = {"services": service_names, "simpleNewServiceNames": 'true'}
 
 r = requests.post(url, json=data, headers=headers)
-r_text = str(r.text)
-log_file = open("spotinst_fargate_import_log.txt", "a+")
-log_file.write(r_text)
 
 if r.status_code == 200:
     print("Migration was successfully, service creation will take some time")
 else:
-    print("FAILED to Migrate services with status code:", r.status_code,
-          "\nPlease check spotinst_fargate_import_log.txt for more information")
+    print("FAILED to Migrate services with status code:", r.status_code)
+    print(r.text)
     sys.exit()
+
 
 status = ""
 print('Waiting for import to complete....')
 while status != "FINISHED":
     prev_status = status
+    update_progress(status)
     time.sleep(10)
     if status == "FAILED":
         break
     if status == "FINISHED_PARTIAL_SUCCESS":
-        print(temp)
         break
     else:
         url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration/status?accountId=' + account_id

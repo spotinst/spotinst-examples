@@ -1,4 +1,5 @@
-##########
+#########################################
+##  Written by steven.feltner@spot.io
 ## Delete all services that do NOT start with "sfm"
 ## NOTE: Please use at your own discrection. Not responsible for any damage or accidental deletion of AWS infrastructure.
 ##########
@@ -6,6 +7,7 @@
 ### Parameters ###
 cluster = ''
 region = ''
+# Profile is Optional
 profile_name = ''
 ###################
 
@@ -31,7 +33,7 @@ for i in services['serviceArns']:
     service_names.append(i.split('/', 1)[1])
 
 for j in service_names:
-    if (j.startswith('sfm')):
+    if j.startswith('sfm'):
         pass
     else:
         client.update_service(cluster=cluster, service=j, desiredCount=0)

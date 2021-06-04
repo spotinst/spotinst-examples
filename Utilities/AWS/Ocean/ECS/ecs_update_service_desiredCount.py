@@ -1,11 +1,19 @@
-###
+#########################################
+##  Written by steven.feltner@spot.io
 ## Script to update the desiredCount (# of tasks) for all services
 # Example usage: 'ecs_update_service_desiredCount.py -c <Cluster> -r <region> -d <desiredcount> -o <ALL|SFM>'
 ###
 
-import boto3
 import getopt
 import sys
+import boto3
+from botocore.exceptions import ClientError
+from botocore.exceptions import ProfileNotFound
+
+### Variables ###
+# AWS Profile Name (Optional)
+profile_name = ""
+###################
 
 
 def main(argv):
@@ -28,20 +36,26 @@ def main(argv):
         elif opt in ("-o"):
             option = arg
 
-    client = boto3.client('ecs', region_name=region)
+    try:
+        session = boto3.session.Session(profile_name=profile_name)
+        client = session.client('ecs', region_name=region)
+    except ProfileNotFound as e:
+        print(e)
+        print("Trying without profile...")
+        client = boto3.client('ecs', region_name=region)
 
     services = client.list_services(cluster=cluster, maxResults=100)
 
     print('---------------------')
 
-    serivce_names = []
+    service_names = []
 
     for i in services['serviceArns']:
-        serivce_names.append(i.split('/', 1)[1])
+        service_names.append(i.split('/', 1)[1])
 
-    for j in serivce_names:
-        if (option == "SFM"):
-            if (j.startswith('sfm')):
+    for j in service_names:
+        if option == "SFM":
+            if j.startswith('sfm'):
                 client.update_service(cluster=cluster, service=j, desiredCount=desiredCount)
                 print("Updated service: " + j + " to a desired count of: " + str(desiredCount))
             else:

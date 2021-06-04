@@ -1,5 +1,5 @@
 #########################################
-##  Written by Steven Feltner        
+##  Written by steven.feltner@spot.io
 ## The script will migrate all fargate services to EC2 services to be managed by Spot.io Ocean.
 ## The script will do the following:
 ## 1) Clone each fargate service/s task definition to to an EC2 task definition
@@ -11,6 +11,7 @@ token = ""
 ecs_cluster = ""
 region = ""
 ocean_id = ""
+# Profile is Optional
 profile_name = ''
 ###################
 

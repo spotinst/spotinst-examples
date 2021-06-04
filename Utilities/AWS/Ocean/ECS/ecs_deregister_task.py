@@ -1,11 +1,12 @@
-##############
+#########################################
+##  Written by steven.feltner@spot.io
 ## Delete task Definitions that start with "SFM"
 ## NOTE: Please use at your own discrection. Not responsible for any damage or accidental deletion of AWS infrastructure.
 ##############
 
 ### Parameters ###
 region = ''
-# Profile is optional
+# Profile is Optional
 profile_name = ''
 ###################
 

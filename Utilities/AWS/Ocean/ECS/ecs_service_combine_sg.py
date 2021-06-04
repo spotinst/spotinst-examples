@@ -1,5 +1,5 @@
 #########################################
-##  Written by Steven Feltner@spotinst        
+##  Written by steven.feltner@spot.io
 ## This script should be ran BEFORE a spotinst ECS service import.
 ## The script will gather all services and do the following:
 ## 1) Describe all Services
@@ -15,7 +15,7 @@ securityGroup_description = ""
 securityGroupName = ""
 vpcId = ""
 region = ""
-# profile is optional
+# Profile is Optional
 profile_name = ""
 ###################
 

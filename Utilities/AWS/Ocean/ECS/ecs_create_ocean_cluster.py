@@ -1,5 +1,5 @@
 #########################################
-##  Written by Steven Feltner@spotinst
+##  Written by steven.feltner@spot.io
 ## The script will create an ECS Ocean Cluster:
 
 # ECS optimized AMI can be found: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html 

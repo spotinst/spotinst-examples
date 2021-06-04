@@ -1,15 +1,14 @@
 #########################################
-##  Written by Steven.Feltner@spot.io      
+##  Written by steven.feltner@spot.io
 ## This script should be ran after a spotinst ECS service import
 ## The script will look for any migrated (fargate -> EC2) services starting with "sfm" and do the following:
 ## 1) Scale Original Fargate service to zero
 ## 2) Delete Original Fargate service
 ## 3) Copy configs of migrated EC2 service task definition
-## 4) Create new EC2 service with same name as Orginal Fargate service
+## 4) Create new EC2 service with same name as Original Fargate service
 ## 5) Scale Migrated "sfm" service to zero
 ## 6) Delete migrated "sfm" service
-## NOTE: Please use at your own discrection. Not responsible for any damage or accidental deletion of AWS infrastructure.
-
+## NOTE: Please use at your own discretion. Not responsible for any damage or accidental deletion of AWS infrastructure.
 
 ### Parameters ###
 cluster = ''

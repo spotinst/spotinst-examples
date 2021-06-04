@@ -1,4 +1,5 @@
-###
+#########################################
+##  Written by steven.feltner@spot.io
 ## Script to update the desiredCount (# of tasks) for all services have less running than desired. 
 ###
 
@@ -6,6 +7,7 @@
 cluster = ''
 desiredCount = 0
 region = ''
+# AWS Profile Name (Optional)
 profile_name = ''
 ###################
 
