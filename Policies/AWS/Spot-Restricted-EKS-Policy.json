@@ -77,6 +77,20 @@
       ]
     },
     {
+      "Sid": "AllowUseOfTheKey",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
       "Sid": "AccessEks",
       "Action": [
         "eks:ListClusters"
