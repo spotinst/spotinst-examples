@@ -4,3 +4,6 @@ variable "name" {
     EOT
     type = string
 }
+variable "token" {
+    type = string
+}

@@ -1,2 +1,8 @@
 /.idea/
 .DS_Store
+/Terraform/Connect Cloud/AWS/spot-connect-aws/.terraform.lock.hcl
+/Terraform/Connect Cloud/AWS/spot-connect-aws/terraform.tfstate
+/Terraform/Connect Cloud/AWS/spot-connect-aws/terraform.tfstate.backup
+.terraform/
+__pycache__/
+spot.egg-info/
