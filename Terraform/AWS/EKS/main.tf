@@ -7,7 +7,7 @@ locals {
 
 ## Create Ocean Cluster in Spot.io and deploy controller pod ##
 module "ocean_eks" {
-  source = "./ocean_eks"
+  source = "ocean_eks"
 
   # Spot.io Credentials
   spotinst_token              = local.spotinst_token
@@ -32,7 +32,7 @@ module "ocean_eks" {
 
 ## Create Ocean Virtual Node Group (launchspec) ##
 module "ocean_eks_launchspec_stateless" {
-  source = "./ocean_eks_launchspec"
+  source = "ocean_eks_launchspec"
 
   # Spot.io Credentials
   spotinst_token              = local.spotinst_token
@@ -53,7 +53,7 @@ module "ocean_eks_launchspec_stateless" {
 
 ## Create additional Ocean Virtual Node Group (launchspec) ##
 module "ocean_eks_launchspec_gpu" {
-  source = "./ocean_eks_launchspec"
+  source = "ocean_eks_launchspec"
 
   # Spot.io Credentials
   spotinst_token              = local.spotinst_token
