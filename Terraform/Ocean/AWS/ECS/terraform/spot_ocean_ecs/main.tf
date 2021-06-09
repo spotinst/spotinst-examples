@@ -59,12 +59,10 @@ resource "spotinst_ocean_ecs" "example" {
             max_scale_down_percentage   = var.scale_down_percentage
         }
     }
-
     update_policy {
         should_roll                 = var.update_roll
         roll_config {
             batch_size_percentage   = var.batch_percentage
         }
     }
-
 }

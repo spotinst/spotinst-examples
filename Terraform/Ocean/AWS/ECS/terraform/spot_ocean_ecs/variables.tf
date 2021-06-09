@@ -1,61 +1,83 @@
 #Spot API Token
-variable "spot_token" {}
-
-#Spot Account ID Ex: act-123e3127
-variable "spot_account" {}
-
-variable "region" {}
-
-variable "cluster_name" {}
-
-variable "subnet_ids" {}
-
-variable "security_group_ids" {}
-
-variable "image_id" {}
-
-variable "iam_instance_profile" {}
-
+variable "spot_token" {
+	type = string
+}
+variable "spot_account" {
+	type = string
+	description = "Spot Account ID Ex: act-123e3127"
+}
+variable "region" {
+	type = string
+}
+variable "cluster_name" {
+	type = string
+}
+variable "subnet_ids" {
+	type = list(string)
+}
+variable "security_group_ids" {
+	type = list(string)
+}
+variable "image_id" {
+	type = string
+}
+variable "iam_instance_profile" {
+	type = string
+}
 variable "key" {
+	type = string
 	default = ""
 }
 variable "public_ip" {
+	type = string
 	default = "false"
 }
 variable "utilize_ri" {
-	default = "true"
+	type = bool
+	default = true
 }
 variable "draining_timeout" {
-	default = "120"
+	type = number
+	default = 120
 }
 variable "monitoring" {
+	type = string
 	default = "true"
 }
 variable "optimized" {
-	default = "true"
+	type = bool
+	default = true
 }
 variable "autoscaler_enabled" {
-	default = "true"
+	type = bool
+	default = true
 }
 variable "autoscaler_auto" {
-	default = "true"
+	type = bool
+	default = true
 }
 variable "headroom_cpu" {
-	default = "0"
+	type = number
+	default = 0
 }
 variable "headroom_memory" {
-	default = "0"
+	type = number
+	default = 0
 }
 variable "headroom_num_unit" {
-	default = "0"
+	type = number
+	default = 0
 }
 variable "scale_down_percentage" {
-	default = "10"
+	type = number
+	default = 10
 }
 variable "update_roll" {
-	default = "false"
+	type = bool
+	default = false
 }
 variable "batch_percentage" {
-	default = "20"
+	type = number
+	default = 20
 }
 

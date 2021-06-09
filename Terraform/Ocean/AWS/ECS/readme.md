@@ -2,31 +2,12 @@
 
 # Spot Ocean ECS Terraform Module
 
-A Terraform module to create ECS Ocean Cluster. You can update the ```terraform.tfvars``` with specific information and run terraform apply to create + Manage the Ocean ECS Cluster
-https://registry.terraform.io/providers/spotinst/spotinst/latest/docs/resources/ocean_ecs
-
-## Table of Contents
-
-- [Usage](#usage)
-- [Prerequisites](#prerequisites)
-- [Resources](#resources)
-- [Requirements](#requirements)
-- [Providers](#providers)
-- [Inputs](#inputs)
-- [Outputs](#outputs)
-- [Documentation](#documentation)
-- [Getting Help](#getting-help)
-- [Community](#community)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Prerequisites
 
 * Have a ECS cluster created
 * Spot Account and API Token
 
 ## Usage
-
 ```hcl
 module "spot_ocean_ecs" {
   source = "../spot_ocean_ecs"
@@ -38,7 +19,6 @@ module "spot_ocean_ecs" {
 ```
 
 ## Resources
-
 This module creates and manages the following resources:
 - spotinst_ocean_ecs
 
@@ -48,14 +28,12 @@ This module creates and manages the following resources:
 | Name | Version |
 |------|---------|
 | terraform | >=0.12.15 |
-| aws | >= 3.3.0 |
 | spotinst | >= 1.27.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.3.0 |
 | spotinst | >= 1.27.0 |
 
 ## Inputs
@@ -69,7 +47,6 @@ This module creates and manages the following resources:
 | Name | Description |
 |------|-------------|
 | ocean\_cluster\_id | The ID of the Ocean cluster |
-| ocean\_controller\_id | The ID of the Ocean controller |
 
 ## Documentation
 
