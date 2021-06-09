@@ -4,7 +4,7 @@ provider "aws" {
 }
 #### Create Ocean ECS Cluster ####
 module "spot_ocean_ecs" {
-    source = "../spot_ocean_ecs"
+    source = "..\/..\/spot_ocean_ecs"
 
     cluster_name                    = var.cluster_name
     spot_token                      = var.spot_token
