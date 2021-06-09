@@ -14,7 +14,7 @@ variable "cluster_name" {
 }
 
 variable "subnet_ids" {
-  type        = list(strings)
+  type        = list(string)
   description = "List of subnet IDs"
 }
 
@@ -29,52 +29,54 @@ variable "region" {
 }
 
 variable "aws_profile" {
-    default = "default"
+  type        = string
+  default     = null
 }
 
 variable "ami_id" {
   type        = string
-  description = "The image ID for the EKS worker nodes
   default     = null
+  description = "The image ID for the EKS worker nodes. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI based on platform"
 }
 
 variable "worker_instance_profile_arn" {
-  default = ""
+  type        = string
+  description = "Instance Profile ARN to assign to worker nodes. Should have the WorkerNode policy"
 }
 variable "security_groups" {
-  type = list(string)
+  type        = list(string)
+  description = "List of security groups"
 }
-
 
 ##Ocean Configurations
 variable "min_size" {
   type        = number
-  description = "The lower limit of worker nodes the Ocean cluster can scale down to"
   default     = 0
+  description = "The lower limit of worker nodes the Ocean cluster can scale down to"
 }
 
 variable "max_size" {
   type        = number
-  description = "The upper limit of worker nodes the Ocean cluster can scale up to"
   default     = 1000
+  description = "The upper limit of worker nodes the Ocean cluster can scale up to"
 }
 
 variable "desired_capacity" {
   type        = number
-  description = "The number of worker nodes to launch and maintain in the Ocean cluster"
   default     = 1
+  description = "The number of worker nodes to launch and maintain in the Ocean cluster"
 }
 
 variable "key_name" {
   type        = string
-  description = "The key pair to attach to the worker nodes launched by Ocean"
   default     = null
+  description = "The key pair to attach to the worker nodes launched by Ocean"
 }
 
 variable "associate_public_ip_address" {
   type        = bool
-  description = "Associate a public IP address to worker nodes"
   default     = true
+  description = "Associate a public IP address to worker nodes"
 }
 
 variable "blacklist" {
@@ -189,29 +191,17 @@ variable "grace_period" {
   default     = 600
   description = "The amount of time, in seconds, after the instance has launched to start checking its health."
 }
-
-
-### Ocean VNG (Launch Spec) Configurations
-variable "max_instance_count" {
-  default     = null
-  description = "Maximum number of nodes launch by Spot VNG"
+variable "tags" {
+  type = list(object({
+    key = string
+    value = string
+  }))
+  default = null
+  description = "Tags to be added to resources"
 }
-
-variable "instance_types" {
-  default     = null
-  type        = list(string)
-  description = "Specific instance types permitted by this VNG. For example, [\"m5.large\",\"m5.xlarge\"]"
-}
-
-variable "root_volume_size" {
-  type        = number
-  default     = 30
-  description = "Size of root volume"
-}
-
-variable "spot_percentage" {
-  type        = number
-  default     = 100
-  description = "Percentage of VNG that will run on EC2 Spot instances and remaining will run on-demand"
+variable "should_roll" {
+  type        = string
+  default     = false
+  description = "Should the cluster be rolled for configuration updates"
 }
 
