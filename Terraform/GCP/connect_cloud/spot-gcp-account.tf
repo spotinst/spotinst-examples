@@ -1,9 +1,13 @@
-provider "external" {
-    version = "~> 1.2"
-}
-
-provider "null" {
-    version = "~> 2.1"
+terraform {
+    required_providers {
+        external = {
+            source = "hashicorp/external"
+        }
+        null = {
+            source = "hashicorp/null"
+        }
+    }
+    required_version = ">= 0.13"
 }
 
 #Call the spot module to create a Spot account and link project
