@@ -6,14 +6,16 @@ terraform {
 
 provider "aws" {
     region = "us-east-1"
+    profile = var.profile
 }
 
 locals {
     cmd = "${path.module}/scripts/spot-account"
     account_id = data.external.account.result["account_id"]
     external_id = data.external.external_id.result["externalId"]
-    name = var.name
 }
+
+data "aws_iam_account_alias" "current" {}
 
 # Create a random string for the role suffix
 resource "random_id" "role" {
@@ -67,7 +69,7 @@ resource "aws_iam_role_policy_attachment" "spot" {
 resource "null_resource" "account" {
     triggers = {
         cmd = "${path.module}/scripts/spot-account"
-        name = var.name
+        name = var.name != null ? var.name : data.aws_iam_account_alias.current.account_alias
     }
     provisioner "local-exec" {
         interpreter = ["/bin/bash", "-c"]

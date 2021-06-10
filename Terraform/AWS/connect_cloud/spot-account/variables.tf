@@ -1,9 +1,12 @@
 variable "name" {
-    description = <<-EOT
-      Name of the spotinst account to create.
-    EOT
+    description = "Name of the spotinst account to create."
     type = string
+    default = null
 }
 variable "token" {
     type = string
+}
+variable "profile" {
+    type = string
+    default = null
 }
