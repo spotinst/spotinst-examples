@@ -397,7 +397,6 @@ status = ""
 print('Waiting for import to complete....')
 while status != "FINISHED":
     prev_status = status
-    update_progress(status)
     time.sleep(10)
     if status == "FAILED":
         break
