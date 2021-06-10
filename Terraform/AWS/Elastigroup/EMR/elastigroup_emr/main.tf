@@ -12,11 +12,7 @@ provider "spotinst" {
 }
 
 locals {
-  standard_tags = {
-    CreatedBy = "terraform"
-    protected = "true"
-    weekend = "true"
-  }
+  cmd = "${path.module}/scripts/get-emr"
 }
 
 # Create a Elastigroup with EMR integration(Mr Scaler) with New strategy
@@ -53,26 +49,20 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   additional_primary_security_groups  = var.additional_master_sg_ids
   additional_replica_security_groups  = var.additional_slave_sg_ids
 
-  applications {
-    name = "hive"
-    version = "2.37"
+  dynamic applications {
+    for_each = var.applications == null ? [] : var.applications
+    content {
+      name = applications.value["name"]
+      version = applications.value["version"]
+    }
   }
-  applications {
-    name = "pig"
-    version = "0.17.0"
-  }
-  applications {
-    name = "spark"
-    version = "2.4.7"
-  }
-/*
+
+  /* Uncomment if you need to use steps or configurations file
   steps_file {
     bucket  = var.steps_bucket
     key     = var.steps_key
   }
-*/
 
-/*
   configurations_file {
     bucket  = var.config_bucket
     key     = var.config_key
@@ -130,10 +120,55 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   // ----------------------------
 
   dynamic "tags" {
-    for_each = local.standard_tags
+    for_each = var.tags == null ? {} : var.tags
     content {
       key   = tags.key
       value = tags.value
     }
   }
+}
+
+### Call script to get the cluster ID using Spot APIs ###
+# This will store the value in a txt file
+resource "null_resource" "cluster_id" {
+  triggers = {
+    cmd = "${path.module}/scripts/get-emr"
+  }
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command = "${local.cmd} get-logs ${spotinst_mrscaler_aws.Terraform-MrScaler-01.id}"
+  }
+  provisioner "local-exec" {
+    when = destroy
+    interpreter = ["/bin/bash", "-c"]
+    command = "${self.triggers.cmd} delete-id"
+  }
+}
+
+### Retrieve the cluster ID from the text file from script ###
+data "local_file" "cluster" {
+  depends_on = [null_resource.cluster_id]
+  filename = "${path.module}/scripts/cluster_id.txt"
+}
+
+### Call script to get the DNS name/Ip address from the cluster and store in a file ###
+resource "null_resource" "dns_name" {
+  triggers = {
+    cmd = "${path.module}/scripts/get-emr"
+  }
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    command = "${local.cmd} get-dns ${data.local_file.cluster.content} ${var.region}"
+  }
+  provisioner "local-exec" {
+    when = destroy
+    interpreter = ["/bin/bash", "-c"]
+    command = "${self.triggers.cmd} delete-dns"
+  }
+}
+
+### Retrieve ip address from file ###
+data "local_file" "dns_name" {
+  depends_on = [null_resource.dns_name]
+  filename = "${path.module}/scripts/cluster_ip.txt"
 }

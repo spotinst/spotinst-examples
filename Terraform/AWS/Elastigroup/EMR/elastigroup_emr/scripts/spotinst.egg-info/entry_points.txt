@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        get-emr=get_emr:cli
+    

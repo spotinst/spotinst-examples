@@ -1,0 +1,7 @@
+setup.py
+spotinst.egg-info/PKG-INFO
+spotinst.egg-info/SOURCES.txt
+spotinst.egg-info/dependency_links.txt
+spotinst.egg-info/entry_points.txt
+spotinst.egg-info/requires.txt
+spotinst.egg-info/top_level.txt

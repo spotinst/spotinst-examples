@@ -1,24 +1,43 @@
-## Create Elastigroup EMR Cluster in Spot.io##
+### Create Elastigroup EMR Cluster in Spot.io ###
 module "elastigroup_emr" {
-  source = "elastigroup_emr"
+  source = "./elastigroup_emr"
 
-  spot_token = "1234567890"
-  spot_account = "act-123456789"
+  spot_token = ""
+  spot_account = ""
 
+  ### Cluster Configurations ###
   emr_name = "Example-Spot-EMR-Terraform"
-  region = "us-east-1"
   release_label = "emr-5.24.0"
   ami_id = "ami-068c8ed05785be1c4"
-  subnet_ids = ["us-east-1a:subnet-0eba9f7d282222b23","us-east-1b:subnet-068e6f4f45218b98f"]
-  bootstrap_bucket = "example"
-  bootstrap_key = "bootstrap.json"
-  master_sg_id = "sg-04cd8b735c62e31cb"
-  slave_sg_id = "sg-04cd8b735c62e31cb"
-  key = "example"
-  log_uri = "s3://example/logs/"
+  key = ""
+  log_uri = "s3://"
+  keep_job_flow_alive = false
+  applications = [{name = "hive", version = "2.37"},{name = "spark", version = "2.47"}]
+  tags = {CreatedBy="Terraform",Env="Dev"}
 
+  ### Network ###
+  region = "us-east-1"
+  subnet_ids = ["us-east-1a:subnet-123456789","us-east-1b:subnet-123456789"]
+  master_sg_id = "sg-123456789"
+  slave_sg_id = "sg-123456789"
+
+  ### Config/step Files ###
+  # Bootstrap arguments stored in a file on s3
+  bootstrap_bucket = "bucketname"
+  bootstrap_key = "bucketfile.json"
+
+  #configuration file stored in a file on s3. Note uncomment line 60 in the module main.tf
+  #steps_bucket = ""
+  #steps_key = ""
+
+  #configuration file stored in a file on s3. Note uncomment line 66 in the module main.tf
+  #config_bucket = ""
+  #config_key = ""
+
+  ### Master Node Configs ###
   master_instance_type = ["m4.large"]
 
+  ### Core Node Configs ###
   core_instance_types = [
     "m4.2xlarge",
     "m4.4xlarge",
@@ -31,8 +50,9 @@ module "elastigroup_emr" {
     "m5d.4xlarge"
   ]
   core_lifecycle = "SPOT"
-  core_desired = 5
+  core_desired = 1
 
+  ### Task node configs ###
   task_instance_types = [
     "m4.2xlarge",
     "m4.4xlarge",
@@ -44,13 +64,19 @@ module "elastigroup_emr" {
     "m5.8xlarge",
     "m5d.4xlarge"
   ]
+  task_lifecycle = "SPOT"
   task_desired = 0
+  task_unit = "weight"
 
 }
 
-output "EMR_ID" {
-  value = module.elastigroup_emr.EMR_id
-}
-output "EG_ID" {
+### Outputs ###
+output "eg_id" {
   value = module.elastigroup_emr.elastigroup_id
+}
+output "cluster_id" {
+  value = module.elastigroup_emr.cluster_id
+}
+output "ip" {
+  value = module.elastigroup_emr.ip
 }
