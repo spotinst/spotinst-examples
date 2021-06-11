@@ -3,9 +3,6 @@ variable "name" {
     type = string
     default = null
 }
-variable "token" {
-    type = string
-}
 variable "profile" {
     type = string
     default = null
