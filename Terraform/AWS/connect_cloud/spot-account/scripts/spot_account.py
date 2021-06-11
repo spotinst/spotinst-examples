@@ -1,6 +1,5 @@
 import click
 import json
-import requests
 
 from spotinst_sdk2 import SpotinstSession
 
@@ -14,7 +13,7 @@ def cli(ctx, *args, **kwargs):
 
 
 @cli.command()
-@click.argument('name', )
+@click.argument('name',)
 @click.pass_context
 def create(ctx, *args, **kwargs):
     """Create a new Spot Account"""
@@ -31,22 +30,13 @@ def delete(ctx, *args, **kwargs):
 
 
 @cli.command()
-@click.argument('account')
-@click.argument('token')
+@click.argument('account-id')
 @click.pass_context
-def create_external_id(*args, **kwargs):
+def create_external_id(ctx, *args, **kwargs):
     """Generate the Spot External ID for Spot Account connection"""
-    headers = {'Authorization': 'Bearer ' + kwargs.get('token')}
-    url = 'https://api.spotinst.io/setup/credentials/aws/externalId?accountId=' + kwargs.get('account')
-    r = requests.post(url, headers=headers)
-    r_json = json.loads(r.text)
-    if r.status_code == 200:
-        # click.echo("Status: " + str(r.status_code))
-        # click.echo("ExternalId: " + str(r_json['response']['items'][0]['externalId']))
-        click.echo(json.dumps(r_json['response']['items'][0]))
-    else:
-        click.echo("Failed")
-        click.echo(r_json)
+    ctx.obj['client'].account_id = kwargs.get('account_id')
+    result = ctx.obj['client'].create_aws_external_id()
+    click.echo(json.dumps(result))
 
 
 @cli.command()
@@ -56,9 +46,7 @@ def create_external_id(*args, **kwargs):
 def set_cloud_credentials(ctx, *args, **kwargs):
     """Set AWS ROLE ARN to Spot Account"""
     ctx.obj['client'].account_id = kwargs.get('account_id')
-    result = ctx.obj['client'].set_cloud_credentials(
-        iam_role=kwargs.get('role_arn')
-    )
+    result = ctx.obj['client'].set_cloud_credentials(iam_role=kwargs.get('role_arn'))
     click.echo(json.dumps(result))
 
 

@@ -1,4 +1,4 @@
-module "spot_account" {
+module "spot_account_aws" {
     source = "spot-account"
 
     #AWS Profile (Optional)
@@ -12,5 +12,5 @@ module "spot_account" {
 }
 
 output "spot_account_id" {
-    value = module.spot_account.spot_account_id
+    value = module.spot_account_aws.spot_account_id
 }
