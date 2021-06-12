@@ -187,7 +187,8 @@ print("The security group ID: " + GroupId)
 #########################################
 ## The will create an ECS Ocean Cluster:
 #########################################
-## Check to see if the Ocean cluster already exists
+
+
 ocean_exist = False
 headers = {'Authorization': 'Bearer ' + token}
 url = 'https://api.spotinst.io/ocean/aws/ecs/cluster?accountId=' + account_id
@@ -202,7 +203,7 @@ if r.status_code == 200:
             ocean_id = x["id"]
             ocean_exist = True
 
-if not ocean_exist:
+if ocean_exist == False:
     # Create user data for ocean cluster in base64
     user_data = "#!/bin/bash \necho ECS_CLUSTER=" + ecs_cluster + " >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;"
     encodedBytes = base64.b64encode(user_data.encode("utf-8"))
@@ -290,6 +291,9 @@ if not ocean_exist:
                         "m5d.4xlarge",
                         "m5d.12xlarge",
                         "m5d.24xlarge",
+                        "p3.2xlarge",
+                        "p3.8xlarge",
+                        "p3.16xlarge",
                         "r5.large",
                         "r5.xlarge",
                         "r5.2xlarge",
@@ -353,10 +357,11 @@ if not ocean_exist:
         sys.exit()
 
 #########################################
-# import fargate services 
+# import fargate services
 #########################################
 
 service_names = []
+service_sfm_names = []
 
 try:
     session = boto3.session.Session(profile_name=profile_name)
@@ -378,46 +383,61 @@ for i in services['serviceArns']:
     try:
         temp = i.split('/')[2]
         if temp.startswith('sfm'):
-            pass
+            temp = temp.split('-',1)[1]
+            service_sfm_names.append(temp)
         else:
             service_names.append(temp)
             print("Service to import: " + temp)
     except:
         temp = i.split('/')[1]
         if temp.startswith('sfm'):
-            pass
+            temp = temp.split('-',1)[1]
+            service_sfm_names.append(temp)
         else:
             service_names.append(temp)
             print("Service to import: " + temp)
 
+print('Checking if the services have already been migrated...')
+
+service_names_filtered = []
+for x in service_names:
+    if x not in service_sfm_names:
+        service_names_filtered.append(x)
+    else:
+        print("Service: "+ x +" has already been imported. SKIPPING")
+
 print('Importing fargate services...')
 
-headers = {'Authorization': 'Bearer ' + token}
-url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration?accountId=' + account_id
-data = {"services": service_names, "simpleNewServiceNames": 'true'}
+if service_names_filtered:
+    headers = {'Authorization': 'Bearer ' + token}
+    url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration?accountId=' + account_id
+    data = {"services": service_names_filtered, "simpleNewServiceNames": 'true'}
 
-r = requests.post(url, json=data, headers=headers)
+    result = requests.post(url, json=data, headers=headers)
 
-if r.status_code == 200:
-    print("Migration was successfully, service creation will take some time")
-else:
-    print("FAILED to Migrate services with status code:", r.status_code)
-    print(r.text)
-    sys.exit()
-
-status = ""
-print('Waiting for import to complete....')
-while status != "FINISHED":
-    prev_status = status
-    time.sleep(10)
-    if status == "FAILED":
-        break
-    if status == "FINISHED_PARTIAL_SUCCESS":
-        break
+    if result.status_code == 200:
+        print("Migration started, service creation will take some time")
     else:
-        url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration/status?accountId=' + account_id
-        r = requests.get(url, headers=headers)
-        r_text = json.loads(r.text)
-        status = r_text['response']['items'][0]['state']
-        if status != prev_status:
-            print('Current migration status: ' + status)
+        print("FAILED to Migrate services with status code:", result.status_code)
+        print(result.text)
+        sys.exit()
+
+    status = ""
+    print('Waiting for import to complete...')
+    while status != "FINISHED":
+        prev_status = status
+        time.sleep(10)
+        if status == "FAILED":
+            break
+        if status == "FINISHED_PARTIAL_SUCCESS":
+            break
+        else:
+            url = 'https://api.spotinst.io/ocean/aws/ecs/cluster/' + ocean_id + '/fargateMigration/status?accountId=' + account_id
+            result = requests.get(url, headers=headers)
+            r_text = json.loads(result.text)
+            if result.status_code == 200:
+                status = r_text['response']['items'][0]['state']
+                if status != prev_status:
+                    print('Current migration status: ' + status)
+            else:
+                print(r)

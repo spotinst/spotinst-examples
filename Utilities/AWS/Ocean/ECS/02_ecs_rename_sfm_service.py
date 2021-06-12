@@ -11,10 +11,11 @@
 ## NOTE: Please use at your own discretion. Not responsible for any damage or accidental deletion of AWS infrastructure.
 
 ### Parameters ###
-cluster = ''
-region = ''
+ecs_cluster = 'ECS-Workshop'
+region = 'us-west-2'
+skip_non_running_services = False
 # Profile is Optional
-profile_name = ''
+profile_name = 'default'
 ####################
 
 
@@ -37,7 +38,7 @@ except ProfileNotFound as e:
     client = boto3.client('ecs', region_name=region)
 
 # Retrieve all the services for the cluster in question
-services = client.list_services(cluster=cluster, maxResults=100)
+services = client.list_services(cluster=ecs_cluster, maxResults=100)
 
 print('---------------------')
 
@@ -47,16 +48,18 @@ service_names = []
 service_list = []
 
 for i in services['serviceArns']:
-    service_names.append(i.split('/', 1)[1])
+    service_names.append(i.split('/', 2)[2])
 
 # Only get services that start with "sfm"
 for j in service_names:
-    print(j)
     if (j.startswith('sfm')):
-        response = client.describe_services(cluster=cluster, services=[j])
+        response = client.describe_services(cluster=ecs_cluster, services=[j])
         current_runningCount = response['services'][0]['runningCount']
-        if (current_runningCount == 0):
-            print("SKIPPING - service " + j + "is not running")
+        if skip_non_running_services == True:
+            if (current_runningCount == 0):
+                print("SKIPPING - service " + j + " has no tasks running")
+            else:
+                service_list.append(j)
         else:
             service_list.append(j)
     else:
@@ -65,30 +68,28 @@ for j in service_names:
 # Get the service names for the migrated services. Convert back to orginal name
 service_names = []
 for i in service_list:
-    temp = i.split('-', 1)
-    service = temp[1]
+    service = i.split('-', 1)[1]
     service_names.append(service)
 
-# for i in range(len(task))
 
 # delete orginal fargate services
 for i in range(len(service_names)):
     print("Updating orginal Fargate service to Zero: " + service_names[i])
     try:
-        client.update_service(cluster=cluster, service=service_names[i], desiredCount=0)
-        task = client.list_tasks(cluster=cluster, serviceName=service_names[i])
+        client.update_service(cluster=ecs_cluster, service=service_names[i], desiredCount=0)
+        task = client.list_tasks(cluster=ecs_cluster, serviceName=service_names[i])
         for x in task['taskArns']:
             task_name = (x.split('/', 1)[1])
             print("Stopping task: " + task_name)
-            client.stop_task(cluster=cluster, task=task_name)
-    except:
-        print("Service does not exist or already at zero")
+            client.stop_task(cluster=ecs_cluster, task=task_name)
+    except ClientError as e:
+        print(e)
 
     print("Deleting orginal Fargate service: " + service_names[i])
     try:
-        client.delete_service(cluster=cluster, service=service_names[i])
-    except:
-        print("Service does not exist or can not be deleted")
+        client.delete_service(cluster=ecs_cluster, service=service_names[i])
+    except ClientError as e:
+        print(e)
 
 # wait for the services to be deleted before creating new ones with the same name
 time.sleep(60)
@@ -100,12 +101,12 @@ x = list(divide_chunks(service_list, n))
 
 # Get the configurations from the migrated services and create new service with corrected/original name
 for i in range(len(x)):
-    services = client.describe_services(cluster=cluster, services=x[i])
+    services = client.describe_services(cluster=ecs_cluster, services=x[i])
     temp = services.get('services')
     dict = temp[0]
     print("Creating EC2 Service: " + service_names[i])
     try:
-        client.create_service(cluster=cluster, serviceName=service_names[i], taskDefinition=dict.get('taskDefinition'),
+        client.create_service(cluster=ecs_cluster, serviceName=service_names[i], taskDefinition=dict.get('taskDefinition'),
                               loadBalancers=dict.get('loadBalancers'), serviceRegistries=dict.get('serviceRegistries'),
                               desiredCount=dict.get('desiredCount'), launchType=dict.get('launchType'),
                               deploymentConfiguration=dict.get('deploymentConfiguration'),
@@ -113,20 +114,20 @@ for i in range(len(x)):
                               placementStrategy=dict.get('placementStrategy'),
                               networkConfiguration=dict.get('networkConfiguration'),
                               schedulingStrategy=dict.get('schedulingStrategy'))
-    except:
-        print("Unable to create service")
+    except ClientError as e:
+        print(e)
 
 # delete Migrated EC2 services with sfm
 for i in range(len(service_list)):
-    print("Deleting Migrated Sig Service: " + service_list[i])
+    print("Deleting Migrated SFM Service: " + service_list[i])
     try:
-        client.update_service(cluster=cluster, service=service_list[i], desiredCount=0)
-    except:
-        print("Service does not exist or already at zero")
+        client.update_service(cluster=ecs_cluster, service=service_list[i], desiredCount=0)
+    except ClientError as e:
+        print(e)
     try:
-        client.delete_service(cluster=cluster, service=service_list[i])
-    except:
-        print("Service does not exist or can not be deleted")
+        client.delete_service(cluster=ecs_cluster, service=service_list[i])
+    except ClientError as e:
+        print(e)
 
 print("Completed")
 print('---------------------')

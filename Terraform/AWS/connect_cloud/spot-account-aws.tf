@@ -1,5 +1,5 @@
 module "spot_account_aws" {
-    source = "spot-account"
+    source = "./spot-account"
 
     #AWS Profile (Optional)
     #profile = ""
