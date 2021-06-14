@@ -191,6 +191,11 @@ variable "grace_period" {
   default     = 600
   description = "The amount of time, in seconds, after the instance has launched to start checking its health."
 }
+variable "spot_percentage" {
+  type        = number
+  default     = null
+  description = "The % of the cluster should be running on Spot vs OD. 100 means 100% of the cluster will be ran on Spot instances"
+}
 variable "tags" {
   type = list(object({
     key = string

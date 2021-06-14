@@ -63,6 +63,7 @@ resource "spotinst_ocean_aws" "ocean" {
   utilize_reserved_instances          = var.utilize_reserved_instances
   draining_timeout                    = var.draining_timeout
   grace_period                        = var.grace_period
+  spot_percentage                     = var.spot_percentage
 
   user_data = <<-EOF
     #!/bin/bash
