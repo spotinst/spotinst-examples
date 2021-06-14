@@ -1,44 +1,40 @@
+## Provider variables ##
 variable "spotinst_token" {
   type        = string
   description = "Spotinst Personal Access token"
 }
-
 variable "spotinst_account" {
   type        = string
   description = "Spotinst account ID"
 }
-
-variable "cluster_name" {
-  type        = string
-  description = "Cluster name"
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "List of subnet IDs"
-}
-
-variable "vpc_id" {
-  type        = string
-  description = "VPC ID where the EKS will be located"
-}
-
-variable "region" {
-  type        = string
-  description = "The region the EKS cluster will be located"
-}
-
 variable "aws_profile" {
   type        = string
   default     = null
 }
+##########################
 
+## Launch Configuration ##
+variable "cluster_name" {
+  type        = string
+  description = "Cluster name"
+}
+variable "subnet_ids" {
+  type        = list(string)
+  description = "List of subnet IDs"
+}
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID where the EKS will be located"
+}
+variable "region" {
+  type        = string
+  description = "The region the EKS cluster will be located"
+}
 variable "ami_id" {
   type        = string
   default     = null
   description = "The image ID for the EKS worker nodes. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI based on platform"
 }
-
 variable "worker_instance_profile_arn" {
   type        = string
   description = "Instance Profile ARN to assign to worker nodes. Should have the WorkerNode policy"
@@ -48,37 +44,32 @@ variable "security_groups" {
   description = "List of security groups"
 }
 
-##Ocean Configurations
+## Ocean Configurations ##
 variable "min_size" {
   type        = number
   default     = 0
   description = "The lower limit of worker nodes the Ocean cluster can scale down to"
 }
-
 variable "max_size" {
   type        = number
   default     = 1000
   description = "The upper limit of worker nodes the Ocean cluster can scale up to"
 }
-
 variable "desired_capacity" {
   type        = number
   default     = 1
   description = "The number of worker nodes to launch and maintain in the Ocean cluster"
 }
-
 variable "key_name" {
   type        = string
   default     = null
   description = "The key pair to attach to the worker nodes launched by Ocean"
 }
-
 variable "associate_public_ip_address" {
   type        = bool
   default     = true
   description = "Associate a public IP address to worker nodes"
 }
-
 variable "blacklist" {
   type        = list(string)
   description = "List of instance types to prohibit Ocean to use"
@@ -170,7 +161,17 @@ variable "blacklist" {
     "t4g.small",
     "t4g.xlarge"]
 }
+variable "tags" {
+  type = list(object({
+    key = string
+    value = string
+  }))
+  default = null
+  description = "Tags to be added to resources"
+}
+##########################
 
+## Ocean Strategy ##
 variable "fallback_to_ondemand" {
   type        = bool
   default     = true
@@ -196,17 +197,40 @@ variable "spot_percentage" {
   default     = null
   description = "The % of the cluster should be running on Spot vs OD. 100 means 100% of the cluster will be ran on Spot instances"
 }
-variable "tags" {
-  type = list(object({
-    key = string
-    value = string
-  }))
-  default = null
-  description = "Tags to be added to resources"
+##########################
+
+## Auto Scaler ##
+variable "autoscale_is_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable the Ocean Kubernetes Auto Scaler."
 }
+variable "autoscale_is_auto_config" {
+  type        = bool
+  default     = true
+  description = "Automatically configure and optimize headroom resources."
+}
+variable "auto_headroom_percentage" {
+  type        = number
+  default     = 5
+  description = "Set the auto headroom percentage (a number in the range [0, 200]) which controls the percentage of headroom from the cluster."
+}
+variable "max_scale_down_percentage" {
+  type        = number
+  default     = 10
+  description = "Would represent the maximum % to scale-down. Number between 1-100."
+}
+##########################
+
+## Update Policy ##
 variable "should_roll" {
   type        = string
   default     = false
   description = "Should the cluster be rolled for configuration updates"
 }
-
+variable "batch_size_percentage" {
+  type        = string
+  default     = false
+  description = "Sets the percentage of the instances to deploy in each batch."
+}
+##########################

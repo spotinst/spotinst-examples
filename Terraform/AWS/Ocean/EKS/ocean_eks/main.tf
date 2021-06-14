@@ -13,6 +13,7 @@ provider "spotinst" {
 }
 provider "aws" {
   region = var.region
+  profile = var.aws_profile
 }
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
@@ -90,11 +91,11 @@ EOF
 
   # Auto Scaler Configurations
   autoscaler {
-    autoscale_is_enabled          = true
-    autoscale_is_auto_config      = true
-    auto_headroom_percentage      = 5
+    autoscale_is_enabled          = var.autoscale_is_enabled
+    autoscale_is_auto_config      = var.autoscale_is_auto_config
+    auto_headroom_percentage      = var.auto_headroom_percentage
     autoscale_down {
-      max_scale_down_percentage   = 10
+      max_scale_down_percentage   = var.max_scale_down_percentage
     }
   }
 
@@ -102,7 +103,7 @@ EOF
   update_policy {
     should_roll               = var.should_roll
     roll_config {
-      batch_size_percentage   = 20
+      batch_size_percentage   = var.batch_size_percentage
     }
   }
 
