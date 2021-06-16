@@ -111,7 +111,9 @@ resource "azurerm_role_definition" "spot" {
       "Microsoft.Network/virtualNetworks/virtualMachines/read",
       "Microsoft.Network/virtualNetworks/subnets/write",
       "Microsoft.Resources/tags/write",
-      "Microsoft.Resources/subscriptions/resourceGroups/read"
+      "Microsoft.Resources/subscriptions/resourceGroups/read",
+      "Microsoft.ContainerService/managedClusters/read",
+      "Microsoft.ContainerService/managedClusters/agentPools/read"
     ]
     not_actions = []
   }
