@@ -11,7 +11,7 @@ token = ""
 ecs_cluster=""
 region=""
 subnet_id=""
-securityGroup_id=""
+securitygroup_id=""
 iam_instance_role=""
 ecs_ami_id=""
 keyPair = ""
@@ -158,7 +158,7 @@ if ocean_exist == False:
                     "imageId": ecs_ami_id,
                     "userData": encoded_user_data,
                     "securityGroupIds": [
-                        GroupId
+                        securitygroup_id
                     ],
 
                     "iamInstanceProfile": {
