@@ -229,8 +229,8 @@ variable "should_roll" {
   description = "Should the cluster be rolled for configuration updates"
 }
 variable "batch_size_percentage" {
-  type        = string
-  default     = false
+  type        = number
+  default     = 20
   description = "Sets the percentage of the instances to deploy in each batch."
 }
 ##########################

@@ -6,3 +6,6 @@
 .terraform/
 __pycache__/
 spot.egg-info/
+/Terraform/AWS/connect_cloud/.terraform.lock.hcl
+/Terraform/AWS/connect_cloud/terraform.tfstate
+/Terraform/AWS/connect_cloud/terraform.tfstate.backup
