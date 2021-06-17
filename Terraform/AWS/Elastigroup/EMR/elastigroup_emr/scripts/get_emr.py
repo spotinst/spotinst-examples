@@ -1,5 +1,4 @@
 import json
-import os
 import boto3
 import boto3.session
 import click
@@ -36,12 +35,9 @@ def get_logs(ctx, *args, **kwargs):
                 if success:
                     break
                 elif y.startswith("j-"):
-                    cluster = str(y)
-                    text_file = open("cluster_id.txt", "w")
-                    text_file.write(cluster)
-                    text_file.close()
-                    click.echo(cluster)
+                    cluster = {"cluster_id": str(y)}
                     success = True
+                    click.echo(json.dumps(cluster))
 
 
 @cli.command()
@@ -59,9 +55,7 @@ def get_dns(ctx, *args, **kwargs):
         dns_name = result.get('Cluster', {}).get('MasterPublicDnsName')
         if dns_name is not None:
             success = True
-            text_file = open("cluster_ip.txt", "w")
-            text_file.write(dns_name)
-            text_file.close()
+            dns_name = {"dns_name": dns_name}
             click.echo(json.dumps(dns_name))
         else:
             time.sleep(10)
@@ -81,24 +75,6 @@ def list_clusters(ctx, *args, **kwargs):
     for page in paginator:
         for item in page['Clusters']:
             print(item['Id'])
-
-
-@cli.command()
-def delete_id(*args, **kwargs):
-    """delete the file for cluster_id"""
-    try:
-        os.remove("cluster_id.txt")
-    except:
-        exit()
-
-
-@cli.command()
-def delete_dns(*args, **kwargs):
-    """delete the file for cluster_ip"""
-    try:
-        os.remove("cluster_ip.txt")
-    except:
-        exit()
 
 
 if __name__ == "__main__":

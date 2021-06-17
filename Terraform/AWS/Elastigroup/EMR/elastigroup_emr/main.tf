@@ -13,6 +13,8 @@ provider "spotinst" {
 
 locals {
   cmd = "${path.module}/scripts/get-emr"
+  cluster_id = lookup(data.external.cluster_id.result, "cluster_id", "fail" )
+  dns_name = lookup(data.external.dns_name.result, "dns_name", "fail")
 }
 
 # Create a Elastigroup with EMR integration(Mr Scaler) with New strategy
@@ -128,47 +130,16 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   }
 }
 
+
 ### Call script to get the cluster ID using Spot APIs ###
-# This will store the value in a txt file
-resource "null_resource" "cluster_id" {
-  triggers = {
-    cmd = "${path.module}/scripts/get-emr"
-  }
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command = "${local.cmd} get-logs ${spotinst_mrscaler_aws.Terraform-MrScaler-01.id}"
-  }
-  provisioner "local-exec" {
-    when = destroy
-    interpreter = ["/bin/bash", "-c"]
-    command = "${self.triggers.cmd} delete-id"
-  }
+data "external" "cluster_id" {
+    depends_on = [spotinst_mrscaler_aws.Terraform-MrScaler-01]
+    program = [local.cmd, "get-logs", spotinst_mrscaler_aws.Terraform-MrScaler-01.id]
 }
 
-### Retrieve the cluster ID from the text file from script ###
-data "local_file" "cluster" {
-  depends_on = [null_resource.cluster_id]
-  filename = "${path.module}/scripts/cluster_id.txt"
+### Call script to get the DNS name/Ip address from the cluster###
+data "external" "dns_name" {
+  depends_on = [data.external.cluster_id]
+  program = [local.cmd, "get-dns", local.cluster_id, var.region]
 }
 
-### Call script to get the DNS name/Ip address from the cluster and store in a file ###
-resource "null_resource" "dns_name" {
-  triggers = {
-    cmd = "${path.module}/scripts/get-emr"
-  }
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    command = "${local.cmd} get-dns ${data.local_file.cluster.content} ${var.region}"
-  }
-  provisioner "local-exec" {
-    when = destroy
-    interpreter = ["/bin/bash", "-c"]
-    command = "${self.triggers.cmd} delete-dns"
-  }
-}
-
-### Retrieve ip address from file ###
-data "local_file" "dns_name" {
-  depends_on = [null_resource.dns_name]
-  filename = "${path.module}/scripts/cluster_ip.txt"
-}

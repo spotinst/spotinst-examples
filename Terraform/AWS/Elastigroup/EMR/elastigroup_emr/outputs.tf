@@ -3,9 +3,9 @@ output "elastigroup_id" {
 }
 
 output "cluster_id" {
-  value = data.local_file.cluster.content
+  value = local.cluster_id
 }
 
 output "ip" {
-  value = data.local_file.dns_name.content
+  value = local.dns_name
 }

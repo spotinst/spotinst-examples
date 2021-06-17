@@ -241,7 +241,7 @@ variable "task_ebs_optimized" {
 variable "task_unit" {
   type        = string
   default     = "instance"
-  description = "Unit of task group for target, min and max. The unit could be \"instance\" or \"weight\". instance - amount of instances. weight - amount of vCPU."
+  description = "Unit of task group for target, min and max. The unit could be instance or weight. instance - amount of instances. weight - amount of vCPU."
 }
 variable "task_volume_per_instance" {
   type        = number
