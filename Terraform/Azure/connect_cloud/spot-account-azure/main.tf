@@ -1,28 +1,38 @@
 terraform {
   required_providers {
     azuread = {
-      version = "~>1.5.0"
+      source = "hashicorp/azuread"
+    }
+    azurerm = {
+      source = "hashicorp/azurerm"
     }
   }
 }
 
-
+## Providers ##
 # Configure the Azure Provider
 provider "azurerm" {
   subscription_id = var.subscription_id
   features {}
 }
-
 provider "azuread" {
   tenant_id = var.tenant_id
 }
+###############
 
+## Locals ##
 locals {
   cmd = "${path.module}/scripts/spot-account"
-  account = data.external.account.result
   account_id = lookup(data.external.account.result,"account_id","Fail")
 }
+###############
 
+## Data Resources ##
+data "azurerm_subscription" "current" {}
+data "azurerm_client_config" "current" {}
+###############
+
+## Resources ##
 # Create a random string for the azure app registration
 resource "random_string" "value" {
   length = 24
@@ -50,9 +60,6 @@ resource "azuread_application_password" "spot-credential" {
   value                 = random_string.value.result
   end_date              = "2099-01-01T01:02:03Z"
 }
-
-data "azurerm_subscription" "current" {}
-data "azurerm_client_config" "current" {}
 
 resource "azurerm_role_definition" "spot" {
   name        = "Spot.io-custom-role-${random_string.string.result}"
@@ -147,7 +154,6 @@ resource "azurerm_role_assignment" "spot" {
 }
 
 #Remove spaces from display name
-
 # Call Spot API to create the Spot Account
 resource "null_resource" "account" {
   triggers = {
@@ -182,4 +188,3 @@ resource "null_resource" "account_association" {
     command = "${local.cmd} set-cloud-credentials --account_id ${local.account_id} --token ${var.spot_token} --client_id ${azuread_application.spot.application_id} --client_secret ${random_string.value.result} --tenant_id ${data.azurerm_client_config.current.tenant_id} --subscription_id ${var.subscription_id}"
   }
 }
-
