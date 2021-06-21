@@ -16,6 +16,7 @@ output "spot_account_id_0" {
   value = module.spot_subscription_0.spot_account_id
 }
 
+#copy paste the following and incriment
 module "spot_subscription_1" {
   source = "./spot-account-azure"
   spot_token = local.spot_token
