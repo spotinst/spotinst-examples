@@ -1,7 +1,9 @@
 terraform {
+  required_version = ">= 0.13.1"
   required_providers {
     azuread = {
       source = "hashicorp/azuread"
+      version = "<2.0.0"
     }
     azurerm = {
       source = "hashicorp/azurerm"
@@ -39,13 +41,8 @@ resource "random_string" "value" {
   special = false
 }
 
-resource "random_string" "string" {
-  length = 12
-  special = false
-}
-
 resource "azuread_application" "spot" {
-  name                        = "spot-${random_string.string.result}"
+  name                        = "Spot.io-${data.azurerm_subscription.current.display_name}"
   available_to_other_tenants  = false
   oauth2_permissions          = []
   reply_urls                  = ["https://spot.io"]
@@ -62,7 +59,7 @@ resource "azuread_application_password" "spot-credential" {
 }
 
 resource "azurerm_role_definition" "spot" {
-  name        = "Spot.io-custom-role-${random_string.string.result}"
+  name        = "Spot.io-custom-role-${data.azurerm_subscription.current.display_name}"
   scope       = data.azurerm_subscription.current.id
   description = "This is a custom role created via Terraform for Spot.io App"
 
@@ -188,3 +185,4 @@ resource "null_resource" "account_association" {
     command = "${local.cmd} set-cloud-credentials --account_id ${local.account_id} --token ${var.spot_token} --client_id ${azuread_application.spot.application_id} --client_secret ${random_string.value.result} --tenant_id ${data.azurerm_client_config.current.tenant_id} --subscription_id ${var.subscription_id}"
   }
 }
+
