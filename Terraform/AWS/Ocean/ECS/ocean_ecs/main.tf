@@ -1,68 +1,120 @@
+terraform {
+    required_providers {
+        spotinst = {
+            source = "spotinst/spotinst"
+        }
+    }
+}
+
 # Configure the Spotinst provider
 provider "spotinst" {
-   token   = var.spot_token
-   account = var.spot_account
+    token                                = var.spot_token
+    account                              = var.spot_account
 }
 
 #Create Spot.io Ocean ECS Cluster
 resource "spotinst_ocean_ecs" "example" {
-    region                          = var.region
-    name                            = var.cluster_name
-    cluster_name                    = var.cluster_name
 
-    min_size                        = "0"
-    max_size                        = "100"
-    desired_capacity                = "0" 
+    name                                = var.cluster_name
+    cluster_name                        = var.cluster_name
+    region                              = var.region
 
-    subnet_ids                      = var.subnet_ids
-    security_group_ids              = var.security_group_ids
-    image_id                        = var.image_id
-    iam_instance_profile            = var.iam_instance_profile
+    min_size                            = var.min_size
+    max_size                            = var.max_size
+    desired_capacity                    = var.desired_capacity
 
-    key_pair                        = var.key
-    whitelist 						= [
-        "a1.4xlarge","a1.2xlarge","a1.medium","a1.xlarge","a1.large","a1.metal","c5.large","c5.2xlarge","c5.24xlarge","c5.metal","c5.18xlarge","c5.4xlarge","c5.9xlarge","c5.xlarge","c5.12xlarge","c5d.4xlarge","c5d.large","c5d.18xlarge","c5d.2xlarge","c5d.9xlarge","c5d.xlarge","c5d.12xlarge","c5d.24xlarge","c5d.metal","m5.24xlarge","m5.12xlarge","m5.2xlarge","m5.16xlarge","m5.4xlarge","m5.xlarge","m5.large","m5.8xlarge","m5.metal","m5a.4xlarge","m5a.24xlarge","m5a.large","m5a.xlarge","m5a.8xlarge","m5a.2xlarge","m5a.12xlarge","m5a.16xlarge","m5ad.xlarge","m5ad.large","m5ad.24xlarge","m5ad.12xlarge","m5ad.2xlarge","m5ad.4xlarge","m5d.4xlarge","m5d.large","m5d.12xlarge","m5d.8xlarge","m5d.2xlarge","m5d.16xlarge","m5d.24xlarge","m5d.xlarge","m5d.metal","p3.2xlarge","p3.8xlarge","p3.16xlarge","r5.metal","r5.xlarge","r5.8xlarge","r5.16xlarge","r5.12xlarge","r5.large","r5.24xlarge","r5.4xlarge","r5.2xlarge","r5a.4xlarge","r5a.2xlarge","r5a.24xlarge","r5a.12xlarge","r5a.16xlarge","r5a.8xlarge","r5a.xlarge","r5a.large","r5ad.12xlarge","r5ad.xlarge","r5ad.large","r5ad.2xlarge","r5ad.24xlarge","r5ad.4xlarge","r5d.4xlarge","r5d.8xlarge","r5d.12xlarge","r5d.2xlarge","r5d.16xlarge","r5d.24xlarge","r5d.large","r5d.metal","r5d.xlarge"]
+    subnet_ids                          = var.subnet_ids
 
-    user_data                       = <<-EOF
+    dynamic tags {
+        for_each = var.tags == null ? [] : var.tags
+        content {
+            key = tags.value["key"]
+            value = tags.value["value"]
+        }
+    }
+    whitelist 						    = var.whitelist
+    user_data                           = <<-EOF
     #!/bin/bash
-    echo "ECS_CLUSTER=${var.cluster_name}" >> /etc/ecs/ecs.config        
+    echo "ECS_CLUSTER=${var.cluster_name}" >> /etc/ecs/ecs.config
     EOF
 
-    associate_public_ip_address     = var.public_ip
-    utilize_reserved_instances      = var.utilize_ri
-    draining_timeout                = var.draining_timeout
-    monitoring                      = var.monitoring
-    ebs_optimized                   = var.optimized
+    image_id                            = var.image_id
+    security_group_ids                  = var.security_group_ids
+    key_pair                            = var.key_pair
+    iam_instance_profile                = var.iam_instance_profile
+    associate_public_ip_address         = var.associate_public_ip_address
+    monitoring                          = var.monitoring
 
-    tags{
-        key = "ApplicationId"
-        value =  "12345"
-    }
-    tags{
-        key =  "ApplicationName"
-        value =  "Example"
-    }
-    tags{
-        key =  "Name"
-        value =  var.cluster_name
+    ## Strategy ##
+    utilize_reserved_instances          = var.utilize_reserved_instances
+    draining_timeout                    = var.draining_timeout
+
+    ebs_optimized                       = var.ebs_optimized
+
+    optimize_images {
+        perform_at = var.perform_at
+        time_windows = var.optimize_time_windows
+        should_optimize_ecs_ami = var.should_optimize_ecs_ami
     }
 
+    ## Autoscaler Settings ##
     autoscaler {
-        is_enabled                  = var.autoscaler_enabled
-        is_auto_config              = var.autoscaler_auto
+        is_enabled                      = var.autoscaler_is_enabled
+        is_auto_config                  = var.autoscaler_is_auto_config
+        cooldown                        = var.cooldown
         headroom {
-            cpu_per_unit            = var.headroom_cpu
-            memory_per_unit         = var.headroom_memory
-            num_of_units            = var.headroom_num_unit
+            cpu_per_unit                = var.cpu_per_unit
+            memory_per_unit             = var.memory_per_unit
+            num_of_units                = var.num_of_units
         }
         down {
-            max_scale_down_percentage   = var.scale_down_percentage
+            max_scale_down_percentage   = var.max_scale_down_percentage
+        }
+        resource_limits {
+            max_vcpu                    = var.max_vcpu
+            max_memory_gib              = var.max_memory_gib
         }
     }
+
+    ## Update Policy ##
     update_policy {
-        should_roll                 = var.update_roll
+        should_roll                     = var.should_roll
         roll_config {
-            batch_size_percentage   = var.batch_percentage
+            batch_size_percentage       = var.batch_size_percentage
+        }
+    }
+
+
+    ## Scheduled Task ##
+    scheduled_task {
+        shutdown_hours {
+            is_enabled                  = var.shutdown_is_enabled
+            time_windows                = var.shutdown_time_windows
+        }
+        tasks {
+            is_enabled                  = var.taskscheduling_is_enabled
+            cron_expression             = var.cron_expression
+            task_type                   = var.task_type
+        }
+    }
+
+    ## Block Device Mappings ##
+    block_device_mappings {
+        device_name                     = var.device_name
+        ebs {
+            delete_on_termination       = var.delete_on_termination
+            encrypted                   = var.encrypted
+            iops                        = var.iops
+            kms_key_id                  = var.kms_key_id
+            snapshot_id                 = var.snapshot_id
+            volume_type                 = var.volume_type
+            volume_size                 = var.volume_size
+            throughput                  = var.throughput
+            dynamic_volume_size {
+                base_size               = var.base_size
+                resource                = var.resource
+                size_per_resource_unit  = var.size_per_resource_unit
+            }
         }
     }
 }
