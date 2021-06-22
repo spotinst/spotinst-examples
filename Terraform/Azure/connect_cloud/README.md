@@ -10,8 +10,16 @@ The module will aid in automatically connecting your Azure Subscription to Spot 
 * Spot Organization Admin API token. This is required to be added as an environment variable stored in ```SPOTINST_TOKEN```.
 * python3 installed
 * pip3 installed
-* Subscription ID
+* Subscription ID/s
 * Azure Active Directory ID
+* Azure CLI access with permissions to perform the following actions on each subscription:
+  - For Apply:
+    - Microsoft.Authorization/roleDefinitions/write
+    - Microsoft.Authorization/roleAssignments/write
+  - For Destroy:
+    - Microsoft.Authorization/roleDefinitions/delete
+    - Microsoft.Authorization/roleAssignments/delete
+
 
 ### Apply
 The terraform module will do the following:
