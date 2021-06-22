@@ -11,6 +11,8 @@ module "ocean_ecs" {
     security_group_ids              = ["sg-123456789"]
     image_id                        = "ami-123456789"
     iam_instance_profile            = "arn:aws:iam::123456789:instance-profile/ecsInstanceRole"
+
+    tags = [{key = "CreatedBy", value = "terraform"},{key = "Env", value = "Dev"}]
 }
 
 output "Ocean_ID" {
