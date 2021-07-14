@@ -1,28 +1,35 @@
 #########################################
 ##  Written by steven.feltner@spot.io
 ## Script to update the desiredCount (# of tasks) for all services have less running than desired. 
-###
+#########################################
 
 ### Parameters ###
 cluster = ''
-desiredCount = 0
 region = ''
+desiredCount = 0
 # AWS Profile Name (Optional)
 profile_name = ''
 ###################
 
 import boto3
 from botocore.exceptions import ProfileNotFound
+from botocore.exceptions import ClientError
 
 try:
     session = boto3.session.Session(profile_name=profile_name)
     client = session.client('ecs', region_name=region)
 except ProfileNotFound as e:
     print(e)
-    print("Trying without profile...")
-    client = boto3.client('ecs', region_name=region)
+    try:
+        print("Trying without profile...")
+        client = boto3.client('ecs', region_name=region)
+    except ClientError as e:
+        print(e)
 
-services = client.list_services(cluster=cluster, maxResults=100)
+try:
+    services = client.list_services(cluster=cluster, maxResults=100)
+except ClientError as e:
+    print(e)
 
 print('---------------------')
 
