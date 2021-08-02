@@ -1,57 +1,66 @@
 {
     "Version": "2012-10-17",
     "Statement": [
-    {
-      "Sid": "SpotCloudAnalyzerPolicy",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:DescribeHostReservations",
-        "ec2:DescribeReservedInstances",
-        "cur:DescribeReportDefinitions",
-        "cur:PutReportDefinitions",
-        "cur:ModifyReportDefinition",
-        "ce:List*",
-        "ce:Get*",
-        "ce:Describe*",
-        "aws-portal:ViewBilling",
-        "aws-portal:ViewUsage",
-        "aws-portal:DescribeReportDefinition",
-        "savingsplans:get*",
-        "savingsplans:describe*",
-        "savingsplans:list*",
-        "s3:GetBucketLocation",
-        "s3:ListBucketMultipartUploads",
-        "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts"
-      ],
-      "Resource": [
-        "*"
-      ]
-    },
-    {
-      "Sid": "S3SyncPermissions",
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:PutObjectTagging",
-        "s3:PutObjectAcl",
-        "s3:List*",
-        "s3:GetBucketLocation",
-        "s3:AbortMultipartUpload"
-      ],
-      "Resource": "arn:aws:s3:::sc-customer-*"
-    },
-    {
-      "Sid": "S3BillingCUR",
-      "Effect": "Allow",
-      "Action": [
-        "s3:Get*",
-        "s3:List*",
-        "s3:Describe*",
-        "s3:AbortMultipartUpload"
-      ],
-      "Resource": "arn:aws:s3:::<CostAndUsageBucket>/*"
-    }
-    
-  ]
+        {
+            "Action": [
+                "ec2:DescribeHostReservations",
+                "ec2:DescribeReservedInstances",
+                "cur:DescribeReportDefinitions",
+                "ce:List*",
+                "ce:Get*",
+                "ce:Describe*",
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage",
+                "aws-portal:DescribeReportDefinition",
+                "savingsplans:get*",
+                "savingsplans:describe*",
+                "savingsplans:list*"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "BillingPolicy"
+        },
+        {
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectTagging",
+                "s3:PutObjectAcl",
+                "s3:List*",
+                "s3:GetBucketLocation",
+                "s3:AbortMultipartUpload",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts"
+            ],
+            "Resource": "arn:aws:s3:::sc-customer-*",
+            "Effect": "Allow",
+            "Sid": "S3SyncPermissions"
+        },
+        {
+            "Action": [
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<CUR Bucket>"
+            ],
+            "Effect": "Allow",
+            "Sid": "S3CURBucket"
+        },
+        {
+            "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetObjectAcl",
+                "s3:AbortMultipartUpload"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<CUR Bucket>/*"
+            ],
+            "Effect": "Allow",
+            "Sid": "S3CURObject"
+        }
+    ]
 }
