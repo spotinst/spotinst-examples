@@ -143,7 +143,7 @@
         "s3:GetBucketLocation"
       ],
       "Resource": [
-        "arn:aws:s3:::Example"
+        "arn:aws:s3:::<Name of Bucket that contains CUR>"
       ],
       "Effect": "Allow",
       "Sid": "S3CURBucket"
@@ -156,7 +156,7 @@
         "s3:List*"
       ],
       "Resource": [
-        "arn:aws:s3:::Example/*"
+        "arn:aws:s3:::<Name of Bucket that contains CUR>/*"
       ],
       "Effect": "Allow",
       "Sid": "S3CURObject"
