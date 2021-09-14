@@ -91,6 +91,18 @@
       ]
     },
     {
+      "Sid": "AllowAttachmentOfPersistentResources",
+      "Effect": "Allow",
+      "Action": [
+          "kms:CreateGrant",
+          "kms:ListGrants",
+          "kms:RevokeGrant"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }.
+    {
       "Sid": "AccessEks",
       "Action": [
         "eks:ListClusters"
