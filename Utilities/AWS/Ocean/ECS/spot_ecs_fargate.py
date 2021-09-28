@@ -29,8 +29,9 @@ class PythonLiteralOption(click.Option):
 @click.pass_context
 def cli(ctx, *args, **kwargs):
     ctx.obj = {}
-    session = SpotinstSession()
-    ctx.obj['client'] = session.client("ocean_aws")
+    # Remove Spotinst SDK
+    # session = SpotinstSession()
+    # ctx.obj['client'] = session.client("ocean_aws")
 
 
 @cli.command()

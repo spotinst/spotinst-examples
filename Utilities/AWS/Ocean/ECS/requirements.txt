@@ -4,4 +4,4 @@ botocore
 requests
 
 ###### Requirements with Version Specifiers ######`
-spotinst-sdk2 >= 2.1.10
+#spotinst-sdk2 >= 2.1.10
