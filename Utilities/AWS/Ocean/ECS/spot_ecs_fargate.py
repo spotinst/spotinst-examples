@@ -98,7 +98,7 @@ def cli(ctx, *args, **kwargs):
     '--iam_instance_role',
     type=str,
     required=True,
-    help='instance profile arn EX: arn:aws:iam::123456789:instance-profile/ecsInstanceRole'
+    help='This is the instance profile for the AWS ecsInstanceRole. The instance profile arn EX: arn:aws:iam::123456789:instance-profile/ecsInstanceRole'
 )
 @click.option(
     '--ecs_ami',
