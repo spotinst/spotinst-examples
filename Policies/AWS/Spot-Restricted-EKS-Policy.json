@@ -11,7 +11,7 @@
         "ec2:RebootInstances",
         "ec2:UnassignPrivateIpAddresses",
         "ec2:ModifyNetworkInterfaceAttribute",
-        "ec2:AssociateAddress",
+        "ec2:AssociateAddress"
       ],
       "Condition": {
         "StringEquals": {
