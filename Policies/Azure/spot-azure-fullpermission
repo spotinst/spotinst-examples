@@ -2,6 +2,9 @@
   "permissions": [
     {
       "actions": [
+        "Microsoft.Authorization/roleAssignments/read",
+        "Microsoft.Compute/availabilitySets/read",
+        "Microsoft.Compute/availabilitySets/vmSizes/read",
         "Microsoft.Compute/disks/read",
         "Microsoft.Compute/disks/write",
         "Microsoft.Compute/disks/delete",
@@ -15,11 +18,14 @@
         "Microsoft.Compute/virtualMachineScaleSets/networkInterfaces/read",
         "Microsoft.Compute/virtualMachineScaleSets/publicIPAddresses/read",
         "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/extensions/read",
+        "Microsoft.ContainerService/managedClusters/read",
+        "Microsoft.ContainerService/managedClusters/agentPools/read",
         "Microsoft.Insights/MetricDefinitions/Read",
         "Microsoft.Insights/Metrics/Read",
         "Microsoft.Insights/AutoscaleSettings/Read",
         "Microsoft.Insights/AutoscaleSettings/providers/Microsoft.Insights/MetricDefinitions/Read",
         "Microsoft.ManagedIdentity/userAssignedIdentities/assign/action",
+        "Microsoft.ManagedIdentity/userAssignedIdentities/read",
         "Microsoft.ManagedIdentity/identities/read",
         "Microsoft.NetApp/netAppAccounts/read",
         "Microsoft.NetApp/netAppAccounts/write",
@@ -40,6 +46,8 @@
         "Microsoft.Network/applicationGateways/read",
         "Microsoft.Network/applicationGateways/backendhealth/action",
         "Microsoft.Network/applicationGateways/backendAddressPools/join/action",
+        "Microsoft.Network/applicationSecurityGroups/joinIpConfiguration/action",
+        "Microsoft.Network/applicationSecurityGroups/read",
         "Microsoft.Network/dnsZones/read",
         "Microsoft.Network/dnsZones/A/read",
         "Microsoft.Network/dnsZones/write",
@@ -60,15 +68,14 @@
         "Microsoft.Network/publicIPAddresses/write",
         "Microsoft.Network/publicIPAddresses/delete",
         "Microsoft.Network/publicIPAddresses/join/action",
+        "Microsoft.Network/routeTables/read",
         "Microsoft.Network/virtualNetworks/read",
         "Microsoft.Network/virtualNetworks/subnets/join/action",
         "Microsoft.Network/virtualNetworks/subnets/read",
         "Microsoft.Network/virtualNetworks/virtualMachines/read",
         "Microsoft.Network/virtualNetworks/subnets/write",
         "Microsoft.Resources/tags/write",
-        "Microsoft.Resources/subscriptions/resourceGroups/read",
-        "Microsoft.ContainerService/managedClusters/read",
-        "Microsoft.ContainerService/managedClusters/agentPools/read"
+        "Microsoft.Resources/subscriptions/resourceGroups/read"
       ]
     }
   ]
