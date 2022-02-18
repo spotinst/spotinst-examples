@@ -69,6 +69,7 @@
       "Action": [
         "ec2:DescribeHostReservations",
         "ec2:DescribeReservedInstances",
+        "ec2:DescribeReservedInstancesOfferings",
         "ec2:ModifyReservedInstances",
         "ec2:AcceptReservedInstancesExchangeQuote",
         "ec2:CancelReservedInstancesListing",
