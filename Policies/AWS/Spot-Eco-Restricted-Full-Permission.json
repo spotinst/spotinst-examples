@@ -69,6 +69,7 @@
       "Action": [
         "ec2:DescribeHostReservations",
         "ec2:DescribeReservedInstances",
+        "ec2:DescribeReservedInstancesOfferings",
         "ec2:ModifyReservedInstances",
         "ec2:AcceptReservedInstancesExchangeQuote",
         "ec2:CancelReservedInstancesListing",
@@ -150,10 +151,9 @@
     },
     {
       "Action": [
-        "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts",
         "s3:get*",
-        "s3:List*"
+        "s3:List*",
+        "s3:Describe*",
       ],
       "Resource": [
         "arn:aws:s3:::<Name of Bucket that contains CUR>/*"
