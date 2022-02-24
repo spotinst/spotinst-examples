@@ -67,9 +67,10 @@
     },
     {
       "Action": [
-        "ec2:DescribeHostReservations",
-        "ec2:DescribeReservedInstances",
-        "ec2:DescribeReservedInstancesOfferings",
+        "ec2:Describe*",
+        "ec2:List*",
+        "ec2:GetHostReservationPurchasePreview",
+        "ec2:GetReservedInstancesExchangeQuote",
         "ec2:ModifyReservedInstances",
         "ec2:AcceptReservedInstancesExchangeQuote",
         "ec2:CancelReservedInstancesListing",
