@@ -2,29 +2,13 @@
   "properties": {
     "roleName": "Spot Eco",
     "description": "Spot Eco read-only role to be granted to Spot Eco users to each subscription for which an assessment is desired",
-    "assignableScopes": [
-      "/subscriptions/<subscriptionID>"
-    ],
+    "assignableScopes": ["/subscriptions/<subscriptionID>"],
     "permissions": [
       {
         "actions": [
           "Microsoft.Authorization/roleAssignments/read",
-          "Microsoft.Advisor/generateRecommendations/action",
-          "Microsoft.Advisor/register/action",
-          "Microsoft.Advisor/unregister/action",
-          "Microsoft.Advisor/configurations/read",
-          "Microsoft.Advisor/configurations/write",
-          "Microsoft.Advisor/generateRecommendations/read",
-          "Microsoft.Advisor/metadata/read",
-          "Microsoft.Advisor/operations/read",
-          "Microsoft.Advisor/recommendations/read",
-          "Microsoft.Advisor/recommendations/available/action",
-          "Microsoft.Advisor/recommendations/suppressions/read",
-          "Microsoft.Advisor/recommendations/suppressions/write",
-          "Microsoft.Advisor/recommendations/suppressions/delete",
-          "Microsoft.Advisor/suppressions/read",
-          "Microsoft.Advisor/suppressions/write",
-          "Microsoft.Advisor/suppressions/delete",
+          "Microsoft.Advisor/advisorScore/read",
+
           "Microsoft.Capacity/catalogs/read",
           "Microsoft.Capacity/register/action",
           "Microsoft.Compute/register/action",
