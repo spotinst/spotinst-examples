@@ -8,8 +8,6 @@
         "ec2:StartInstances",
         "ec2:TerminateInstances",
         "ec2:DeleteTags",
-        "ec2:DisassociateAddress",
-        "ec2:RebootInstances",
         "ec2:UnassignPrivateIpAddresses",
         "ec2:ModifyNetworkInterfaceAttribute",
         "ec2:ModifyImageAttribute",
@@ -49,10 +47,23 @@
         "elasticloadbalancing:Describe*",
         "elasticloadbalancing:Deregister*",
         "elasticloadbalancing:Register*",
-        "elasticloadbalancing:RemoveTags",
         "elasticloadbalancing:RegisterTargets",
         "elasticloadbalancing:EnableAvailabilityZonesForLoadBalancer",
         "elasticloadbalancing:DisableAvailabilityZonesForLoadBalancer"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "AccessCloudWatch",
+      "Action": [
+        "cloudwatch:DescribeAlarmHistory",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:DescribeAlarmsForMetric",
+        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:ListMetrics"
       ],
       "Effect": "Allow",
       "Resource": [
@@ -68,6 +79,7 @@
         "iam:ListRolePolicies",
         "iam:GetInstanceProfile",
         "iam:GetRolePolicy",
+        "iam:CreateServiceLinkedRole",
         "iam:PassRole"
       ],
       "Effect": "Allow",
@@ -76,7 +88,7 @@
       ]
     },
     {
-      "Sid": "AllowUseOfTheKey",
+      "Sid": "AllowUseOfKMSKey",
       "Action": [
         "kms:Encrypt",
         "kms:Decrypt",
@@ -90,7 +102,7 @@
       ]
     },
     {
-      "Sid": "AllowAttachmentOfPersistentResources",
+      "Sid": "AllowCrossAccountKMS",
       "Effect": "Allow",
       "Action": [
           "kms:CreateGrant",
@@ -133,7 +145,7 @@
       ]
     },
     {
-      "Sid": "Lambda",
+      "Sid": "LambdaConsumptionForSP",
       "Action": [
         "lambda:ListFunctions"
       ],
