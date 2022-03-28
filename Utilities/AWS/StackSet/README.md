@@ -1,6 +1,4 @@
-<!-- ![Spot by NetApp](https://assets.spot.io/app/uploads/2019/11/23073715/fyl.svg) -->
-
-![Spot by NetApp](./images/Spot-NetApp_Logo_Color_14oct20_RGB.png)
+![Spot by NetApp](./images/logo.png)
 
 # Overview
 
