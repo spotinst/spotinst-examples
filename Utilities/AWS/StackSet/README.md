@@ -61,8 +61,10 @@ Create Stackset - AWS Console (UI):
         C. Upload/provide the link for the following template: ​ **_spot-create-account.cf_**
                 i. Template URL for Full Permissions: 
 <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
-                ii. Template URL for Read-Only Permissions: [https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-onl
-        y.cf](https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-onl%20y.cf)
+                
+                ii. Template URL for Read-Only Permissions: 
+<a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
+
         D. Enter the following Parameters:
                 i. LambdaARN from the previous Cloudformation
                 ii. External ID random string of your choice
