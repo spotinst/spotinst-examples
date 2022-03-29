@@ -9,7 +9,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 # Pre-req:
 
-1. User with access to the Master Payer account. User will need at ​ **least** ​ the following permission:<br>
+1. User with access to the Master Payer account. User will need at ​**least** the following permission:<br>
 
 <ol>   A. Create a lambda function.</ol>
 <ol>   B. Create/run CF templates.</ol>
