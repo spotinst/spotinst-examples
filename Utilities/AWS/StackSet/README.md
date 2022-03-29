@@ -166,4 +166,4 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 </ol>
 
 #### Step 2. Once Operation completes Delete StackSet
-    ○ Actions -> ​“Delete Stackset”
+<ol>○ Actions -> ​“Delete Stackset”</ol>
