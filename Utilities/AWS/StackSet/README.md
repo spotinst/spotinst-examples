@@ -4,7 +4,7 @@
 
 Quickly connect all AWS accounts within an AWS organization or OU to spot.io. The process will create
 a policy and role in each AWS account. The role ARN from each AWS account will then be supplied to
-the spot platform to connect and consume. The solution will leverage cloud formation stacksets to run a
+the spot platform to connect and consume. The solution will leverage cloudformation stacksets to run a
 cloudformation stack in each AWS account. The accounts in Spot will be named using the AWS
 
 # Pre-req:
