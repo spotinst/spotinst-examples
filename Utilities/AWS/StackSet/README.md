@@ -93,7 +93,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>   G. Review and Run</ol>
 <ol>
 
-    i. On the Review page of the Create Stack wizards, choose ​“I acknowledge this template may create IAM resources”​
+    i. On the Review page of the Create Stack wizard, choose ​“I acknowledge this template may create IAM resources”​
 </ol>
 
 
