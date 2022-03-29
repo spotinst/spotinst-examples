@@ -45,10 +45,10 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>   B. Select “StackSets” -> Create Stackset</ol>
 <ol>   C. Upload/provide the link for the following template: ​spot-create-account.cf</ol>
 
-<ol>Template URL for Full Permissions: </ol>
-<a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
+<ol>Template URL for Full Permissions:</ol>
+<ol><a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a></ol>
 <ol>Template URL for Read-Only Permissions:</ol>
-<a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
+<ol><a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a></ol>
 <ol>   D. Enter the following Parameters:</ol>
 <ol>
 
@@ -58,7 +58,6 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
     iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
 <div><img src="./images/2-d.png"></div>
 </ol>
-<!-- <img src="./images/2-d.png"><br> -->
 <ol>   E. Step 3 - Configure StackSet options (Apply defaults)</ol>
 <ol>
 
