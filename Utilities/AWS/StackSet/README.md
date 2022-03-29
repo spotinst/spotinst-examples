@@ -39,26 +39,26 @@ Check the Spot ORG allows adding additional accounts (Contact Spot to enable)
 Create a Lambda function to pass Role ARN to Spot. ​ **_(NOTE: All items need to run in us-east-1 (Virginia). If desired to run in a different region, the lambda code will need to be downloaded and uploaded to a bucket and region of your choice.)_**
 
 
-A. Navigate to Cloudformation Service in Master Payer Account.<br>
-B. Run the following template: “spot_create_account_function.cf”<br>
-    i. Template URL: [https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf](https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf)<br>
-C. The template will default with these parameters. (Only change if using different region)<br>
-D. The template will output the ARN of the newly created Lambda function:<br>
-E. Copy and save the output for the next step<br>
+<ol>   A. Navigate to Cloudformation Service in Master Payer Account.</ol>
+<ol>   B. Run the following template: “spot_create_account_function.cf”</ol>
+    i. Template URL: [https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf](https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf)</ol>
+<ol>   C. The template will default with these parameters. (Only change if using different region)</ol>
+<ol>   D. The template will output the ARN of the newly created Lambda function:</ol>
+<ol>   E. Copy and save the output for the next step</ol>
 
 #### Step 2:
 Create Stackset - AWS Console (UI):
 #### Run StackSet:
 
-A. Navigate to Cloudformation Service in Master Payer Account<br>
-B. Select “StackSets” -> Create Stackset<br>
-C. Upload/provide the link for the following template: ​spot-create-account.cf<br>
+<ol>   A. Navigate to Cloudformation Service in Master Payer Account</ol>
+<ol>   B. Select “StackSets” -> Create Stackset</ol>
+<ol>   C. Upload/provide the link for the following template: ​spot-create-account.cf</ol>
 
 <ol>Template URL for Full Permissions: </ol>
 <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
 <ol>Template URL for Read-Only Permissions:</ol>
 <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
-D. Enter the following Parameters:<br>
+<ol>   D. Enter the following Parameters:</ol>
 <ol>
 
     i. LambdaARN from the previous Cloudformation
@@ -67,14 +67,14 @@ D. Enter the following Parameters:<br>
     iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
 </ol>
 <img src="./images/2-d.png"><br>
-E. Step 3 - Configure StackSet options (Apply defaults)
+<ol>   E. Step 3 - Configure StackSet options (Apply defaults)</ol>
 <ol>
 
     i. Service Managed Permissions ​ - Allows for automatic deployment to    all accounts
     ii. Self-service permissions - Allows deploying to specific accounts
     iii. IAM execution role name - “AWSCloudFormationStackSetExecutionRole”
 </ol>
-F. Step 4 - Set deployment options:<br>
+<ol>   F. Step 4 - Set deployment options:<ol>   
 <ol>
 
     i. Decide which accounts to deploy to:
@@ -84,7 +84,7 @@ F. Step 4 - Set deployment options:<br>
     ii. Specify Region to deploy
         ● Select the same region the Lambda function is deployed. (us-east-1)
 </ol>
-G. Review and Run<br>
+<ol>   G. Review and Run</ol>
 <ol>
 
     i. On the Review page of the Create Stack wizards, choose ​ “I acknowledge this template may create IAM resources” ​.
