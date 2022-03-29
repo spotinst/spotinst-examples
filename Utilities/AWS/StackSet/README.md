@@ -76,7 +76,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>   E. Step 3 - Configure StackSet options (Apply defaults)</ol>
 <ol>
 
-    i. Service Managed Permissions ​ - Allows for automatic deployment to    all accounts
+    i. Service Managed Permissions ​ - Allows for automatic deployment to all accounts
     ii. Self-service permissions - Allows deploying to specific accounts
     iii. IAM execution role name - “AWSCloudFormationStackSetExecutionRole”
 </ol>
