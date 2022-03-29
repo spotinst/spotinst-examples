@@ -143,9 +143,9 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 # Troubleshooting
 <ol>
 
-● Logs are placed in the same account as the Lambda function.
-    ○ Cloudwatch -> LogGroups -> Name of stack.
-● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
+    ● Logs are placed in the same account as the Lambda function.
+        ○ Cloudwatch -> LogGroups -> Name of stack.
+    ● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
 </ol>
 
 <img src="./images/troubleshooting.png">
@@ -153,12 +153,17 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 # Removing Stackset
 
 #### Step 1. Delete Stacks from StackSet
+<ol>
+
     ○ Actions -> ​“Delete Stacks from StackSet”
-<img src="./images/removing.png" width="200">
+<div><img src="./images/removing.png" width="200"></div>
+
+<!-- <img src="./images/removing.png" width="200"> -->
 
     ○ Provide OU ID (Root: r-1234 or OU: ou-123-abc123)
     ○ Select all regions
     ○ Submit/Run
+</ol>
 
 #### Step 2. Once Operation completes Delete StackSet
     ○ Actions -> ​“Delete Stackset”
