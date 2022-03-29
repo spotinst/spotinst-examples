@@ -67,7 +67,7 @@ Create Stackset - AWS Console (UI):
                 ii. External ID random string of your choice
                 iii. API Token for Spot.io
                 iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
-                <img src="./images/2-d.png">
+<img src="./images/2-d.png">
         E. Step 3 - Configure StackSet options (Apply defaults)
                 i. Service Managed Permissions ​ - Allows for automatic deployment to    all accounts
                 ii. Self-service permissions - Allows deploying to specific accounts
