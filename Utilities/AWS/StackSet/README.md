@@ -23,6 +23,12 @@ User with access to the Master Payer account. User will need at â€‹ **least** â€
 <ol>
 
 	    D. Read-only permissions to AWS organization.
+</ol>
+
+<img src="./images/1-d.png">
+
+</ol>
+
 	    E. Read/write permissions to SSM Parameter Store.
 </ol>
 
