@@ -24,8 +24,8 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 # Step 1: Create a Lambda Function:
 
-#### Step 1.
-Create a Lambda function to pass Role ARN to Spot. ​ **_(NOTE: All items need to run in us-east-1 (Virginia). If desired to run in a different region, the lambda code will need to be downloaded and uploaded to a bucket and region of your choice.)_**
+#### Step 1. Create a Lambda function to pass Role ARN to Spot.
+(NOTE: All items need to run in us-east-1 (Virginia). If desired to run in a different region, the lambda code will need to be downloaded and uploaded to a bucket and region of your choice.)
 
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account.</ol>
@@ -38,8 +38,7 @@ Create a Lambda function to pass Role ARN to Spot. ​ **_(NOTE: All items need 
 <img src="./images/1-d.png">
 <ol>   E. Copy and save the output for the next step</ol>
 
-#### Step 2:
-Create Stackset - AWS Console (UI):
+#### Step 2: Create Stackset - AWS Console (UI):
 #### Run StackSet:
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account</ol>
