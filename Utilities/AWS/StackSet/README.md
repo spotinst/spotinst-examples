@@ -130,18 +130,19 @@ Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/pa
 # Troubleshooting
 
 ● Logs are placed in the same account as the Lambda function.
-○ Cloudwatch -> LogGroups -> Name of stack.
-● There are print messages showing when a call was received and each api status. Review for
-any errors and troubleshooting.
+    ○ Cloudwatch -> LogGroups -> Name of stack.
+● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
+<img src="./images/troubleshooting.png">
 
 # Removing Stackset
 
 #### Step 1. Delete Stacks from StackSet
     ○ Actions -> ​ **_“Delete Stacks from StackSet”_**
+<img src="./images/removing.png">
 
-○ Provide OU ID (Root: r-1234 or OU: ou-123-abc123)
-○ Select all regions
-○ Submit/Run
+    ○ Provide OU ID (Root: r-1234 or OU: ou-123-abc123)
+    ○ Select all regions
+    ○ Submit/Run
 
 #### Step 2. Once Operation completes Delete StackSet
     ○ Actions -> ​ **_“Delete Stackset”_**
