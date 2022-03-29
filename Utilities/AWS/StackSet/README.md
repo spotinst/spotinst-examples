@@ -56,8 +56,9 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
     ii. External ID random string of your choice
     iii. API Token for Spot.io
     iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
+<div><img src="./images/2-d.png"></div>
 </ol>
-<img src="./images/2-d.png"><br>
+<!-- <img src="./images/2-d.png"><br> -->
 <ol>   E. Step 3 - Configure StackSet options (Apply defaults)</ol>
 <ol>
 
