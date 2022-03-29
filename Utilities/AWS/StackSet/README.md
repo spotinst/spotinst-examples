@@ -41,7 +41,8 @@ Create a Lambda function to pass Role ARN to Spot. ​ **_(NOTE: All items need 
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account.</ol>
 <ol>   B. Run the following template: “spot_create_account_function.cf”</ol>
-    i. Template URL: [https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf](https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf)</ol>
+<ol>     i. Template URL:</ol>
+<a href="https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf"</a>
 <ol>   C. The template will default with these parameters. (Only change if using different region)</ol>
 <ol>   D. The template will output the ARN of the newly created Lambda function:</ol>
 <ol>   E. Copy and save the output for the next step</ol>
