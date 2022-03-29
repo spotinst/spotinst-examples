@@ -119,14 +119,17 @@ file://parameters.json
 #### Step 3. Create stack instances (Enter stack-name and Org ID):
 <ol>   A. Stack-name from above</ol>
 <ol>   B. Retrieve Root Org-ID: (Required to be called from the organization’s master account or by a member that is a delegated administrator access for Organizations eg: r-1234 ):</ol>
+
 ```bash
 aws organizations list-roots | jq '.Roots' | jq '.[].Id'
 ```
 <ol>   C. Create stack-instances (SERVICE_MANAGED):</ol>
+
 ```bash
 aws cloudformation create-stack-instances --stack-set-name <Stack Name --deployment-targets OrganizationalUnitIds=<r-1234> --regions us-east-1
 ```
 <ol>   D. Create stack-instances (SELF_SERVICE):</ol>
+
 ```bash
 aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets Accounts=<123456789,555123455> --regions us-east-1
 ```
