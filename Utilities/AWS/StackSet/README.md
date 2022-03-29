@@ -54,7 +54,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 </ol>
 <ol>
 
-    ii. Template URL for Read-Only Permissions:</ol>
+    ii. Template URL for Read-Only Permissions:
 <div>
     <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
 </div>
