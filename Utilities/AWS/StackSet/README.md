@@ -137,7 +137,7 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 
 #### Step 1. Delete Stacks from StackSet
     ○ Actions -> ​“Delete Stacks from StackSet”
-<img src="./images/removing.png">
+<img src="./images/removing.png" width="50">
 
     ○ Provide OU ID (Root: r-1234 or OU: ou-123-abc123)
     ○ Select all regions
