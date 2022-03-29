@@ -84,16 +84,16 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>
 
     i. Decide which accounts to deploy to:
-        ● Select ​ “Deploy to Organization” ​ (Organization Root ID eg. r-1234) OR
-        ● Select ​ “Deploy to organizational units (OUs)” and enter OU IDs (OU ID eg. ou-12w3-pk1cphl0) OR
-        ● Specific account numbers (Only if using Self-service permissions)
+        ● Select “Deploy to Organization” (Organization Root ID eg. r-1234) OR
+        ● Select “Deploy to organizational units (OUs)” and enter OU IDs (OU ID eg. ou-12w3-pk1cphl0) OR
+        ● Specific account number (Only if using Self-service permissions)
     ii. Specify Region to deploy
         ● Select the same region the Lambda function is deployed. (us-east-1)
 </ol>
 <ol>   G. Review and Run</ol>
 <ol>
 
-    i. On the Review page of the Create Stack wizards, choose ​ “I acknowledge this template may create IAM resources” ​.
+    i. On the Review page of the Create Stack wizards, choose ​“I acknowledge this template may create IAM resources”​
 </ol>
 
 
