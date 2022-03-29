@@ -112,7 +112,7 @@ file://parameters.json
 ```
             
 #### Step 3. Create stack instances (Enter stack-name and Org ID):
-A. Stack-name from above
+A. Stack-name from above<br>
 B. Retrieve Root Org-ID: (Required to be called from the organization’s master account or by a member that is a delegated administrator access for Organizations eg: r-1234 ):
 ```bash
 aws organizations list-roots | jq '.Roots' | jq '.[].Id'
