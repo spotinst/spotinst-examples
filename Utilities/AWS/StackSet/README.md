@@ -12,17 +12,17 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 #### 1.
 User with access to the Master Payer account. User will need at ​ **least** ​ the following permission:
 
-A. Create a lambda function.<br>
-B. Create/run CF templates.<br>
-C. Create IAM Policy/Role.<br>
+<ol>   A. Create a lambda function.</ol>
+<ol>   B. Create/run CF templates.</ol>
+<ol>   C. Create IAM Policy/Role.</ol>
 
 <img src="./images/1-c.png">
 
-D. Read-only permissions to AWS organization.<br>
+<ol>   D. Read-only permissions to AWS organization.</ol>
 
 <img src="./images/1-d.png">
 
-E. Read/write permissions to SSM Parameter Store.<br>
+<ol>   E. Read/write permissions to SSM Parameter Store.</ol>
 
 #### 2.
 Enable Trusted Access with AWS Organizations - ​[Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
