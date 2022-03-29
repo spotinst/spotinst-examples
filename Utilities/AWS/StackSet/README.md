@@ -60,9 +60,9 @@ A. Navigate to Cloudformation Service in Master Payer Account<br>
 B. Select “StackSets” -> Create Stackset<br>
 C. Upload/provide the link for the following template: ​spot-create-account.cf<br>
 
-<ol>        i. Template URL for Full Permissions: </ol>
+<ol>Template URL for Full Permissions: </ol>
 <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
-<ol>        ii. Template URL for Read-Only Permissions:</ol>
+<ol>Template URL for Read-Only Permissions:</ol>
 <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
 D. Enter the following Parameters:<br>
 <ol>
