@@ -106,7 +106,7 @@ Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/pa
 
 #### Step 2. Create the stackset:
 
-```console
+```bash
 aws cloudformation create-stack-set --cli-input-json
 file://parameters.json
 ```
