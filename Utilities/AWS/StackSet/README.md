@@ -9,7 +9,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 # Pre-req:
 
-#### Step 1.
+#### 1.
 User with access to the Master Payer account. User will need at ​ **least** ​ the following permission:
 
 A. Create a lambda function.<br>
@@ -24,13 +24,13 @@ D. Read-only permissions to AWS organization.<br>
 
 E. Read/write permissions to SSM Parameter Store.<br>
 
-#### Step 2.
+#### 2.
 Enable Trusted Access with AWS Organizations - ​[Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
-#### Step 3.
+#### 3.
 ExternalID string sequence for Spot account role - The regex used to validate this parameter is a string of characters consisting of upper and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: =,.@:/- ​[Doc](https://aws.amazon.com/blogs/security/how-to-use-external-id-when-granting-access-to-your-aws-resources/)
-#### Step 4.
+#### 4.
 Spot API token with admin access to Spot Organization - ​[Doc](https://help.spot.io/spotinst-api/administration/create-an-api-token)
-#### Step 5.
+#### 5.
 Check the Spot ORG allows adding additional accounts (Contact Spot to enable)
 
 # Step 1: Create a Lambda Function:
