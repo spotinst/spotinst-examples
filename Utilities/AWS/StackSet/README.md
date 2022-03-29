@@ -46,6 +46,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>   C. Upload/provide the link for the following template: ​spot-create-account.cf</ol>
 
 <ol> 
+
         i. Template URL for Full Permissions:
 <div><a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a></div>
         ii. Template URL for Read-Only Permissions:</ol>
