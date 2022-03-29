@@ -127,6 +127,7 @@ Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/pa
 
 # Troubleshooting
 <ol>
+
         ● Logs are placed in the same account as the Lambda function.
             ○ Cloudwatch -> LogGroups -> Name of stack.
         ● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
