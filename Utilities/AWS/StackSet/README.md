@@ -55,36 +55,46 @@ E. Copy and save the output for the next step<br>
 #### Step 2:
 Create Stackset - AWS Console (UI):
 #### Run StackSet:
-   
-        A. Navigate to Cloudformation Service in Master Payer Account
-        B. Select “StackSets” -> Create Stackset
-        C. Upload/provide the link for the following template: ​ **_spot-create-account.cf_**
-                i. Template URL for Full Permissions: 
+
+A. Navigate to Cloudformation Service in Master Payer Account<br>
+B. Select “StackSets” -> Create Stackset<br>
+C. Upload/provide the link for the following template: ​spot-create-account.cf<br>
+
+<ol>        i. Template URL for Full Permissions: </ol>
 <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
-                
-                ii. Template URL for Read-Only Permissions: 
+<ol>        ii. Template URL for Read-Only Permissions:</ol>
 <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
+D. Enter the following Parameters:<br>
+<ol>
 
-        D. Enter the following Parameters:
-                i. LambdaARN from the previous Cloudformation
-                ii. External ID random string of your choice
-                iii. API Token for Spot.io
-                iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
-<img src="./images/2-d.png">
+    i. LambdaARN from the previous Cloudformation
+    ii. External ID random string of your choice
+    iii. API Token for Spot.io
+    iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
+</ol>
+<img src="./images/2-d.png"><br>
+E. Step 3 - Configure StackSet options (Apply defaults)
+<ol>
 
-        E. Step 3 - Configure StackSet options (Apply defaults)
-                i. Service Managed Permissions ​ - Allows for automatic deployment to    all accounts
-                ii. Self-service permissions - Allows deploying to specific accounts
-                iii. IAM execution role name - “AWSCloudFormationStackSetExecutionRole”
-        F. Step 4 - Set deployment options:
-                i. Decide which accounts to deploy to:
-                    ● Select ​ “Deploy to Organization” ​ (Organization Root ID eg. r-1234) OR
-                    ● Select ​ “Deploy to organizational units (OUs)” and enter OU IDs (OU ID eg. ou-12w3-pk1cphl0) OR
-                    ● Specific account numbers (Only if using Self-service permissions)
-                ii. Specify Region to deploy
-                    ● Select the same region the Lambda function is deployed. (us-east-1)
-        G. Review and Run
-            i. On the Review page of the Create Stack wizards, choose ​ “I acknowledge this template may create IAM resources” ​.
+    i. Service Managed Permissions ​ - Allows for automatic deployment to    all accounts
+    ii. Self-service permissions - Allows deploying to specific accounts
+    iii. IAM execution role name - “AWSCloudFormationStackSetExecutionRole”
+</ol>
+F. Step 4 - Set deployment options:<br>
+<ol>
+
+    i. Decide which accounts to deploy to:
+        ● Select ​ “Deploy to Organization” ​ (Organization Root ID eg. r-1234) OR
+        ● Select ​ “Deploy to organizational units (OUs)” and enter OU IDs (OU ID eg. ou-12w3-pk1cphl0) OR
+        ● Specific account numbers (Only if using Self-service permissions)
+    ii. Specify Region to deploy
+        ● Select the same region the Lambda function is deployed. (us-east-1)
+</ol>
+G. Review and Run<br>
+<ol>
+
+    i. On the Review page of the Create Stack wizards, choose ​ “I acknowledge this template may create IAM resources” ​.
+</ol>
 
 
 # Step 2: Create Stackset - API (AWS CLI)
