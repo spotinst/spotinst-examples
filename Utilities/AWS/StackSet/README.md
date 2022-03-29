@@ -93,51 +93,50 @@ Create Stackset - AWS Console (UI):
 Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/parameters.json
 <ol>
 
-            a. Edit and Enter the following:
-                i. StackSetName
-                ii. LambdaARN
-                iii. Token
-                iv. ExternalID
-                v. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
-                    1. Service_manage -> Deploys to entire ORG or specific OU
-                    2. Self_Services -> Deploys to specific accounts
-            b. Save
+        A. Edit and Enter the following:
+            i. StackSetName
+            ii. LambdaARN
+            iii. Token
+            iv. ExternalID
+            v. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
+                1. Service_manage -> Deploys to entire ORG or specific OU
+                2. Self_Services -> Deploys to specific accounts
+        B. Save
 </ol>
 
 #### Step 2. Create the stackset:
 
-            ```
-            a. aws cloudformation create-stack-set --cli-input-json
-            file://parameters.json
-            ```
+        ``` console
+        aws cloudformation create-stack-set --cli-input-json
+        file://parameters.json
+        ```
             
 #### Step 3. Create stack instances (Enter stack-name and Org ID):
-            a. Stack-name from above
-            b. Retrieve Root Org-ID: (Required to be called from the organization’s master account or
-            by a member that is a delegated administrator access for Organizations eg: r-1234 ):
-                aws organizations list-roots | jq '.Roots' | jq '.[].Id'
-            c. Create stack-instances (SERVICE_MANAGED):
-            aws cloudformation create-stack-instances --stack-set-name
-            <Stack Name> --deployment-targets
-            OrganizationalUnitIds=<r-1234> --regions us-east-
-
-            d. Create stack-instances (SELF_SERVICE):
-            aws cloudformation create-stack-instances --stack-set-name
-            <Stack Name> --deployment-targets Accounts=<123456789,
-            555123455> --regions us-east-
+        A. Stack-name from above
+        B. Retrieve Root Org-ID: (Required to be called from the organization’s master account or by a member that is a delegated administrator access for Organizations eg: r-1234 ):
+        aws organizations list-roots | jq '.Roots' | jq '.[].Id'
+        C. Create stack-instances (SERVICE_MANAGED):
+        aws cloudformation create-stack-instances --stack-set-name
+        <Stack Name> --deployment-targets
+        OrganizationalUnitIds=<r-1234> --regions us-east-
+        D. Create stack-instances (SELF_SERVICE):
+        aws cloudformation create-stack-instances --stack-set-name
+        <Stack Name> --deployment-targets Accounts=<123456789,
+        555123455> --regions us-east-
 
 
 # Troubleshooting
-
-● Logs are placed in the same account as the Lambda function.
-    ○ Cloudwatch -> LogGroups -> Name of stack.
-● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
+<ol>
+        ● Logs are placed in the same account as the Lambda function.
+            ○ Cloudwatch -> LogGroups -> Name of stack.
+        ● There are print messages showing when a call was received and each api status. Review for any errors and troubleshooting.
+</ol>
 <img src="./images/troubleshooting.png">
 
 # Removing Stackset
 
 #### Step 1. Delete Stacks from StackSet
-    ○ Actions -> ​ **_“Delete Stacks from StackSet”_**
+    ○ Actions -> ​“Delete Stacks from StackSet”
 <img src="./images/removing.png">
 
     ○ Provide OU ID (Root: r-1234 or OU: ou-123-abc123)
@@ -145,4 +144,4 @@ Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/pa
     ○ Submit/Run
 
 #### Step 2. Once Operation completes Delete StackSet
-    ○ Actions -> ​ **_“Delete Stackset”_**
+    ○ Actions -> ​“Delete Stackset”
