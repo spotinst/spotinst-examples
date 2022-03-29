@@ -15,13 +15,7 @@ User with access to the Master Payer account. User will need at ​ **least** �
 <ol>   A. Create a lambda function.</ol>
 <ol>   B. Create/run CF templates.</ol>
 <ol>   C. Create IAM Policy/Role.</ol>
-
-<img src="./images/1-c.png">
-
 <ol>   D. Read-only permissions to AWS organization.</ol>
-
-<img src="./images/1-d.png">
-
 <ol>   E. Read/write permissions to SSM Parameter Store.</ol>
 
 #### 2.
@@ -44,7 +38,9 @@ Create a Lambda function to pass Role ARN to Spot. ​ **_(NOTE: All items need 
 <ol>     i. Template URL:</ol>
 <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf"</a>
 <ol>   C. The template will default with these parameters. (Only change if using different region)</ol>
+<img src="./images/1-c.png">
 <ol>   D. The template will output the ARN of the newly created Lambda function:</ol>
+<img src="./images/1-d.png">
 <ol>   E. Copy and save the output for the next step</ol>
 
 #### Step 2:
