@@ -1,4 +1,4 @@
-![Spot by NetApp](./images/logo.png)
+![Spot by NetApp](./images/logo.png =x250)
 
 # Overview
 
