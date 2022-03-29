@@ -84,8 +84,8 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 # Step 2: Create Stackset - API (AWS CLI)
 
-#### Step 1. 
-Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/parameters.json
+#### Step 1. Download parameter.json
+​<a href="https://spot-connect-account-cf.s3.amazonaws.com/parameters.json">https://spot-connect-account-cf.s3.amazonaws.com/parameters.json</a>
 
 <ol>   A. Edit and Enter the following:</ol>
 <ol>
