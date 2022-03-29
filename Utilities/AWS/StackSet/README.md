@@ -132,7 +132,7 @@ aws organizations list-roots | jq '.Roots' | jq '.[].Id'
 <ol>   C. Create stack-instances (SERVICE_MANAGED):</ol>
 
 ```bash
-aws cloudformation create-stack-instances --stack-set-name <Stack Name --deployment-targets OrganizationalUnitIds=<r-1234> --regions us-east-1
+aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets OrganizationalUnitIds=<r-1234> --regions us-east-1
 ```
 <ol>   D. Create stack-instances (SELF_SERVICE):</ol>
 
