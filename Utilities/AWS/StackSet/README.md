@@ -18,7 +18,7 @@ User with access to the Master Payer account. User will need at â€‹ **least** â€
 	    C. Create IAM Policy/Role
 </ol>
 
-            ![](./images/1-c.png)
+<img src="./images/1-c.png">
 
 <ol>
 
