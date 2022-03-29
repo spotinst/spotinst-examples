@@ -59,7 +59,8 @@ Create Stackset - AWS Console (UI):
         A. Navigate to Cloudformation Service in Master Payer Account
         B. Select “StackSets” -> Create Stackset
         C. Upload/provide the link for the following template: ​ **_spot-create-account.cf_**
-                i. Template URL for Full Permissions: <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
+                i. Template URL for Full Permissions: 
+<a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
                 ii. Template URL for Read-Only Permissions: [https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-onl
         y.cf](https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-onl%20y.cf)
         D. Enter the following Parameters:
