@@ -91,18 +91,16 @@ Create Stackset - AWS Console (UI):
 
 #### Step 1. 
 Download parameter.json - ​https://spot-connect-account-cf.s3.amazonaws.com/parameters.json
-<ol>
 
-        A. Edit and Enter the following:
-            i. StackSetName
-            ii. LambdaARN
-            iii. Token
-            iv. ExternalID
-            v. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
-                1. Service_manage -> Deploys to entire ORG or specific OU
-                2. Self_Services -> Deploys to specific accounts
-        B. Save
-</ol>
+A. Edit and Enter the following:
+    i. StackSetName
+    ii. LambdaARN
+    iii. Token
+    iv. ExternalID
+    v. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
+        1. Service_manage -> Deploys to entire ORG or specific OU
+        2. Self_Services -> Deploys to specific accounts
+B. Save
 
 #### Step 2. Create the stackset:
 
