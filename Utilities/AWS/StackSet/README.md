@@ -30,8 +30,13 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account.</ol>
 <ol>   B. Run the following template: “spot_create_account_function.cf”</ol>
-<ol>     i. Template URL:</ol>
+<ol> 
+
+    i. Template URL:
+<div>
 <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf"</a>
+<div>
+</ol>
 <ol>   C. The template will default with these parameters. (Only change if using different region)</ol>
 <img src="./images/1-c.png">
 <ol>   D. The template will output the ARN of the newly created Lambda function:</ol>
