@@ -17,6 +17,7 @@ User with access to the Master Payer account. User will need at â€‹ **least** â€
 	    B. Create/run CF templates.
 	    C. Create IAM Policy/Role
             ![](./images/1-c.png)
+            <img src="./images/1-c.png">
 	    D. Read-only permissions to AWS organization.
 	    E. Read/write permissions to SSM Parameter Store.
 </ol>
