@@ -34,7 +34,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
     i. Template URL:
 <div>
-<a href="https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf"</a>
+<a href="https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.cf</a>
 <div>
 </ol>
 <ol>   C. The template will default with these parameters. (Only change if using different region)</ol>
