@@ -74,7 +74,7 @@ Create Stackset - AWS Console (UI):
     ii. Self-service permissions - Allows deploying to specific accounts
     iii. IAM execution role name - “AWSCloudFormationStackSetExecutionRole”
 </ol>
-<ol>   F. Step 4 - Set deployment options:<ol>   
+<ol>   F. Step 4 - Set deployment options:</ol>   
 <ol>
 
     i. Decide which accounts to deploy to:
