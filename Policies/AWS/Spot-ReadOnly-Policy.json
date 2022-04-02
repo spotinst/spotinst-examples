@@ -7,7 +7,7 @@
       "Action": [
         "autoscaling:Describe*",
         "elasticmapreduce:Describe*",
-        "elasticmapreduce:ListClusters",
+        "elasticmapreduce:List*",
         "elasticloadbalancing:Describe*",
         "ecs:List*",
         "batch:Describe*",
@@ -17,7 +17,8 @@
         "codedeploy:BatchGetDeployments",
         "batch:List*",
         "eks:ListClusters",
-        "codedeploy:List*"
+        "codedeploy:List*",
+        "iam:ListAccountAliases"
       ],
       "Resource": [
         "*"
