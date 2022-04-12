@@ -1,0 +1,5 @@
+###### Requirements without Version Specifiers ######`
+click
+
+###### Requirements with Version Specifiers ######`
+spotinst-sdk2 >= 2.1.10
