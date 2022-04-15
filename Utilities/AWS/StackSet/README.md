@@ -42,7 +42,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol><div><img src="./images/1-d.png"></div></ol>
 <ol>   E. Copy and save the output for the next step</ol>
 
-#### Step 2: Create Stackset - AWS Console (UI):
+#### Step 2: Option 1 Create Stackset - AWS Console (UI):
 #### Run StackSet:
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account</ol>
@@ -96,7 +96,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 </ol>
 
 
-# Option 2: Create Stackset - API (AWS CLI)
+# Step 2: Option 2 - Create Stackset - API (AWS CLI)
 
 #### Step 1. Download parameter.json
 ​<a href="https://spot-connect-account-cf.s3.amazonaws.com/parameters.json">https://spot-connect-account-cf.s3.amazonaws.com/parameters.json</a>
