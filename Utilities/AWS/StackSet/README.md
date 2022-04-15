@@ -53,14 +53,14 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
     i. Template URL for Full Permissions:
 <div>
-    <a href="https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
+    <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account.cf</a>
 <div>
 </ol>
 <ol>
 
     ii. Template URL for Read-Only Permissions:
 <div>
-    <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https:/spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
+    <a href="https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf">https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.cf</a>
 </div>
 </ol>
 <ol>   D. Enter the following Parameters:</ol>
@@ -96,7 +96,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 </ol>
 
 
-# Step 2: Create Stackset - API (AWS CLI)
+# Option 2: Create Stackset - API (AWS CLI)
 
 #### Step 1. Download parameter.json
 ​<a href="https://spot-connect-account-cf.s3.amazonaws.com/parameters.json">https://spot-connect-account-cf.s3.amazonaws.com/parameters.json</a>
