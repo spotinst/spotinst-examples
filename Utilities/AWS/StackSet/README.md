@@ -42,7 +42,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol><div><img src="./images/1-d.png"></div></ol>
 <ol>   E. Copy and save the output for the next step</ol>
 
-# Step 2: Option 1 Create Stackset - AWS Console (UI):
+# Step 2: Option 1 - Create Stackset - AWS Console (UI):
 #### Run StackSet:
 
 <ol>   A. Navigate to Cloudformation Service in Master Payer Account</ol>
