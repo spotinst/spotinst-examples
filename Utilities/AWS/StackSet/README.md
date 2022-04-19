@@ -67,9 +67,8 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 <ol>
 
     i. LambdaARN from the previous Cloudformation
-    ii. External ID random string of your choice
-    iii. API Token for Spot.io
-    iv. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
+    ii. API Token for Spot.io
+    iii. Omit/Skip AccountName when running as a StackSet (Only use when connecting a single account using a single stack - DO NOT USE WITH STACKSET)
 <div><img src="./images/2-d.png"></div>
 </ol>
 <ol>   E. Step 3 - Configure StackSet options (Apply defaults)</ol>
@@ -107,8 +106,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
     i. StackSetName
     ii. LambdaARN
     iii. Token
-    iv. ExternalID
-    v. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
+    iv. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)
         1. Service_manage -> Deploys to entire ORG or specific OU
         2. Self_Services -> Deploys to specific accounts
 </ol>
