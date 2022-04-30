@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create and link AWS Account to Spot.io
+Parameters:
+  LambdaARN:
+    Description: The lambda function ARN for creating account with Spot.io
+    Type: String
+  Token:
+    Description: The API Token for Spot.io
+    Type: String
+Resources:
+  SpotManagedPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: Spot.io-Account-Read-Only-Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: SpotAccountReadOnly
+            Effect: Allow
+            Action:
+              - 'autoscaling:Describe*'
+              - 'elasticmapreduce:Describe*'
+              - 'elasticmapreduce:ListClusters'
+              - 'elasticloadbalancing:Describe*'
+              - 'ecs:List*'
+              - 'batch:Describe*'
+              - 'ecs:Describe*'
+              - 'elasticbeanstalk:Describe*'
+              - 'ec2:Describe*'
+              - 'codedeploy:BatchGetDeployments'
+              - 'batch:List*'
+              - 'eks:ListClusters'
+              - 'codedeploy:List*'
+              - 'iam:ListAccountAliases'
+            Resource: '*'
+          - Sid: SavingsPlan
+            Action:
+              - 'savingsplans:Describe*'
+              - 'savingsplans:List*'
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: Lambda
+            Action:
+              - 'lambda:ListFunctions'
+            Effect: Allow
+            Resource:
+              - '*'
+  SpotGetExternalId:
+    Type: 'Custom::SpotGetExternalId'
+    Properties:
+      ServiceToken:
+        Ref: LambdaARN
+      Token:
+        Ref: Token
+      External: 'False'
+  SpotRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: 'arn:aws:iam::922761411349:root'
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId':
+                  'Fn::GetAtt':
+                    - SpotGetExternalId
+                    - externalId
+      ManagedPolicyArns:
+        - Ref: SpotManagedPolicy
+  SpotSetAccountCredentials:
+    Type: 'Custom::SpotSetAccountCredentials'
+    Properties:
+      ServiceToken:
+        Ref: LambdaARN
+      Arn:
+        'Fn::GetAtt':
+          - SpotRole
+          - Arn
+      Token:
+        Ref: Token
+      External: 'True'
+Outputs:
+  AccountId:
+    Description: The Account ID for Spot.io
+    Value:
+      'Fn::GetAtt':
+        - SpotSetAccountCredentials
+        - Id
+  ExternalId:
+    Description: The External ID for Spot.io Role
+    Value:
+      'Fn::GetAtt':
+        - SpotGetExternalId
+        - externalId
+  SpotRoleArn:
+    Description: The Account Role ARN used for Spot.io
+    Value:
+      'Fn::GetAtt':
+        - SpotRole
+        - Arn
