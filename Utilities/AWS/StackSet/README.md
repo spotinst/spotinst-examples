@@ -25,9 +25,9 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 A. Navigate to Cloudformation Service in Master Payer Account.  
 B. Select "Create Stack" ->  "With New Resource (standard)" -> Copy and enter the URL for the template source (S3):  
-
+```
     https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.yaml
-
+```
 C. The template will default values. Enter the AWS Organization ID (Only change default values if using a different region)  
 <ol><div><img src="./images/1-c.png"></div></ol>
 D. The template will output the ARN of the newly created Lambda function:  
@@ -43,15 +43,13 @@ C. Configure StackSet Permissions:
 &nbsp;&nbsp;&nbsp;&nbsp;ii. Self-service permissions - Allows for automatic deployment using a self managed IAM role to specific AWS account IDS.  
 D. Copy and enter the URL for the template source (S3):  
 - Template URL for full permissions:
-
-
+```
     https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account.yaml
-
+```
 - Template URL for Read-Only permissions:  
-
-
+```
     https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.yaml
-
+```
 
 E. Specify Stackset details:  
 &nbsp;&nbsp;&nbsp;&nbsp;i. LambdaARN from the previous Cloudformation  
@@ -64,13 +62,13 @@ F. Configure StackSet options:
 &nbsp;&nbsp;&nbsp;&nbsp;ii. (Default) Execution configuration set to "Inactive"
 
 G. Set deployment options:  
-&nbsp;&nbsp;&nbsp;&nbsp;i. Options for "Service Managed Permissions"
+&nbsp;&nbsp;&nbsp;&nbsp;i. Options for "Service Managed Permissions"  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Select "Deploy to Organization" (Organization Root ID eg. r-1234) OR  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. Select "Deploy to organizational units (OUs)" and enter OU IDs (OU ID eg. ou-12w3-pk1cphl0) OR  
-&nbsp;&nbsp;&nbsp;&nbsp;ii. Options for "Self-service permissions"
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Enter specific account number/s seperated by a comma.
+&nbsp;&nbsp;&nbsp;&nbsp;ii. Options for "Self-service permissions"  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Enter specific account number/s seperated by a comma.  
 &nbsp;&nbsp;&nbsp;&nbsp;iii. Specify Region to deploy:  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Select the same region the Lambda function is deployed (us-east-1).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Select the same region the Lambda function is deployed (us-east-1).  
 
 H. Review and Run  
 &nbsp;&nbsp;&nbsp;&nbsp;i. On the Review page of the Create Stack wizard, choose "I acknowledge this template may create IAM resources" -> Submit
@@ -89,23 +87,23 @@ B. Edit and enter the following:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. Self_Services -> Deploys to specific accounts  
 C. Save  
 D. Call AWS CLI to create stackset:
-
+```
     aws cloudformation create-stack-set --cli-input-json file://parameters.json
+```
 
 E. Create Stack Instances  
-&nbsp;&nbsp;&nbsp;&nbsp;i. Stack-name from above  
-&nbsp;&nbsp;&nbsp;&nbsp;ii. Retrieve Root Org-ID: (Required to be called from the organization’s master account or by a member that is a delegated administrator access for Organizations eg: r-1234 ):  
-
-    aws organizations list-roots | jq '.Roots' | jq '.[].Id'
-
-C. Create stack-instances (SERVICE_MANAGED):  
-
-    aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets OrganizationalUnitIds=<r-1234> --regions us-east-1
-
-D. Create stack-instances (SELF_SERVICE):  
-
-    aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets Accounts=<123456789,555123455> --regions us-east-1
-
+&nbsp;&nbsp;&nbsp;&nbsp;i. Retrieve Root Org-ID: (Required to be called from the organization’s master account or by a member that is a delegated administrator access for Organizations eg: r-1234 ):  
+```
+aws organizations list-roots | jq '.Roots' | jq '.[].Id'
+```
+&nbsp;&nbsp;&nbsp;&nbsp;ii. Create stack-instances (SERVICE_MANAGED):  
+```
+aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets OrganizationalUnitIds=<r-1234> --regions us-east-1
+```
+&nbsp;&nbsp;&nbsp;&nbsp;iii. Create stack-instances (SELF_SERVICE):  
+```
+aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets Accounts=<123456789,555123455> --regions us-east-1
+```
 
 ## Troubleshooting
 Logs are placed in the same AWS account as the Lambda function. There are print messages showing when a call is received and each api status. Review for any errors and troubleshooting.
