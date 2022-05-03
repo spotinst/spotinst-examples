@@ -13,9 +13,12 @@ Parameters:
     Description: The name of the program file
     Type: String
     Default: lambda_function
+  OrgId:
+    Description: "The AWS Organization ID (Can be found in Organization Service, ie: o-hkum3f12134)"
+    Type: String
 Resources:
   SpotNetAppCreateAccountFunction:
-    Type: AWS::Lambda::Function
+    Type: 'AWS::Lambda::Function'
     Properties:
       Code:
         S3Bucket:
@@ -23,16 +26,16 @@ Resources:
         S3Key:
           Ref: S3Key
       Handler:
-        Fn::Join:
+        'Fn::Join':
           - ''
           - - Ref: ModuleName
             - .lambda_handler
       Role:
-        Fn::GetAtt:
+        'Fn::GetAtt':
           - SpotNetAppLambdaExecutionRole
           - Arn
       Runtime: python3.8
-      Timeout: 60
+      Timeout: '60'
       FunctionName: SpotNetAppCreateAccountFunction
   SpotNetAppLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
@@ -59,7 +62,7 @@ Resources:
                 Resource: '*'
                 Condition:
                   StringNotLike:
-                    aws:userid: '*:SpotNetAppCreateAccountFunction'
+                    'aws:userid': '*:SpotNetAppCreateAccountFunction'
               - Sid: CreateLogGroup
                 Action:
                   - 'logs:CreateLogGroup'
@@ -82,14 +85,16 @@ Resources:
                   - 'organizations:DescribeAccount'
                 Resource: '*'
   LambdaResourcePolicy:
-    Type: AWS::Lambda::Permission
+    Type: 'AWS::Lambda::Permission'
     Properties:
-      Action: lambda:InvokeFunction
+      Action: 'lambda:InvokeFunction'
       FunctionName:
-        Fn::GetAtt:
+        'Fn::GetAtt':
           - SpotNetAppCreateAccountFunction
           - Arn
       Principal: '*'
+      PrincipalOrgID:
+        Ref: OrgId
 Outputs:
   LambdaARN:
     Description: The Lambda Function for Spot by NetApp

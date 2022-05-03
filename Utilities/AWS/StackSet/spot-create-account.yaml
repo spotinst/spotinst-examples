@@ -257,7 +257,7 @@ Resources:
             Condition:
               StringEquals:
                 'sts:ExternalId':
-                  'Fn::GetAtt':
+                  Fn::GetAtt:
                     - SpotGetExternalId
                     - externalId
       ManagedPolicyArns:
@@ -268,7 +268,7 @@ Resources:
       ServiceToken:
         Ref: LambdaARN
       Arn:
-        'Fn::GetAtt':
+        Fn::GetAtt:
           - SpotRole
           - Arn
       Token:
