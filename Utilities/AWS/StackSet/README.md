@@ -58,7 +58,7 @@ E. Specify Stackset details:
 <div><img src="./images/2-d.png"></div>
 
 F. Configure StackSet options:  
-&nbsp;&nbsp;&nbsp;&nbsp;i. (Optional) Add desired tags
+&nbsp;&nbsp;&nbsp;&nbsp;i. (Optional) Add desired tags  
 &nbsp;&nbsp;&nbsp;&nbsp;ii. (Default) Execution configuration set to "Inactive"
 
 G. Set deployment options:  
