@@ -26,7 +26,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 A. Navigate to Cloudformation Service in Master Payer Account.  
 B. Select "Create Stack" ->  "With New Resource (standard)" -> Copy and enter the URL for the template source (S3):  
 ```
-    https://spot-connect-account-cf.s3.amazonaws.com/spot_create_account_function.yaml
+    https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-function.yaml
 ```
 C. The template will default values. Enter the AWS Organization ID (Only change default values if using a different region)  
 <ol><div><img src="./images/1-c.png"></div></ol>
