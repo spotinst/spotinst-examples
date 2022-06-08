@@ -1,3 +1,20 @@
+#############################
+### Cost and Usage Report ###
+#############################
+
+resource "aws_cur_report_definition" "spot_io_cur_report" {
+  report_name                = "spot-io-cur"
+  time_unit                  = "HOURLY"
+  format                     = "Parquet"
+  compression                = "Parquet"
+  s3_prefix                  = "spot-io-cur"
+  additional_schema_elements = ["RESOURCES"]
+  s3_bucket                  = aws_s3_bucket.spot_io_cur_report.id
+  s3_region                  = "us-east-1"
+  additional_artifacts       = ["ATHENA"]
+  report_versioning          = "OVERWRITE_REPORT"
+}
+
 ########
 ## S3 ##
 ########
@@ -51,23 +68,6 @@ resource "aws_s3_bucket_policy" "spot_io_cur_report" {
   ]
 }
 POLICY
-}
-
-#############################
-### Cost and Usage Report ###
-#############################
-
-resource "aws_cur_report_definition" "spot_io_cur_report" {
-  report_name                = "spot-io-cur"
-  time_unit                  = "HOURLY"
-  format                     = "Parquet"
-  compression                = "Parquet"
-  s3_prefix                  = "spot-io-cur"
-  additional_schema_elements = ["RESOURCES"]
-  s3_bucket                  = aws_s3_bucket.spot_io_cur_report.id
-  s3_region                  = "us-east-1"
-  additional_artifacts       = ["ATHENA"]
-  report_versioning          = "OVERWRITE_REPORT"
 }
 
 ############
