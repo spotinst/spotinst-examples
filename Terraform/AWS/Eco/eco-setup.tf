@@ -1,20 +1,3 @@
-#############################
-### Cost and Usage Report ###
-#############################
-
-resource "aws_cur_report_definition" "spot_io_cur_report" {
-  report_name                = "spot-io-cur"
-  time_unit                  = "HOURLY"
-  format                     = "Parquet"
-  compression                = "Parquet"
-  s3_prefix                  = "spot-io-cur"
-  additional_schema_elements = ["RESOURCES"]
-  s3_bucket                  = var.bucket_name
-  s3_region                  = "us-east-1"
-  additional_artifacts       = ["ATHENA"]
-  report_versioning          = "OVERWRITE_REPORT"
-}
-
 ########
 ## S3 ##
 ########
@@ -35,7 +18,7 @@ resource "aws_s3_bucket" "spot_io_cur_report" {
 }
 
 resource "aws_s3_bucket_policy" "spot_io_cur_report" {
-  bucket = var.bucket_name
+  bucket = aws_s3_bucket.spot_io_cur_report.id
 
   policy = <<POLICY
 {
@@ -70,12 +53,35 @@ resource "aws_s3_bucket_policy" "spot_io_cur_report" {
 POLICY
 }
 
+#############################
+### Cost and Usage Report ###
+#############################
+
+resource "aws_cur_report_definition" "spot_io_cur_report" {
+  report_name                = "spot-io-cur"
+  time_unit                  = "HOURLY"
+  format                     = "Parquet"
+  compression                = "Parquet"
+  s3_prefix                  = "spot-io-cur"
+  additional_schema_elements = ["RESOURCES"]
+  s3_bucket                  = aws_s3_bucket.spot_io_cur_report.id
+  s3_region                  = "us-east-1"
+  additional_artifacts       = ["ATHENA"]
+  report_versioning          = "OVERWRITE_REPORT"
+}
+
 ############
 # IAM Role #
 ############
 
+variable "role_name" {
+  type        = string
+  description = "IAM Role name for Spot FinOps Eco role"
+  default     = "Spot-Eco-FinOps"
+}
+
 resource "aws_iam_role" "spot_io" {
-  name               = "spot-io"
+  name               = var.role_name
   description        = "Spot role with full billing admin access"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.spot_io.json
