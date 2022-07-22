@@ -112,17 +112,6 @@
     },
     {
       "Action": [
-        "organizations:InviteAccountToOrganization",
-        "organizations:CancelHandshake"
-      ],
-      "Resource": [
-        "*"
-      ],
-      "Effect": "Allow",
-      "Sid": "ECOFlex"
-    },
-    {
-      "Action": [
         "s3:GetBucketLocation",
         "s3:ListBucketMultipartUploads",
         "s3:AbortMultipartUpload",
