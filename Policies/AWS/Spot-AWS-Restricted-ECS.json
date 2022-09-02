@@ -50,10 +50,10 @@
         "elasticloadbalancing:Describe*",
         "elasticloadbalancing:Deregister*",
         "elasticloadbalancing:Register*",
+        "elasticloadbalancing:AddTags",
         "elasticloadbalancing:RemoveTags",
-        "elasticloadbalancing:RegisterTargets",
-        "elasticloadbalancing:EnableAvailabilityZonesForLoadBalancer",
-        "elasticloadbalancing:DisableAvailabilityZonesForLoadBalancer"
+        "elasticloadbalancing:AttachLoadBalancerToSubnets",
+        "elasticloadbalancing:DetachLoadBalancerFromSubnets"
       ],
       "Effect": "Allow",
       "Resource": [
