@@ -47,9 +47,10 @@
         "elasticloadbalancing:Describe*",
         "elasticloadbalancing:Deregister*",
         "elasticloadbalancing:Register*",
-        "elasticloadbalancing:RegisterTargets",
-        "elasticloadbalancing:EnableAvailabilityZonesForLoadBalancer",
-        "elasticloadbalancing:DisableAvailabilityZonesForLoadBalancer"
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:RemoveTags",
+        "elasticloadbalancing:AttachLoadBalancerToSubnets",
+        "elasticloadbalancing:DetachLoadBalancerFromSubnets"
       ],
       "Effect": "Allow",
       "Resource": [
