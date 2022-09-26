@@ -1,7 +1,9 @@
-###### Requirements without Version Specifiers ######`
+###### Requirements without Version Specifiers ######
 boto3
 botocore
 requests
+click
+spotinst_sdk2
 
-###### Requirements with Version Specifiers ######`
+###### Requirements with Version Specifiers ######
 #spotinst-sdk2 >= 2.1.10
