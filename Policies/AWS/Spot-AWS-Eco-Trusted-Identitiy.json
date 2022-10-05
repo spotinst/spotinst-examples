@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
+                    "arn:aws:iam::884866656237:role/Admin",
+                    "arn:aws:iam::884866656237:role/DevRole",
+                    "arn:aws:iam::884866656237:role/ReadOnly",
+                    "arn:aws:iam::627743545735:role/Admin",
+                    "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"
+                ]
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
