@@ -1,0 +1,164 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spot-log
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spot-log
+  template:
+    metadata:
+      labels:
+        app: spot-log
+    spec:
+      serviceAccountName: spot-log
+      containers:
+      - name: spot-log-cron
+        image: stevenfeltner/kubectl:latest
+        command:
+        - /bin/bash
+        args:
+        - /root/cmd/query.sh
+        volumeMounts:
+        - name: cmd
+          mountPath: /root/cmd
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: SPOTINST_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: spotinst-kubernetes-cluster-controller
+              key: token
+              optional: true
+        - name: SPOTINST_ACCOUNT
+          valueFrom:
+            secretKeyRef:
+              name: spotinst-kubernetes-cluster-controller
+              key: account
+              optional: true
+        #- name: SPOTINST_TOKEN
+        #  valueFrom:
+        #    configMapKeyRef:
+        #      key: spotinst.token
+        #      name: spotinst-kubernetes-cluster-controller-config
+        #- name: SPOTINST_ACCOUNT
+        #  valueFrom:
+        #    configMapKeyRef:
+        #      key: spotinst.account
+        #      name: spotinst-kubernetes-cluster-controller-config
+        - name: CLUSTER_IDENTIFIER
+          valueFrom:
+            configMapKeyRef:
+              key: spotinst.cluster-identifier
+              name: spotinst-kubernetes-cluster-controller-config
+      volumes:
+      - name: cmd
+        configMap:
+          name: spot-log
+      nodeSelector:
+        kubernetes.io/arch: amd64
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spot-log
+  namespace: kube-system
+data:
+  query.sh: |-
+    #!/bin/bash
+    if [ "$DEBUG" = "true" ];then set -x;fi
+    ##
+    ## Setup the spot-log-query ConfigMap to store the last_query_time
+    ##
+    kubectl get configmap --namespace ${POD_NAMESPACE} spot-log-query >/dev/null 2>err.log
+    if [ -s err.log ] && (grep "not found" err.log >/dev/null 2>/dev/null); then
+        kubectl create configmap --namespace ${POD_NAMESPACE} spot-log-query >/dev/null 2>err.log
+        ##
+        ## Exit if there is an error creating a configmap
+        ##
+        if [ -s err.log ];then
+          >&2 cat err.log
+          exit 1
+        fi
+    fi
+    while true;do
+      ##
+      ## Find the last query time, this is the derived from the last log received
+      ##
+      last_query_time=$(kubectl get configmap --namespace ${POD_NAMESPACE} spot-log-query -ojsonpath='{.data.last_query_time}')
+      if [ -z ${last_query_time} ];then
+        # This should only happen the very first time the service is created
+        last_query_time=$(date -d '1 hour ago' --iso-8601=seconds)
+      fi
+      lastest_log="null"
+      while [ "${lastest_log}" == "null" ]; do
+        ##
+        ## Perform Spot Queries for logs
+        ##
+        id=$(curl -s "https://api.spotinst.io/ocean/gcp/k8s/cluster/?accountId=${SPOTINST_ACCOUNT}" -H "Authorization: Bearer ${SPOTINST_TOKEN}"|jq --arg name "${CLUSTER_IDENTIFIER}" -r '.response.items[]|select(.controllerClusterId==$name)|.id')
+        resp=$(curl -s "https://api.spotinst.io/ocean/gcp/k8s/cluster/${id}/log?fromDate=$(date "+%s000" -d "${last_query_time}")&toDate=$(date '+%s000')&severity=ALL&limit=1000&accountId=${SPOTINST_ACCOUNT}" -H "Authorization: Bearer ${SPOTINST_TOKEN}")
+        ##
+        ## Print to stdout
+        ##
+        jq -r '.response.items|reverse|.[]|@json' <<< $resp
+        ##
+        ## Finally, save the last query time so next job can pick up where this left off
+        ##
+        lastest_log=$(jq -r '.response.items[0].createdAt' <<< $resp)
+        if [ "${lastest_log}" != "null" ];then
+          latest_log1=$(date -d "$lastest_log + 1 seconds" --iso-8601=seconds)
+          break 1
+        fi
+        sleep 600
+      done
+      if [ "${lastest_log}" != "null" ];then
+        kubectl patch configmap --namespace ${POD_NAMESPACE} spot-log-query --type merge -p '{"data":{"last_query_time":"'${latest_log1}'"}}' >/dev/null 2>/dev/null
+        if [ -s err.log ];then
+          >&2 cat err.log
+          exit 1
+        fi
+      fi
+      sleep 600
+    done
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spot-log
+  namespace: kube-system
+
+---
+# TODO find least-priv for this role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: spot-log
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - '*'
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: spot-log
+  namespace: kube-system
+subjects:
+- kind: ServiceAccount
+  name: spot-log
+  namespace: kube-system
+roleRef:
+  kind: Role
+  name: spot-log
+  apiGroup: rbac.authorization.k8s.io
