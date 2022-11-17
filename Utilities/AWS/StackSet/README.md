@@ -27,7 +27,7 @@ D. Copy and enter the URL for the template source (S3):
 ```
 - Template URL for Read-Only permissions:  
 ```
-    https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-read-only.yaml
+    https://github.com/spotinst/spotinst-examples/blob/master/Policies/AWS/Spot-AWS-Stackset-ReadOnly.yaml
 ```
 
 E. Specify Stackset details:  
