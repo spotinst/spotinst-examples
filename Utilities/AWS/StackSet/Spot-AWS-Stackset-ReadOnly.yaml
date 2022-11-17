@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: StackSet to link newly created AWS accounts to a Spot account
+Parameters:
+  Token:
+    Description: The API Token for Spot.io
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+$
+    NoEcho: true
+Resources:
+  SpotManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Spot.io Account Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ReadonlyAccess
+            Action:
+              - autoscaling:Describe*
+              - ec2:Describe*
+              - elasticmapreduce:Describe*
+              - elasticmapreduce:List*
+              - elasticloadbalancing:Describe*
+              - elasticbeanstalk:Describe*
+              - iam:ListAccountAliases
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessEks
+            Action:
+              - eks:ListClusters
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessECS
+            Action:
+              - ecs:List*
+              - ecs:Describe*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessBatch
+            Action:
+              - batch:List*
+              - batch:Describe*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessCodeDeploy
+            Action:
+              - codedeploy:BatchGetDeployments
+              - codedeploy:List*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: SavingsPlan
+            Action:
+              - savingsplans:Describe*
+              - savingsplans:List*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: Lambda
+            Action:
+              - lambda:ListFunctions
+            Effect: Allow
+            Resource:
+              - '*'
+  SpotAccount:
+    Type: Custom::SpotAccount
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-account-lambda
+        - Region: !Ref 'AWS::Region'
+      AwsAccountId: !Ref 'AWS::AccountId'
+      Token: !Ref 'Token'
+    DependsOn:
+      - 'SpotManagedPolicy'
+  SpotExternalId:
+    Type: Custom::SpotExternalId
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-external-id-lambda
+        - Region: !Ref 'AWS::Region'
+      SpotAccountId: !Ref 'SpotAccount'
+      Token: !Ref 'Token'
+    DependsOn:
+     - "SpotAccount"
+  SpotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::922761411349:root
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref 'SpotExternalId'
+      ManagedPolicyArns:
+        - !Ref 'SpotManagedPolicy'
+    DependsOn:
+      - "SpotAccount"
+      - "SpotExternalId"
+  SpotLinkedCredentials:
+    Type: Custom::SpotLinkedCredentials
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:spotinst-set-credentials
+        - Region: !Ref 'AWS::Region'
+      AccountId: !Ref 'SpotAccount'
+      IamRoleArn: !GetAtt 'SpotRole.Arn'
+      Token: !Ref 'Token'
+      StackId: !Ref 'AWS::StackId'
+      isTokenEncrypted: "false"
+    DependsOn:
+      - 'SpotAccount'
+      - 'SpotExternalId'
+      - 'SpotRole'
+  RenamedSpotAccountByAlias:
+    Type: Custom::RenamedSpotAccountByAlias
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-alias-lambda
+        - Region: !Ref 'AWS::Region'
+      SpotAccountId: !Ref 'SpotAccount'
+      Token: !Ref 'Token'
+      AwsAccountId: !Ref 'AWS::AccountId'
+    DependsOn:
+      - 'SpotAccount'
+      - 'SpotLinkedCredentials'
+Outputs:
+  AccountId:
+    Description: The Account ID for Spot.io
+    Value: !Ref 'SpotAccount'
+  ExternalId:
+    Description: The External ID for Spot.io Role
+    Value: !Ref 'SpotExternalId'
+  SpotRoleArn:
+    Description: The Account Role ARN used for Spot.io
+    Value: !GetAtt 'SpotRole.Arn'
