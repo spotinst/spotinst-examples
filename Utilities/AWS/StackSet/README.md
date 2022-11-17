@@ -9,33 +9,12 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
 
 ## Pre-req:
 
-1. User with access to the Master Payer account. User will need at **least** the following permission:  
-    A. Create a lambda function.   
-    B. Create/run CF templates.  
-    C. Create IAM Policy/Role.  
-    D. Read-only permissions to AWS organization.  
-    E. Read/write permissions to SSM Parameter Store.
-2. Enable Trusted Access with AWS Organizations. - [Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
-3. Spot API token with admin access to Spot Organization. [Doc](https://help.spot.io/spotinst-api/administration/create-an-api-token)
-4. Check the Spot ORG allows adding additional accounts (Contact Spot to enable).
-
-## Step 1: Create Lambda Function:
-
-(NOTE: All items need to run in us-east-1 (Virginia). If desired to run in a different region, the lambda code will need to be downloaded and uploaded to a bucket and region of your choice.)  
-
-A. Navigate to Cloudformation Service in Master Payer Account.  
-B. Select "Create Stack" ->  "With New Resource (standard)" -> Copy and enter the URL for the template source (S3):  
-```
-    https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account-function.yaml
-```
-C. The template will default values. Enter the AWS Organization ID (Only change default values if using a different region)  
-<ol><div><img src="./images/1-c.png"></div></ol>
-D. The template will output the ARN of the newly created Lambda function:  
-<ol><div><img src="./images/1-d.png"></div></ol>
-E. Copy and save the output for the next step  
+1. Acquire a Spot API token with admin access. [Doc](https://docs.spot.io/spotinst-api/administration/create-an-api-token)
+2. Enable Trusted Access with AWS Organizations. [Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
+3. Verify that your Spot organization is permitted to enroll additional accounts. Contact our support team if you’re unsure about this permission.
 
 
-## Step 2: (Option 1) - Create Stackset - AWS Console (UI):
+## Create Stackset - AWS Console (UI - Option 1):
 A. Navigate to Cloudformation Service in Master Payer Account  
 B. Select “StackSets” -> Create Stackset  
 C. Configure StackSet Permissions:  
@@ -44,7 +23,7 @@ C. Configure StackSet Permissions:
 D. Copy and enter the URL for the template source (S3):  
 - Template URL for full permissions:
 ```
-    https://spot-connect-account-cf.s3.amazonaws.com/spot-create-account.yaml
+    https://spotinst-public.s3.amazonaws.com/assets/cloudformation/templates/stacksets/onboarding_stackset.yaml
 ```
 - Template URL for Read-Only permissions:  
 ```
@@ -52,10 +31,9 @@ D. Copy and enter the URL for the template source (S3):
 ```
 
 E. Specify Stackset details:  
-&nbsp;&nbsp;&nbsp;&nbsp;i. LambdaARN from the previous Cloudformation  
-&nbsp;&nbsp;&nbsp;&nbsp;ii. API Token for Spot.io (Must be a personal Org Admin token)    
+&nbsp;&nbsp;&nbsp;&nbsp;i. API Token for Spot.io (Must be a personal Org Admin token)    
 
-<div><img src="./images/2-d.png"></div>
+<div><img src="./images/2-d-1-2.png"></div>
 
 F. Configure StackSet options:  
 &nbsp;&nbsp;&nbsp;&nbsp;i. (Optional) Add desired tags  
@@ -74,14 +52,12 @@ H. Review and Run
 &nbsp;&nbsp;&nbsp;&nbsp;i. On the Review page of the Create Stack wizard, choose "I acknowledge this template may create IAM resources" -> Submit
 
 
-
-## Step 2: (Option 2) - Create Stackset - API (AWS CLI)
+## Create Stackset - API (AWS CLI - Option 2)
 
 A. Download `parameter.json` from: <a href="https://spot-connect-account-cf.s3.amazonaws.com/parameters.json">https://spot-connect-account-cf.s3.amazonaws.com/parameters.json  
 B. Edit and enter the following:  
 &nbsp;&nbsp;&nbsp;&nbsp;i. StackSetName  
-&nbsp;&nbsp;&nbsp;&nbsp;ii. LambdaARN  
-&nbsp;&nbsp;&nbsp;&nbsp;iii. Token  
+&nbsp;&nbsp;&nbsp;&nbsp;ii. Token  
 &nbsp;&nbsp;&nbsp;&nbsp;iv. PermissionModel (SERVICE_MANAGED OR SELF_SERVICE)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A. Service_manage -> Deploys to entire ORG or specific OU  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. Self_Services -> Deploys to specific accounts  
@@ -104,12 +80,6 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 ```
 aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets Accounts=<123456789,555123455> --regions us-east-1
 ```
-
-## Troubleshooting
-Logs are placed in the same AWS account as the Lambda function. There are print messages showing when a call is received and each api status. Review for any errors and troubleshooting.
-- Cloudwatch -> LogGroups -> Name of stack.
-
-<img src="./images/troubleshooting.png">
 
 ## Removing Stackset AWS Console (UI)
 A. Actions -> “Delete Stacks from StackSet”  
