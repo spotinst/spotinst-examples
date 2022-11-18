@@ -87,12 +87,6 @@ aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deploy
 aws cloudformation create-stack-instances --stack-set-name <Stack Name> --deployment-targets Accounts=<123456789,555123455> --regions us-east-1
 ```
 
-## Troubleshooting
-Logs are placed in the same AWS account as the Lambda function. There are print messages showing when a call is received and each api status. Review for any errors and troubleshooting.
-- Cloudwatch -> LogGroups -> Name of stack.
-
-<img src="./images/troubleshooting.png">
-
 ## Removing Stackset AWS Console (UI)
 A. Actions -> “Delete Stacks from StackSet”  
 
