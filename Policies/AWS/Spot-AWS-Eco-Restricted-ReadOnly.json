@@ -3,8 +3,76 @@
     "Statement": [
         {
             "Action": [
+                "es:ListElasticsearchInstanceTypes",
+                "es:DescribeReservedElasticsearchInstanceOfferings",
+                "es:DescribeReservedElasticsearchInstances"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyElasticSearch"
+        },
+        {
+            "Action": [
+                "rds:DescribeReservedDBInstances",
+                "rds:DescribeDBInstances",
+                "rds:DescribeReservedDBInstancesOfferings"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyRDS"
+        },
+        {
+            "Action": [
+                "redshift:DescribeReservedNodeOfferings",
+                "redshift:DescribeReservedNodes",
+                "redshift:DescribeClusters"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyRedshift"
+        },
+        {
+            "Action": [
+                "elasticache:DescribeReservedCacheNodesOfferings",
+                "elasticache:DescribeReservedCacheNodes",
+                "elasticache:DescribeCacheClusters"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyElasticache"
+        },
+        {
+            "Action": [
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeReservedCapacity"
+            ],
+            "Resource": [
+              "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyDynamoDB"
+        },
+        {
+            "Action": [
                 "ec2:DescribeHostReservations",
                 "ec2:DescribeReservedInstances",
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyDynamoDB"
+        },
+        {
+            "Action": [
                 "cur:DescribeReportDefinitions",
                 "ce:List*",
                 "ce:Get*",
