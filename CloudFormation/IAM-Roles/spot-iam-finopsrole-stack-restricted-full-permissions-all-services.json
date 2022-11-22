@@ -139,6 +139,16 @@
             },
             {
               "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:PutRolePolicy"
+              ],
+              "Resource": "arn:aws:iam::*:role/aws-service-role/elasticache.amazonaws.com/AWSServiceRoleForElastiCache*",
+              "Condition": {"StringLike": {"iam:AWSServiceName": "elasticache.amazonaws.com"}},
+              "Effect": "Allow",
+              "Sid": "CreateServiceLinkedRole"
+            },
+            {
+              "Action": [
                 "s3:GetBucketLocation",
                 "s3:ListBucketMultipartUploads",
                 "s3:AbortMultipartUpload",
