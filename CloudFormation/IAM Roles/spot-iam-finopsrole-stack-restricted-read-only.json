@@ -14,20 +14,92 @@
     "CostAndUsageBucket": {
       "Type": "String",
       "Description": "The bucket name of where the *HOURLY* Cost and Usage Report is located. https://console.aws.amazon.com/billing/home?#/reports"
+    },
+    "RoleName": {
+      "Type": "String",
+      "Default": "SpotByNetApp_Finops_ReadOnly"
     }
   },
   "Resources": {
     "SpotFinOpsManagedPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "Description": "Spot.io ECO ReadOnly Policy",
+        "Description": "Spot by NetApp Finops ReadOnly Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
             {
               "Action": [
+                "es:ListElasticsearchInstanceTypes",
+                "es:DescribeReservedElasticsearchInstanceOfferings",
+                "es:DescribeReservedElasticsearchInstances"
+              ],
+              "Resource": [
+                  "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyElasticSearch"
+            },
+            {
+              "Action": [
+                "rds:DescribeReservedDBInstances",
+                "rds:DescribeDBInstances",
+                "rds:DescribeReservedDBInstancesOfferings"
+              ],
+              "Resource": [
+                  "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyRDS"
+            },
+            {
+              "Action": [
+                "redshift:DescribeReservedNodeOfferings",
+                "redshift:DescribeReservedNodes",
+                "redshift:DescribeClusters"
+              ],
+              "Resource": [
+                  "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyRedshift"
+            },
+            {
+              "Action": [
+                "elasticache:DescribeReservedCacheNodesOfferings",
+                "elasticache:DescribeReservedCacheNodes",
+                "elasticache:DescribeCacheClusters"
+              ],
+              "Resource": [
+                  "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyElasticache"
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeReservedCapacity"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyDynamoDB"
+            },
+            {
+              "Action": [
                 "ec2:DescribeHostReservations",
                 "ec2:DescribeReservedInstances",
+              ],
+              "Resource": [
+                  "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyDynamoDB"
+            },
+            {
+              "Action": [
                 "cur:DescribeReportDefinitions",
                 "ce:List*",
                 "ce:Get*",
@@ -42,7 +114,7 @@
                   "*"
               ],
               "Effect": "Allow",
-              "Sid": "BillingPolicyReadOnly"
+              "Sid": "BillingPolicy"
             },
             {
               "Action": [
@@ -61,8 +133,6 @@
               "Sid": "S3SyncPermissions"
             },
             {
-              "Sid": "S3CURBucket",
-              "Effect": "Allow",
               "Action": [
                 "s3:ListBucket",
                 "s3:ListBucketVersions",
@@ -71,11 +141,11 @@
               ],
               "Resource": [
                 { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" }]]}
-              ]
+              ],
+              "Effect": "Allow",
+              "Sid": "S3CURBucket"
             },
             {
-              "Sid": "S3CURObject",
-              "Effect": "Allow",
               "Action": [
                 "s3:AbortMultipartUpload",
                 "s3:ListMultipartUploadParts",
@@ -84,9 +154,10 @@
               ],
               "Resource": [
                 { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" },"/*"]]}
-              ]
+              ],
+              "Effect": "Allow",
+              "Sid": "S3CURObject"
             }
-            
           ]
         }
       }
@@ -98,7 +169,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
+              "Action": "sts:AssumeRole",
               "Principal": {
                 "AWS": ["arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
                         "arn:aws:iam::884866656237:role/Admin",
@@ -107,15 +178,17 @@
                         "arn:aws:iam::627743545735:role/Admin",
                         "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"]
               },
-              "Action": "sts:AssumeRole"
+              "Effect": "Allow"
             }
           ]
         },
+        "Description" : "Spot by NetApp ReadOnly Finops IAM Role",
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
           }
-        ]
+        ],
+        "RoleName" : { "Ref" : "CostAndUsageBucket" }
       }
     }
   }
