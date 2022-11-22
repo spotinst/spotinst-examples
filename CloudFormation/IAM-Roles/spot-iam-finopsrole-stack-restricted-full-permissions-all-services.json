@@ -17,14 +17,14 @@
     },
     "RoleName": {
       "Type": "String",
-      "Default": "SpotByNetApp_Finops_ReadOnly"
+      "Default": "SpotByNetApp_Finops_FullPermissions"
     }
   },
   "Resources": {
     "SpotFinOpsManagedPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "Description": "Spot by NetApp Finops ReadOnly Policy",
+        "Description": "Spot by NetApp Finops Full Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -32,89 +32,110 @@
               "Action": [
                 "es:ListElasticsearchInstanceTypes",
                 "es:DescribeReservedElasticsearchInstanceOfferings",
-                "es:DescribeReservedElasticsearchInstances"
-              ],
-              "Resource": [
-                  "*"
-              ],
-              "Effect": "Allow",
-              "Sid": "ReadOnlyElasticSearch"
-            },
-            {
-              "Action": [
-                "rds:DescribeReservedDBInstances",
-                "rds:DescribeDBInstances",
-                "rds:DescribeReservedDBInstancesOfferings"
-              ],
-              "Resource": [
-                  "*"
-              ],
-              "Effect": "Allow",
-              "Sid": "ReadOnlyRDS"
-            },
-            {
-              "Action": [
-                "redshift:DescribeReservedNodeOfferings",
-                "redshift:DescribeReservedNodes",
-                "redshift:DescribeClusters"
-              ],
-              "Resource": [
-                  "*"
-              ],
-              "Effect": "Allow",
-              "Sid": "ReadOnlyRedshift"
-            },
-            {
-              "Action": [
-                "elasticache:DescribeReservedCacheNodesOfferings",
-                "elasticache:DescribeReservedCacheNodes",
-                "elasticache:DescribeCacheClusters"
-              ],
-              "Resource": [
-                  "*"
-              ],
-              "Effect": "Allow",
-              "Sid": "ReadOnlyElasticache"
-            },
-            {
-              "Action": [
-                "dynamodb:DescribeReservedCapacityOfferings",
-                "dynamodb:DescribeReservedCapacity"
+                "es:DescribeReservedElasticsearchInstances",
+                "es:PurchaseReservedElasticsearchInstanceOffering"
               ],
               "Resource": [
                 "*"
               ],
               "Effect": "Allow",
-              "Sid": "ReadOnlyDynamoDB"
+              "Sid": "FullPolicyElasticSearch"
             },
             {
               "Action": [
-                "ec2:DescribeHostReservations",
-                "ec2:DescribeReservedInstances",
+                "rds:DescribeReservedDBInstances",
+                "rds:DescribeDBInstances",
+                "rds:DescribeReservedDBInstancesOfferings",
+                "rds:PurchaseReservedDBInstancesOffering"
               ],
               "Resource": [
-                  "*"
+                "*"
               ],
               "Effect": "Allow",
-              "Sid": "ReadOnlyDynamoDB"
+              "Sid": "FullPolicyRDS"
+            },
+            {
+              "Action": [
+                "redshift:DescribeReservedNodeOfferings",
+                "redshift:DescribeReservedNodes",
+                "redshift:DescribeClusters",
+                "redshift:PurchaseReservedNodeOffering"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "FullPolicyRedshift"
+            },
+            {
+              "Action": [
+                "elasticache:DescribeReservedCacheNodesOfferings",
+                "elasticache:DescribeReservedCacheNodes",
+                "elasticache:DescribeCacheClusters",
+                "elasticache:PurchaseReservedCacheNodesOffering"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "FullPolicyElasticache"
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:PurchaseReservedCapacityOfferings"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "FullPolicyDynamoDB"
+            },
+            {
+              "Action": [
+                "ec2:Describe*",
+                "ec2:List*",
+                "ec2:GetHostReservationPurchasePreview",
+                "ec2:GetReservedInstancesExchangeQuote",
+                "ec2:ModifyReservedInstances",
+                "ec2:AcceptReservedInstancesExchangeQuote",
+                "ec2:CancelReservedInstancesListing",
+                "ec2:CreateReservedInstancesListing",
+                "ec2:PurchaseHostReservation",
+                "ec2:PurchaseReservedInstancesOffering",
+                "ec2:PurchaseScheduledInstances"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "FullPolicyEC2"
             },
             {
               "Action": [
                 "cur:DescribeReportDefinitions",
+                "cur:PutReportDefinition",
+                "cur:ModifyReportDefinition",
                 "ce:List*",
                 "ce:Get*",
                 "ce:Describe*",
                 "aws-portal:ViewBilling",
                 "aws-portal:ViewUsage",
-                "savingsplans:get*",
-                "savingsplans:describe*",
-                "savingsplans:list*"
+                "savingsplans:list*",
+                "savingsplans:Describe*",
+                "savingsplans:CreateSavingsPlan",
+                "organizations:List*",
+                "organizations:DescribeOrganization",
+                "servicequotas:List*",
+                "servicequotas:Get*",
+                "support:*"
               ],
               "Resource": [
-                  "*"
+                "*"
               ],
               "Effect": "Allow",
-              "Sid": "BillingPolicy"
+              "Sid": "FullPolicy"
             },
             {
               "Action": [
@@ -147,10 +168,9 @@
             },
             {
               "Action": [
-                "s3:AbortMultipartUpload",
-                "s3:ListMultipartUploadParts",
                 "s3:get*",
-                "s3:List*"
+                "s3:List*",
+                "s3:Describe*"
               ],
               "Resource": [
                 { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" },"/*"]]}
@@ -182,13 +202,13 @@
             }
           ]
         },
-        "Description" : "Spot by NetApp ReadOnly Finops IAM Role",
+        "Description" : "Spot by NetApp FullPermissions Finops IAM Role",
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
           }
         ],
-        "RoleName" : { "Ref" : "CostAndUsageBucket" }
+        "RoleName" : { "Ref" : "RoleName" }
       }
     }
   }

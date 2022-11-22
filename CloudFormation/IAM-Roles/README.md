@@ -2,6 +2,8 @@
 
 This repository contains examples and complete CloudFormation templates for installing the Spot IAM role.
 
+> **_NOTE:_**  All templates are located in us-east-1, please be sure to run in that region or download to create stack in different region.    
+> 
 ## AWS - Elastigroup / Ocean:
 ### Stacks:
 #### ReadOnly: 
@@ -15,6 +17,7 @@ This repository contains examples and complete CloudFormation templates for inst
 
 ### Stacksets:
 If interested in connected all accounts within the AWS organization: [documentation](/spotinst-examples/Utilities/AWS/StackSet/README.md)
+
 
 ## AWS - Eco:
 #### ReadOnly:

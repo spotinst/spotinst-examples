@@ -14,13 +14,17 @@
     "CostAndUsageBucket": {
       "Type": "String",
       "Description": "The bucket name of where the *HOURLY* Cost and Usage Report is located. https://console.aws.amazon.com/billing/home?#/reports"
+    },
+    "RoleName": {
+      "Type": "String",
+      "Default": "SpotByNetApp_Finops_ReadOnly"
     }
   },
   "Resources": {
     "SpotFinOpsManagedPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "Description": "Spot.io CA/ECO Policy",
+        "Description": "Spot by NetApp Finops ReadOnly Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -28,110 +32,89 @@
               "Action": [
                 "es:ListElasticsearchInstanceTypes",
                 "es:DescribeReservedElasticsearchInstanceOfferings",
-                "es:DescribeReservedElasticsearchInstances",
-                "es:PurchaseReservedElasticsearchInstanceOffering"
+                "es:DescribeReservedElasticsearchInstances"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyElasticSearch"
+              "Sid": "ReadOnlyElasticSearch"
             },
             {
               "Action": [
                 "rds:DescribeReservedDBInstances",
                 "rds:DescribeDBInstances",
-                "rds:DescribeReservedDBInstancesOfferings",
-                "rds:PurchaseReservedDBInstancesOffering"
+                "rds:DescribeReservedDBInstancesOfferings"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyRDS"
+              "Sid": "ReadOnlyRDS"
             },
             {
               "Action": [
                 "redshift:DescribeReservedNodeOfferings",
                 "redshift:DescribeReservedNodes",
-                "redshift:DescribeClusters",
-                "redshift:PurchaseReservedNodeOffering"
+                "redshift:DescribeClusters"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyRedshift"
+              "Sid": "ReadOnlyRedshift"
             },
             {
               "Action": [
                 "elasticache:DescribeReservedCacheNodesOfferings",
                 "elasticache:DescribeReservedCacheNodes",
-                "elasticache:DescribeCacheClusters",
-                "elasticache:PurchaseReservedCacheNodesOffering"
+                "elasticache:DescribeCacheClusters"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyElasticache"
+              "Sid": "ReadOnlyElasticache"
             },
             {
               "Action": [
                 "dynamodb:DescribeReservedCapacityOfferings",
-                "dynamodb:DescribeReservedCapacity",
-                "dynamodb:PurchaseReservedCapacityOfferings"
+                "dynamodb:DescribeReservedCapacity"
               ],
               "Resource": [
                 "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyDynamoDB"
+              "Sid": "ReadOnlyDynamoDB"
             },
             {
               "Action": [
-                "ec2:Describe*",
-                "ec2:List*",
-                "ec2:GetHostReservationPurchasePreview",
-                "ec2:GetReservedInstancesExchangeQuote",
-                "ec2:ModifyReservedInstances",
-                "ec2:AcceptReservedInstancesExchangeQuote",
-                "ec2:CancelReservedInstancesListing",
-                "ec2:CreateReservedInstancesListing",
-                "ec2:PurchaseHostReservation",
-                "ec2:PurchaseReservedInstancesOffering",
-                "ec2:PurchaseScheduledInstances"
+                "ec2:DescribeHostReservations",
+                "ec2:DescribeReservedInstances",
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicyEC2"
+              "Sid": "ReadOnlyEC2"
             },
             {
               "Action": [
                 "cur:DescribeReportDefinitions",
-                "cur:PutReportDefinition",
-                "cur:ModifyReportDefinition",
                 "ce:List*",
                 "ce:Get*",
                 "ce:Describe*",
                 "aws-portal:ViewBilling",
                 "aws-portal:ViewUsage",
-                "savingsplans:list*",
-                "savingsplans:Describe*",
-                "savingsplans:CreateSavingsPlan",
-                "organizations:List*",
-                "organizations:DescribeOrganization",
-                "servicequotas:List*",
-                "servicequotas:Get*",
-                "support:*"
+                "savingsplans:get*",
+                "savingsplans:describe*",
+                "savingsplans:list*"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicy"
+              "Sid": "BillingPolicy"
             },
             {
               "Action": [
@@ -166,7 +149,7 @@
               "Action": [
                 "s3:get*",
                 "s3:List*",
-                "s3:Describe*",
+                "s3:Describe*"
               ],
               "Resource": [
                 { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" },"/*"]]}
@@ -185,7 +168,7 @@
           "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
+              "Action": "sts:AssumeRole",
               "Principal": {
                 "AWS": ["arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
                         "arn:aws:iam::884866656237:role/Admin",
@@ -194,15 +177,17 @@
                         "arn:aws:iam::627743545735:role/Admin",
                         "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"]
               },
-              "Action": "sts:AssumeRole"
+              "Effect": "Allow"
             }
           ]
         },
+        "Description" : "Spot by NetApp ReadOnly Finops IAM Role",
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
           }
-        ]
+        ],
+        "RoleName" : { "Ref" : "RoleName" }
       }
     }
   }
