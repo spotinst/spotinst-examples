@@ -16,7 +16,7 @@ This repository contains examples and complete CloudFormation templates for inst
 ```
 
 ### Stacksets:
-If interested in connected all accounts within the AWS organization: [documentation](/spotinst-examples/Utilities/AWS/StackSet/README.md)
+If interested in connected all accounts within the AWS organization: [documentation](https://github.com/spotinst/spotinst-examples/blob/master/Utilities/AWS/StackSet/README.md)
 
 
 ## AWS - Eco:
