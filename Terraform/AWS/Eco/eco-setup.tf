@@ -1,5 +1,5 @@
 #############################
-### Eco Admin             ###
+### Eco Full Permissions  ###
 #############################
 
 variable "is_admin" {
