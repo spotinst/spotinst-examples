@@ -1,4 +1,13 @@
 #############################
+### Eco Admin             ###
+#############################
+
+variable "is_admin" {
+  type = bool
+  default = true
+}
+
+#############################
 ### Cost and Usage Report ###
 #############################
 
@@ -113,9 +122,9 @@ data "aws_iam_policy_document" "spot_io" {
 # IAM Policies #
 ################
 
-# iam policy for spot-io-management role
-resource "aws_iam_policy" "spot_io_management" {
-  name        = "spot-io-management"
+# Admin iam policy for spot-io-management role
+resource "aws_iam_policy" "spot_io_admin_management" {
+  name        = "spot-io-admin-management"
   description = "For use with spot-io verified role with Eco full permission"
 
   tags = {
@@ -127,58 +136,279 @@ resource "aws_iam_policy" "spot_io_management" {
 
   policy = <<EOF
 {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Sid": "FullPolicy",
-              "Effect": "Allow",
-              "Action": [
-                "cloudformation:DescribeStacks",
-                "cloudformation:GetStackPolicy",
-                "cloudformation:GetTemplate",
-                "cloudformation:ListStackResources",
-                "dynamodb:List*",
-                "dynamodb:Describe*",
-                "ec2:Describe*",
-                "ec2:List*",
-                "ec2:GetHostReservationPurchasePreview",
-                "ec2:GetReservedInstancesExchangeQuote",
-                "elasticache:List*",
-                "elasticache:Describe*",
-                "elasticache:PurchaseReservedCacheNodesOffering",
-                "savingsplans:*",
-                "cur:*",
-                "ce:*",
-                "rds:Describe*",
-                "rds:List*",
-                "rds:PurchaseReservedDBInstancesOffering",
-                "redshift:Describe*",
-                "redshift:PurchaseReservedNodeOffering",
-                "trustedadvisor:*",
-                "support:*",
-                "ec2:ModifyReservedInstances",
-                "ec2:AcceptReservedInstancesExchangeQuote",
-                "ec2:CancelReservedInstancesListing",
-                "ec2:CreateReservedInstancesListing",
-                "ec2:PurchaseHostReservation",
-                "ec2:PurchaseReservedInstancesOffering",
-                "ec2:PurchaseScheduledInstances",
-                "organizations:List*",
-                "organizations:Describe*",
-                "es:List*",
-                "es:Describe*",
-                "es:PurchaseReservedElasticsearchInstanceOffering",
-                "organizations:InviteAccountToOrganization",
-                "organizations:CancelHandshake"
-              ],
-              "Resource": [
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "es:ListElasticsearchInstanceTypes",
+        "es:DescribeReservedElasticsearchInstanceOfferings",
+        "es:DescribeReservedElasticsearchInstances",
+        "es:PurchaseReservedElasticsearchInstanceOffering"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyElasticSearch"
+    },
+    {
+      "Action": [
+        "rds:DescribeReservedDBInstances",
+        "rds:DescribeDBInstances",
+        "rds:DescribeReservedDBInstancesOfferings",
+        "rds:PurchaseReservedDBInstancesOffering"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyRDS"
+    },
+    {
+      "Action": [
+        "redshift:DescribeReservedNodeOfferings",
+        "redshift:DescribeReservedNodes",
+        "redshift:DescribeClusters",
+        "redshift:PurchaseReservedNodeOffering"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyRedshift"
+    },
+    {
+      "Action": [
+        "elasticache:DescribeReservedCacheNodesOfferings",
+        "elasticache:DescribeReservedCacheNodes",
+        "elasticache:DescribeCacheClusters",
+        "elasticache:PurchaseReservedCacheNodesOffering"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyElasticache"
+    },
+    {
+      "Action": [
+        "dynamodb:DescribeReservedCapacityOfferings",
+        "dynamodb:DescribeReservedCapacity",
+        "dynamodb:PurchaseReservedCapacityOfferings"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyDynamoDB"
+    },
+    {
+      "Action": [
+        "ec2:Describe*",
+        "ec2:List*",
+        "ec2:GetHostReservationPurchasePreview",
+        "ec2:GetReservedInstancesExchangeQuote",
+        "ec2:ModifyReservedInstances",
+        "ec2:AcceptReservedInstancesExchangeQuote",
+        "ec2:CancelReservedInstancesListing",
+        "ec2:CreateReservedInstancesListing",
+        "ec2:PurchaseHostReservation",
+        "ec2:PurchaseReservedInstancesOffering",
+        "ec2:PurchaseScheduledInstances"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicyEC2"
+    },
+    {
+      "Action": [
+        "cur:DescribeReportDefinitions",
+        "cur:PutReportDefinition",
+        "cur:ModifyReportDefinition",
+        "ce:List*",
+        "ce:Get*",
+        "ce:Describe*",
+        "aws-portal:ViewBilling",
+        "aws-portal:ViewUsage",
+        "savingsplans:list*",
+        "savingsplans:Describe*",
+        "savingsplans:CreateSavingsPlan",
+        "organizations:List*",
+        "organizations:DescribeOrganization",
+        "servicequotas:List*",
+        "servicequotas:Get*",
+        "support:*"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullPolicy"
+    },
+    {
+      "Action": [
+        "iam:CreateServiceLinkedRole",
+        "iam:PutRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/aws-service-role/elasticache.amazonaws.com/AWSServiceRoleForElastiCache*",
+      "Condition": {"StringLike": {"iam:AWSServiceName": "elasticache.amazonaws.com"}},
+      "Effect": "Allow",
+      "Sid": "CreateServiceLinkedRole"
+    },
+    {
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListBucketMultipartUploads",
+        "s3:AbortMultipartUpload",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject",
+        "s3:ListBucket",
+        "s3:List*",
+        "s3:PutObjectTagging",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::sc-customer-*",
+      "Effect": "Allow",
+      "Sid": "S3SyncPermissions"
+    },
+    {
+      "Action": [
+        "s3:ListBucket",
+        "s3:ListBucketVersions",
+        "s3:ListBucketMultipartUploads",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": [
+        "arn:aws:s3:::<Name of Bucket that contains CUR>"
+      ],
+      "Effect": "Allow",
+      "Sid": "S3CURBucket"
+    },
+    {
+      "Action": [
+        "s3:get*",
+        "s3:List*",
+        "s3:Describe*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::<Name of Bucket that contains CUR>/*"
+      ],
+      "Effect": "Allow",
+      "Sid": "S3CURObject"
+    }
+  ]
+}
+EOF
+}
+
+# ReadOnly iam policy for spot-io-management role
+resource "aws_iam_policy" "spot_io_readOnly_management" {
+  name        = "spot-io-readOnly-management"
+  description = "For use with spot-io verified role with Eco Read Only permission"
+
+  tags = {
+    service     = "spot"
+    environment = "prod"
+    role        = "eco"
+    terraformed = "true"
+  }
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "es:ListElasticsearchInstanceTypes",
+                "es:DescribeReservedElasticsearchInstanceOfferings",
+                "es:DescribeReservedElasticsearchInstances"
+            ],
+            "Resource": [
                 "*"
-              ]
-            },
-            {
-              "Sid": "S3SyncPermissions",
-              "Effect": "Allow",
-              "Action": [
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyElasticSearch"
+        },
+        {
+            "Action": [
+                "rds:DescribeReservedDBInstances",
+                "rds:DescribeDBInstances",
+                "rds:DescribeReservedDBInstancesOfferings"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyRDS"
+        },
+        {
+            "Action": [
+                "redshift:DescribeReservedNodeOfferings",
+                "redshift:DescribeReservedNodes",
+                "redshift:DescribeClusters"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyRedshift"
+        },
+        {
+            "Action": [
+                "elasticache:DescribeReservedCacheNodesOfferings",
+                "elasticache:DescribeReservedCacheNodes",
+                "elasticache:DescribeCacheClusters"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyElasticache"
+        },
+        {
+            "Action": [
+                "dynamodb:DescribeReservedCapacityOfferings",
+                "dynamodb:DescribeReservedCapacity"
+            ],
+            "Resource": [
+              "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyDynamoDB"
+        },
+        {
+            "Action": [
+                "ec2:DescribeHostReservations",
+                "ec2:DescribeReservedInstances"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlyRI"
+        },
+        {
+            "Action": [
+                "cur:DescribeReportDefinitions",
+                "ce:List*",
+                "ce:Get*",
+                "ce:Describe*",
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage",
+                "savingsplans:get*",
+                "savingsplans:describe*",
+                "savingsplans:list*"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "BillingPolicy"
+        },
+        {
+            "Action": [
                 "s3:GetBucketLocation",
                 "s3:ListBucketMultipartUploads",
                 "s3:AbortMultipartUpload",
@@ -188,22 +418,38 @@ resource "aws_iam_policy" "spot_io_management" {
                 "s3:List*",
                 "s3:PutObjectTagging",
                 "s3:PutObjectAcl"
-              ],
-              "Resource": "arn:aws:s3:::sc-customer-*"
-            },
-            {
-              "Sid": "S3BillingDBR",
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetBucketLocation",
+            ],
+            "Resource": "arn:aws:s3:::sc-customer-*",
+            "Effect": "Allow",
+            "Sid": "S3SyncPermissions"
+        },
+        {
+            "Action": [
                 "s3:ListBucket",
-                "s3:GetObject",
-                "s3:GetObjectAcl"
-              ],
-              "Resource": ["arn:aws:s3:::${var.bucket_name}","arn:aws:s3:::${var.bucket_name}/*"]
-            }
-          ]
+                "s3:ListBucketVersions",
+                "s3:ListBucketMultipartUploads",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<Name of Bucket that contains CUR>"
+            ],
+            "Effect": "Allow",
+            "Sid": "S3CURBucket"
+        },
+        {
+            "Action": [
+                "s3:get*",
+                "s3:List*",
+                "s3:Describe*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::<Name of Bucket that contains CUR>/*"
+            ],
+            "Effect": "Allow",
+            "Sid": "S3CURObject"
         }
+    ]
+}
 EOF
 }
 
@@ -231,9 +477,15 @@ resource "aws_iam_role_policy_attachment" "spot_io_ServiceQuotasFullAccess" {
   policy_arn = "arn:aws:iam::aws:policy/ServiceQuotasFullAccess"
 }
 
-resource "aws_iam_role_policy_attachment" "spot_io_management" {
+# resource "aws_iam_role_policy_attachment" "spot_io_management" {
+#   role       = aws_iam_role.spot_io.name
+#   policy_arn = aws_iam_policy.spot_io_management.arn
+# }
+
+resource "aws_iam_role_policy_attachment" "example" {
   role       = aws_iam_role.spot_io.name
-  policy_arn = aws_iam_policy.spot_io_management.arn
+  # Attach the admin policy if is_admin is true, otherwise attach the read_only policy
+  policy_arn = var.is_admin ? aws_iam_policy.spot_io_admin_management.arn : aws_iam_policy.spot_io_readOnly_management.arn
 }
 
 ###########
