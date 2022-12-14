@@ -477,7 +477,7 @@ resource "aws_iam_role_policy_attachment" "spot_io_ServiceQuotasFullAccess" {
   policy_arn = "arn:aws:iam::aws:policy/ServiceQuotasFullAccess"
 }
 
-resource "aws_iam_role_policy_attachment" "example" {
+resource "aws_iam_role_policy_attachment" "spot_io_iam_policy" {
   role       = aws_iam_role.spot_io.name
   # Attach the admin policy if is_admin is true, otherwise attach the read_only policy
   policy_arn = var.is_admin ? aws_iam_policy.spot_io_admin_management.arn : aws_iam_policy.spot_io_readOnly_management.arn
