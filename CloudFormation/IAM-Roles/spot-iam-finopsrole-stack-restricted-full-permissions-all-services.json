@@ -17,13 +17,18 @@
     },
     "RoleName": {
       "Type": "String",
-      "Default": "SpotByNetApp_Finops_FullPermissions"
+      "Default": "SpotByNetApp_Finops_FullPermission"
+    },
+    "PolicyName": {
+      "Type": "String",
+      "Default": "SpotByNetApp_Finops_FullPermission_Policy"
     }
   },
   "Resources": {
     "SpotFinOpsManagedPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
+        "ManagedPolicyName": { "Ref" : "PolicyName" },
         "Description": "Spot by NetApp Finops Full Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
@@ -201,12 +206,8 @@
             {
               "Action": "sts:AssumeRole",
               "Principal": {
-                "AWS": ["arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
-                        "arn:aws:iam::884866656237:role/Admin",
-                        "arn:aws:iam::884866656237:role/DevRole",
-                        "arn:aws:iam::884866656237:role/ReadOnly",
-                        "arn:aws:iam::627743545735:role/Admin",
-                        "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"]
+                "AWS": ["arn:aws:iam::884866656237:root",
+                  "arn:aws:iam::627743545735:root"]
               },
               "Effect": "Allow"
             }
@@ -216,7 +217,8 @@
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
-          }
+          },
+          "arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess"
         ],
         "RoleName" : { "Ref" : "RoleName" }
       }
