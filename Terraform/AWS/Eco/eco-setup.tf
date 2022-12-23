@@ -5,6 +5,7 @@
 variable "is_admin" {
   type = bool
   default = true
+  description = "If True, Eco Admin policy is applied to the role. If False, Eco Read Only policy is applied to the role."
 }
 
 variable "bucket_name" {
