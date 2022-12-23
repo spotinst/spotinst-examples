@@ -353,6 +353,7 @@ resource "aws_cur_report_definition" "spot_io_cur_report" {
 
 resource "aws_s3_bucket" "spot_io_cur_report" {
   bucket = var.bucket_name
+  force_destroy = true
   tags = {
     environment = "prod"
     service     = "spot-io"
