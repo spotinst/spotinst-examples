@@ -143,9 +143,19 @@
               "Sid": "FullPolicy"
             },
             {
+              "Sid": "RequestServiceQuotaIncrease",
+              "Effect": "Allow",
+              "Action": "servicequotas:RequestServiceQuotaIncrease",
+              "Resource": [
+                  "arn:aws:servicequotas:*:*:rds/L-78E853F4",
+                  "arn:aws:servicequotas:*:*:ec2/L-D0B7243C",
+                  "arn:aws:servicequotas:*:*:redshift/L-58C8C0E8"
+              ]
+            },
+            {
               "Action": [
-                "iam:CreateServiceLinkedRole",
-                "iam:PutRolePolicy"
+                  "iam:CreateServiceLinkedRole",
+                  "iam:PutRolePolicy"
               ],
               "Resource": "arn:aws:iam::*:role/aws-service-role/elasticache.amazonaws.com/AWSServiceRoleForElastiCache*",
               "Condition": {"StringLike": {"iam:AWSServiceName": "elasticache.amazonaws.com"}},
@@ -207,7 +217,7 @@
               "Action": "sts:AssumeRole",
               "Principal": {
                 "AWS": ["arn:aws:iam::884866656237:root",
-                  "arn:aws:iam::627743545735:root"]
+                        "arn:aws:iam::627743545735:root"]
               },
               "Effect": "Allow"
             }
