@@ -109,6 +109,16 @@
       ],
       "Effect": "Allow",
       "Sid": "FullPolicy"
+    },       
+    {
+      "Sid": "RequestServiceQuotaIncrease",
+      "Effect": "Allow",
+      "Action": "servicequotas:RequestServiceQuotaIncrease",
+      "Resource": [
+          "arn:aws:servicequotas:*:*:rds/L-78E853F4",
+          "arn:aws:servicequotas:*:*:ec2/L-D0B7243C",
+          "arn:aws:servicequotas:*:*:redshift/L-58C8C0E8"
+      ]
     },
     {
       "Action": [
