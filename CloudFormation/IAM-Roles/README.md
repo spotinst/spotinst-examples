@@ -22,9 +22,17 @@ If interested in connected all accounts within the AWS organization: [documentat
 ## AWS - Eco:
 #### ReadOnly:
 ```
-  https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.json
+  https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack.template.json
 ```
 #### Full Permission:
+```
+  https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack-full-ri-management.template.json
+```
+#### Restrictive ReadOnly:
+```
+  https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.json
+```
+#### Restrictive Full Permission:
 ```
   https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
 ```
