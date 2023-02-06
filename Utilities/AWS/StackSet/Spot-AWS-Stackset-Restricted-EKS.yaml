@@ -10,34 +10,10 @@ Resources:
   SpotManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Description: Spot.io Account Policy w/ EG Ocean access rights
+      Description: Spot.io Account Policy
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Sid: ReadonlyAccess
-            Action:
-              - autoscaling:Describe*
-              - elasticmapreduce:Describe*
-              - elasticmapreduce:List*
-              - elasticbeanstalk:Describe*
-              - iam:ListAccountAliases
-            Effect: Allow
-            Resource:
-              - '*'
-          - Sid: AccessBatch
-            Action:
-              - batch:List*
-              - batch:Describe*
-            Effect: Allow
-            Resource:
-              - '*'
-          - Sid: AccessCodeDeploy
-            Action:
-              - codedeploy:BatchGetDeployments
-              - codedeploy:List*
-            Effect: Allow
-            Resource:
-              - '*'
           - Sid: EC2WithRestrictions
             Action:
               - ec2:StopInstances
@@ -124,6 +100,12 @@ Resources:
           - Sid: AccessEks
             Action:
               - eks:ListClusters
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessAutoScalingGroups
+            Action:
+              - autoscaling:Describe*
             Effect: Allow
             Resource:
               - '*'
