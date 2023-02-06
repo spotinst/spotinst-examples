@@ -14,7 +14,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
     B. Create IAM Policy/Role.  
     C. Read-only permissions to AWS organization.
 2. Enable Trusted Access with AWS Organizations. - [Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
-3. Spot API token with admin access to Spot Organization. [Doc](https://help.spot.io/spotinst-api/administration/create-an-api-token)
+3. Spot API token with admin access to Spot Organization. [Doc](https://docs.spot.io/administration/api/create-api-token)
 4. Check the Spot ORG allows adding additional accounts (Contact Spot to enable).
 
 
