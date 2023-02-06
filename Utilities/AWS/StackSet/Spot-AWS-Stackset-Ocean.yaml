@@ -10,7 +10,7 @@ Resources:
   SpotManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Description: Spot.io Account Policy w/ EG Ocean access rights
+      Description: Spot.io Account Policy w/ Ocean access rights
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
