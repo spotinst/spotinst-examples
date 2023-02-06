@@ -37,7 +37,6 @@ D. Copy and enter the URL for the template source (S3):
 ```
     https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-Restricted-EKS.yaml
 ```
-
 - Template URL for Read-Only permissions:  
 ```
     https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-ReadOnly.yaml
