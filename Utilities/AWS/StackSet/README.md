@@ -14,7 +14,7 @@ cloudformation stack in each AWS account. The accounts in Spot will be named usi
     B. Create IAM Policy/Role.  
     C. Read-only permissions to AWS organization.
 2. Enable Trusted Access with AWS Organizations. - [Doc](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html)
-3. Spot API token with admin access to Spot Organization. [Doc](https://help.spot.io/spotinst-api/administration/create-an-api-token)
+3. Spot API token with admin access to Spot Organization. [Doc](https://docs.spot.io/administration/api/create-api-token)
 4. Check the Spot ORG allows adding additional accounts (Contact Spot to enable).
 
 
@@ -29,10 +29,19 @@ D. Copy and enter the URL for the template source (S3):
 ```
     https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset.yaml
 ```
+- Template URL for Ocean permissions:  
+```
+    https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-Ocean.yaml
+```
+- Template URL for EKS permissions:  
+```
+    https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-Restricted-EKS.yaml
+```
 - Template URL for Read-Only permissions:  
 ```
     https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-ReadOnly.yaml
 ```
+
 
 E. Specify Stackset details:   
 &nbsp;&nbsp;&nbsp;&nbsp;i. API Token for Spot.io (Must be a personal Org Admin token)    

@@ -1,0 +1,199 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: StackSet to link newly created AWS accounts to a Spot account
+Parameters:
+  Token:
+    Description: The API Token for Spot.io
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+$
+    NoEcho: true
+Resources:
+  SpotManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Spot.io Account Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: EC2WithRestrictions
+            Action:
+              - ec2:StopInstances
+              - ec2:StartInstances
+              - ec2:TerminateInstances
+              - ec2:DeleteTags
+              - ec2:UnassignPrivateIpAddresses
+              - ec2:ModifyNetworkInterfaceAttribute
+              - ec2:ModifyImageAttribute
+              - ec2:ModifyInstanceAttribute
+              - ec2:AssociateAddress
+            Condition:
+              StringEquals:
+                ec2:ResourceTag/spotinst:aws:ec2:group:createdBy: spotinst
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: GeneralSpotInstancesAccess
+            Action:
+              - ec2:RequestSpotInstances
+              - ec2:CancelSpotInstanceRequests
+              - ec2:CreateSpotDatafeedSubscription
+              - ec2:Describe*
+              - ec2:ConfirmProductInstance
+              - ec2:CreateTags
+              - ec2:MonitorInstances
+              - ec2:RunInstances
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessELB
+            Action:
+              - elasticloadbalancing:Describe*
+              - elasticloadbalancing:Deregister*
+              - elasticloadbalancing:Register*
+              - elasticloadbalancing:AddTags
+              - elasticloadbalancing:RemoveTags
+              - elasticloadbalancing:AttachLoadBalancerToSubnets
+              - elasticloadbalancing:DetachLoadBalancerFromSubnets
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessCloudWatch
+            Action:
+              - cloudwatch:DescribeAlarmHistory
+              - cloudwatch:DescribeAlarms
+              - cloudwatch:DescribeAlarmsForMetric
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:ListMetrics
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessIAM
+            Action:
+              - iam:ListInstanceProfiles
+              - iam:ListInstanceProfilesForRole
+              - iam:ListRoles
+              - iam:ListRolePolicies
+              - iam:GetInstanceProfile
+              - iam:GetRolePolicy
+              - iam:CreateServiceLinkedRole
+              - iam:PassRole
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AllowUseOfKMSKey
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AllowCrossAccountKMS
+            Effect: Allow
+            Action:
+              - kms:CreateGrant
+              - kms:ListGrants
+              - kms:RevokeGrant
+            Resource:
+              - '*'
+          - Sid: AccessEks
+            Action:
+              - eks:ListClusters
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: AccessAutoScalingGroups
+            Action:
+              - autoscaling:Describe*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: SavingsPlan
+            Action:
+              - savingsplans:Describe*
+              - savingsplans:List*
+            Effect: Allow
+            Resource:
+              - '*'
+          - Sid: LambdaConsumptionForSP
+            Action:
+              - lambda:ListFunctions
+            Effect: Allow
+            Resource:
+              - '*'
+  SpotAccount:
+    Type: Custom::SpotAccount
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-account-lambda
+        - Region: !Ref 'AWS::Region'
+      AwsAccountId: !Ref 'AWS::AccountId'
+      Token: !Ref 'Token'
+    DependsOn:
+      - 'SpotManagedPolicy'
+  SpotExternalId:
+    Type: Custom::SpotExternalId
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-external-id-lambda
+        - Region: !Ref 'AWS::Region'
+      SpotAccountId: !Ref 'SpotAccount'
+      Token: !Ref 'Token'
+    DependsOn:
+     - "SpotAccount"
+  SpotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::922761411349:root
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref 'SpotExternalId'
+      ManagedPolicyArns:
+        - !Ref 'SpotManagedPolicy'
+    DependsOn:
+      - "SpotAccount"
+      - "SpotExternalId"
+  SpotLinkedCredentials:
+    Type: Custom::SpotLinkedCredentials
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:spotinst-set-credentials
+        - Region: !Ref 'AWS::Region'
+      AccountId: !Ref 'SpotAccount'
+      IamRoleArn: !GetAtt 'SpotRole.Arn'
+      Token: !Ref 'Token'
+      StackId: !Ref 'AWS::StackId'
+      isTokenEncrypted: "false"
+    DependsOn:
+      - 'SpotAccount'
+      - 'SpotExternalId'
+      - 'SpotRole'
+  RenamedSpotAccountByAlias:
+    Type: Custom::RenamedSpotAccountByAlias
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${Region}:178579023202:function:onboarding-stackset-alias-lambda
+        - Region: !Ref 'AWS::Region'
+      SpotAccountId: !Ref 'SpotAccount'
+      Token: !Ref 'Token'
+      AwsAccountId: !Ref 'AWS::AccountId'
+    DependsOn:
+      - 'SpotAccount'
+      - 'SpotLinkedCredentials'
+Outputs:
+  AccountId:
+    Description: The Account ID for Spot.io
+    Value: !Ref 'SpotAccount'
+  ExternalId:
+    Description: The External ID for Spot.io Role
+    Value: !Ref 'SpotExternalId'
+  SpotRoleArn:
+    Description: The Account Role ARN used for Spot.io
+    Value: !GetAtt 'SpotRole.Arn'
