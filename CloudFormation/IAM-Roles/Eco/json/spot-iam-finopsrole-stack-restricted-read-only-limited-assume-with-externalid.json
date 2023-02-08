@@ -8,6 +8,12 @@
           "Arn"
         ]
       }
+    },
+    "CostAndUsageBucket": {
+      "Value": {"Ref": "CostAndUsageBucket"}
+    },
+    "ExternalId": {
+      "Value": {"Ref": "ExternalId"}
     }
   },
   "Parameters": {
@@ -22,6 +28,9 @@
     "PolicyName": {
       "Type": "String",
       "Default": "SpotByNetApp_Finops_ReadOnly_Policy"
+    },
+    "ExternalId": {
+      "Type": "String"
     }
   },
   "Resources": {
@@ -40,7 +49,7 @@
                 "es:DescribeReservedElasticsearchInstances"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
               "Sid": "ReadOnlyElasticSearch"
@@ -52,7 +61,7 @@
                 "rds:DescribeReservedDBInstancesOfferings"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
               "Sid": "ReadOnlyRDS"
@@ -64,7 +73,7 @@
                 "redshift:DescribeClusters"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
               "Sid": "ReadOnlyRedshift"
@@ -76,7 +85,7 @@
                 "elasticache:DescribeCacheClusters"
               ],
               "Resource": [
-                "*"
+                  "*"
               ],
               "Effect": "Allow",
               "Sid": "ReadOnlyElasticache"
@@ -95,7 +104,7 @@
             {
               "Action": [
                 "ec2:DescribeHostReservations",
-                "ec2:DescribeReservedInstances",
+                "ec2:DescribeReservedInstances"
               ],
               "Resource": [
                 "*"
@@ -105,15 +114,41 @@
             },
             {
               "Action": [
-                "cur:DescribeReportDefinitions",
-                "ce:List*",
-                "ce:Get*",
-                "ce:Describe*",
-                "aws-portal:ViewBilling",
-                "aws-portal:ViewUsage",
-                "savingsplans:get*",
                 "savingsplans:describe*",
                 "savingsplans:list*"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlySavingsPlans"
+            },
+            {
+              "Action": [
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "BillingdeprecatedJuly6"
+            },
+            {
+              "Action": [
+                "cur:DescribeReportDefinitions",
+                "ce:Get*",
+                "ce:Describe*",
+                "ce:List*",
+                "account:GetAccountInformation",
+                "billing:Get*",
+                "consolidatedbilling:Get*",
+                "consolidatedbilling:List*",
+                "invoicing:List*",
+                "invoicing:Get*",
+                "cur:Get*",
+                "cur:Validate*",
+                "freetier:Get*"
               ],
               "Resource": [
                 "*"
@@ -175,10 +210,21 @@
             {
               "Action": "sts:AssumeRole",
               "Principal": {
-                "AWS": ["arn:aws:iam::884866656237:root",
-                        "arn:aws:iam::627743545735:root"]
+                "AWS": ["arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
+                        "arn:aws:iam::884866656237:role/Admin",
+                        "arn:aws:iam::884866656237:role/DevRole",
+                        "arn:aws:iam::884866656237:role/ReadOnly",
+                        "arn:aws:iam::627743545735:role/Admin",
+                        "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"]
               },
-              "Effect": "Allow"
+              "Effect": "Allow",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "ExternalId"
+                  }
+                }
+              }
             }
           ]
         },

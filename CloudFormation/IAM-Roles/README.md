@@ -8,11 +8,11 @@ This repository contains examples and complete CloudFormation templates for inst
 ### Stacks:
 #### ReadOnly: 
 ```
-  https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-ReadOnly.yaml
+https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-ReadOnly.yaml
 ```
 #### Full Permission:
 ```
-  https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS.yaml
+https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-FullPermission.yaml
 ```
 
 ### Stacksets:
@@ -20,19 +20,29 @@ If interested in connected all accounts within the AWS organization: [documentat
 
 
 ## AWS - Eco:
+### Standard Policies
 #### ReadOnly:
 ```
-  https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack.template.json
+https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack.template.json
 ```
 #### Full Permission:
 ```
-  https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack-full-ri-management.template.json
+https://spot-iam-permissions.s3.amazonaws.com/finops-iam-role-stack-full-ri-management.template.json
 ```
+### Restrictive Policies
 #### Restrictive ReadOnly:
 ```
-  https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.json
+```
+#### Restrictive Full EC2 Only Permission:
+```
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
 ```
 #### Restrictive Full Permission:
 ```
-  https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-ec2-only.json
 ```
+
+
+
+

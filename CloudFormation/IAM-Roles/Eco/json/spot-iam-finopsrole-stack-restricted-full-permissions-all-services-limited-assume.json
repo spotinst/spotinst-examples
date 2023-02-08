@@ -119,17 +119,44 @@
             },
             {
               "Action": [
+                "savingsplans:describe*",
+                "savingsplans:list*",
+                "savingsplans:CreateSavingsPlan"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "FullPolicySavingsPlans"
+            },
+            {
+              "Action": [
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "BillingdeprecatedJuly6"
+            },
+            {
+              "Action": [
                 "cur:DescribeReportDefinitions",
                 "cur:PutReportDefinition",
                 "cur:ModifyReportDefinition",
-                "ce:List*",
                 "ce:Get*",
                 "ce:Describe*",
-                "aws-portal:ViewBilling",
-                "aws-portal:ViewUsage",
-                "savingsplans:list*",
-                "savingsplans:Describe*",
-                "savingsplans:CreateSavingsPlan",
+                "ce:List*",
+                "account:GetAccountInformation",
+                "billing:Get*",
+                "consolidatedbilling:Get*",
+                "consolidatedbilling:List*",
+                "invoicing:List*",
+                "invoicing:Get*",
+                "cur:Get*",
+                "cur:Validate*",
+                "freetier:Get*",
                 "organizations:List*",
                 "organizations:DescribeOrganization",
                 "servicequotas:List*",
@@ -140,7 +167,7 @@
                 "*"
               ],
               "Effect": "Allow",
-              "Sid": "FullPolicy"
+              "Sid": "BillingPolicy"
             },
             {
               "Sid": "RequestServiceQuotaIncrease",
@@ -216,8 +243,12 @@
             {
               "Action": "sts:AssumeRole",
               "Principal": {
-                "AWS": ["arn:aws:iam::884866656237:root",
-                        "arn:aws:iam::627743545735:root"]
+                "AWS": ["arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole",
+                        "arn:aws:iam::884866656237:role/Admin",
+                        "arn:aws:iam::884866656237:role/DevRole",
+                        "arn:aws:iam::884866656237:role/ReadOnly",
+                        "arn:aws:iam::627743545735:role/Admin",
+                        "arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole"]
               },
               "Effect": "Allow"
             }
