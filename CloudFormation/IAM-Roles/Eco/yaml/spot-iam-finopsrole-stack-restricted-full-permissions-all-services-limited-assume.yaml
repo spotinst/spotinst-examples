@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Outputs:
+  SpotFinOpsRoleArn:
+    Value: !GetAtt 'SpotFinOpsRole.Arn'
+Parameters:
+  CostAndUsageBucket:
+    Type: String
+    Description: The bucket name of where the *HOURLY* Cost and Usage Report is located. https://console.aws.amazon.com/billing/home?#/reports
+  RoleName:
+    Type: String
+    Default: SpotByNetApp_Finops_FullPermission
+  PolicyName:
+    Type: String
+    Default: SpotByNetApp_Finops_FullPermission_Policy
+Resources:
+  SpotFinOpsManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Ref 'PolicyName'
+      Description: Spot by NetApp Finops Full Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - es:ListElasticsearchInstanceTypes
+              - es:DescribeReservedElasticsearchInstanceOfferings
+              - es:DescribeReservedElasticsearchInstances
+              - es:PurchaseReservedElasticsearchInstanceOffering
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyElasticSearch
+          - Action:
+              - rds:DescribeReservedDBInstances
+              - rds:DescribeDBInstances
+              - rds:DescribeReservedDBInstancesOfferings
+              - rds:PurchaseReservedDBInstancesOffering
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyRDS
+          - Action:
+              - redshift:DescribeReservedNodeOfferings
+              - redshift:DescribeReservedNodes
+              - redshift:DescribeClusters
+              - redshift:PurchaseReservedNodeOffering
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyRedshift
+          - Action:
+              - elasticache:DescribeReservedCacheNodesOfferings
+              - elasticache:DescribeReservedCacheNodes
+              - elasticache:DescribeCacheClusters
+              - elasticache:PurchaseReservedCacheNodesOffering
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyElasticache
+          - Action:
+              - dynamodb:DescribeReservedCapacityOfferings
+              - dynamodb:DescribeReservedCapacity
+              - dynamodb:PurchaseReservedCapacityOfferings
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyDynamoDB
+          - Action:
+              - ec2:Describe*
+              - ec2:List*
+              - ec2:GetHostReservationPurchasePreview
+              - ec2:GetReservedInstancesExchangeQuote
+              - ec2:ModifyReservedInstances
+              - ec2:AcceptReservedInstancesExchangeQuote
+              - ec2:CancelReservedInstancesListing
+              - ec2:CreateReservedInstancesListing
+              - ec2:PurchaseHostReservation
+              - ec2:PurchaseReservedInstancesOffering
+              - ec2:PurchaseScheduledInstances
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicyEC2
+          - Action:
+              - savingsplans:describe*
+              - savingsplans:list*
+              - savingsplans:CreateSavingsPlan
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: FullPolicySavingsPlans
+          - Action:
+              - aws-portal:ViewBilling
+              - aws-portal:ViewUsage
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: BillingdeprecatedJuly6
+          - Action:
+              - cur:DescribeReportDefinitions
+              - cur:PutReportDefinition
+              - cur:ModifyReportDefinition
+              - ce:Get*
+              - ce:Describe*
+              - ce:List*
+              - account:GetAccountInformation
+              - billing:Get*
+              - consolidatedbilling:Get*
+              - consolidatedbilling:List*
+              - invoicing:List*
+              - invoicing:Get*
+              - cur:Get*
+              - cur:Validate*
+              - freetier:Get*
+              - organizations:List*
+              - organizations:DescribeOrganization
+              - servicequotas:List*
+              - servicequotas:Get*
+              - support:*
+            Resource:
+              - '*'
+            Effect: Allow
+            Sid: BillingPolicy
+          - Sid: RequestServiceQuotaIncrease
+            Effect: Allow
+            Action: servicequotas:RequestServiceQuotaIncrease
+            Resource:
+              - arn:aws:servicequotas:*:*:rds/L-78E853F4
+              - arn:aws:servicequotas:*:*:ec2/L-D0B7243C
+              - arn:aws:servicequotas:*:*:redshift/L-58C8C0E8
+          - Action:
+              - iam:CreateServiceLinkedRole
+              - iam:PutRolePolicy
+            Resource: arn:aws:iam::*:role/aws-service-role/elasticache.amazonaws.com/AWSServiceRoleForElastiCache*
+            Condition:
+              StringLike:
+                iam:AWSServiceName: elasticache.amazonaws.com
+            Effect: Allow
+            Sid: CreateServiceLinkedRole
+          - Action:
+              - s3:GetBucketLocation
+              - s3:ListBucketMultipartUploads
+              - s3:AbortMultipartUpload
+              - s3:ListMultipartUploadParts
+              - s3:PutObject
+              - s3:ListBucket
+              - s3:List*
+              - s3:PutObjectTagging
+              - s3:PutObjectAcl
+            Resource: arn:aws:s3:::sc-customer-*
+            Effect: Allow
+            Sid: S3SyncPermissions
+          - Action:
+              - s3:ListBucket
+              - s3:ListBucketVersions
+              - s3:ListBucketMultipartUploads
+              - s3:GetBucketLocation
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref 'CostAndUsageBucket'
+            Effect: Allow
+            Sid: S3CURBucket
+          - Action:
+              - s3:get*
+              - s3:List*
+              - s3:Describe*
+            Resource:
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref 'CostAndUsageBucket'
+                  - /*
+            Effect: Allow
+            Sid: S3CURObject
+  SpotFinOpsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: sts:AssumeRole
+            Principal:
+              AWS:
+                - arn:aws:iam::884866656237:role/eco-base-cdk-stack-globalclientassumerole
+                - arn:aws:iam::884866656237:role/Admin
+                - arn:aws:iam::884866656237:role/DevRole
+                - arn:aws:iam::884866656237:role/ReadOnly
+                - arn:aws:iam::627743545735:role/Admin
+                - arn:aws:iam::627743545735:role/eco-base-cdk-stack-globalclientassumerole
+            Effect: Allow
+      Description: Spot by NetApp FullPermissions Finops IAM Role
+      ManagedPolicyArns:
+        - !Ref 'SpotFinOpsManagedPolicy'
+        - arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess
+      RoleName: !Ref 'RoleName'
