@@ -76,6 +76,7 @@ Resources:
               - iam:GetRolePolicy
               - iam:CreateServiceLinkedRole
               - iam:PassRole
+              - iam:ListAccountAliases
             Effect: Allow
             Resource:
               - '*'
