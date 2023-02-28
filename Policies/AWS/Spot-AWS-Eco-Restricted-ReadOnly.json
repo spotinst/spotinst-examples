@@ -55,7 +55,7 @@
                 "dynamodb:DescribeReservedCapacity"
             ],
             "Resource": [
-              "*"
+                "*"
             ],
             "Effect": "Allow",
             "Sid": "ReadOnlyDynamoDB"
@@ -69,19 +69,45 @@
                 "*"
             ],
             "Effect": "Allow",
-            "Sid": "ReadOnlyDynamoDB"
+            "Sid": "ReadOnlyEC2"
+        },
+        {
+            "Action": [
+                "savingsplans:describe*",
+                "savingsplans:list*"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "ReadOnlySavingsPlans"
+        },
+        {
+            "Action": [
+                "aws-portal:ViewBilling",
+                "aws-portal:ViewUsage"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow",
+            "Sid": "BillingdeprecatedJuly6"
         },
         {
             "Action": [
                 "cur:DescribeReportDefinitions",
-                "ce:List*",
                 "ce:Get*",
                 "ce:Describe*",
-                "aws-portal:ViewBilling",
-                "aws-portal:ViewUsage",
-                "savingsplans:get*",
-                "savingsplans:describe*",
-                "savingsplans:list*"
+                "ce:List*",
+                "account:GetAccountInformation",
+                "billing:Get*",
+                "consolidatedbilling:Get*",
+                "consolidatedbilling:List*",
+                "invoicing:List*",
+                "invoicing:Get*",
+                "cur:Get*",
+                "cur:Validate*",
+                "freetier:Get*"
             ],
             "Resource": [
                 "*"
@@ -113,7 +139,7 @@
                 "s3:GetBucketLocation"
             ],
             "Resource": [
-                "arn:aws:s3:::<Name of Bucket that contains CUR>"
+                { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" }]]}
             ],
             "Effect": "Allow",
             "Sid": "S3CURBucket"
@@ -125,7 +151,7 @@
                 "s3:Describe*"
             ],
             "Resource": [
-                "arn:aws:s3:::<Name of Bucket that contains CUR>/*"
+                { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" },"/*"]]}
             ],
             "Effect": "Allow",
             "Sid": "S3CURObject"
