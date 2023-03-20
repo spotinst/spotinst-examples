@@ -16,10 +16,6 @@
             "Description": "The bucket name where the CUR will be placed.",
             "Default": "SpotByNetApp_Finops_FullPermission"
         },
-        "RoleName": {
-            "Type": "String",
-            "Default": "SpotByNetApp_Finops_ReadOnly"
-        },
         "PolicyName": {
             "Type": "String",
             "Default": "SpotByNetApp_Finops_FullPermission_Policy"
