@@ -30,7 +30,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: arn:aws:iam::303703646777:role/spotinst-examples-github-actions-role
-        role-duration-seconds: 90
+        role-duration-seconds: 900
         aws-region: us-east-1
 
     - name: Upload changed files to the root of the S3 bucket
