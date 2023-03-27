@@ -137,6 +137,7 @@
                 "consolidatedbilling:List*",
                 "invoicing:List*",
                 "invoicing:Get*",
+                "tax:ListTaxRegistrations",
                 "cur:Get*",
                 "cur:Validate*",
                 "freetier:Get*"
