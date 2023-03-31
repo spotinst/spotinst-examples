@@ -36,11 +36,11 @@ https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restr
 ```
 #### Restrictive Full EC2 Only Permission:
 ```
-https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-ec2-only.json
 ```
 #### Restrictive Full Permission:
 ```
-https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-ec2-only.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
 ```
 
 
