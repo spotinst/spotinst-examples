@@ -4,5 +4,3 @@
 __pycache__/
 spot.egg-info/
 /CloudFormation/IAM-Roles/Eco/tree-md
-/CloudFormation/IAM-Roles/Eco/test.py
-/CloudFormation/IAM-Roles/Eco/upload.py
