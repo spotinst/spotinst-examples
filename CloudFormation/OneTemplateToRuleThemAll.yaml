@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  CostAndUsageBucket:
+    Type: String
+    Description: The bucket name where the CUR will be placed.
+    Type: String
+    Default: SpotByNetApp_Finops_FullPermission
+  RoleName:
+    Type: String
+    Default: SpotByNetApp_Finops_ReadOnly
+  PolicyName:
+    Type: String
+    Default: SpotByNetApp_Finops_FullPermission_Policy
+  Token:
+    Description: The API Token for Spot.io. Only needed if selecting full analysis.
+    Type: String
+    AllowedPattern: ^[a-zA-Z0-9]+$
+    NoEcho: true
+  AnalysisType:
+    Type: String
+    Description: Choose "Full" or "Eco" to select either a full analysis or just an Eco one. 
+    Default: Full
+    AllowedValues:
+      - Full
+      - Eco
+  PermissionScope:
+    Type: String
+    Description: Choose "Full" or "Read Only" to create either full permissions policies, or the read only ones.
+    Default: Read Only
+    AllowedValues:
+      - Full
+      - Read Only
+
+Conditions:
+
+  IsReadOnly: !Equals 
+    - !Ref PermissionScope
+    - Read Only
+  IsFullPerms: !Equals 
+    - !Ref PermissionScope
+    - Full
+  IsFullAnalysis: !Equals 
+    - !Ref AnalysisType
+    - Full
+  IsEcoOnly:
+    - !Ref AnalysisType
+    - Eco
+  ReadOnlyStackset: !And
+    - !Condition IsFullAnalysis
+    - !Condition IsReadOnly
+  FullPermissionsStackset: !And
+    - !Condition IsFullAnalysis
+    - !Condition IsFullPerms
+
+
+Resources:
+  
+  EcoStackReadOnly:
+    Type: AWS::CloudFormation::Stack
+    Conditions: IsReadOnly
+    Properties: 
+      TemplateURL: https://spot-cloudformation-automation.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services-with-cur-and-bucket.yaml
+      Parameters:
+        - CostAndUsageBucket: !Ref CostAndUsageBucket
+        - RoleName: !Ref RoleName
+        - PolicyName: !Ref PolicyName
+
+  EcoStackFullPermissions:
+    Type: AWS::CloudFormation::Stack
+    Conditions: IsFullPerms
+    Properties: 
+      TemplateURL: https://spot-cloudformation-automation.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services-with-cur-and-bucket.yaml
+      Parameters:
+        - CostAndUsageBucket: !Ref CostAndUsageBucket
+        - RoleName: !Ref RoleName
+        - PolicyName: !Ref PolicyName
+
+  StacksetReadOnly:
+    Type: 'AWS::CloudFormation::StackSet'
+    Condition: ReadOnlyStackset
+    DeletionPolicy: Retain
+    Properties:
+      TemplateURL: https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-ReadOnly.yaml
+      StackSetName: Spot-IO-ReadOnly-Stackset
+      Description: Stackset creates spot sub accounts in your spot Org, and creates the IAM role in each AWS account, and then connects them. 
+      PermissionModel: SERVICE_MANAGED
+      ManagedExecution:
+        Active: true
+
+  StacksetFullPermissions:
+    Type: 'AWS::CloudFormation::StackSet'
+    Condition: FullPermissionsStackset
+    DeletionPolicy: Retain
+    Properties:
+      TemplateURL: https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset.yaml
+      StackSetName: Spot-IO-FullPermissions-Stackset
+      Description: Stackset creates spot sub accounts in your spot Org, and creates the IAM role in each AWS account, and then connects them. 
+      PermissionModel: SERVICE_MANAGED
+      ManagedExecution:
+        Active: true
