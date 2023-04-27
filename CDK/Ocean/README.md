@@ -1,6 +1,6 @@
-# AWS CDK Ocean Stack
+# Spotinst Examples - CDK Ocean
 
-This code defines an AWS CDK stack that provisions an Amazon EKS cluster using Spot by NetApp Ocean as the underlying infrastructure for worker nodes. It sets up the required IAM roles, security groups, and instance profiles for the worker nodes, and installs the Spotinst Ocean Controller on the EKS cluster.
+This repository contains an example for using AWS CDK to deploy an Amazon EKS cluster using Spot by NetApp Ocean as the underlying infrastructure for worker nodes. It sets up the required IAM roles, security groups, and instance profiles for the worker nodes, and installs the Spotinst Ocean Controller on the EKS cluster.
 
 ## Requirements
 
@@ -9,26 +9,14 @@ This code defines an AWS CDK stack that provisions an Amazon EKS cluster using S
 - An active Spotinst account with a valid API token
 - AWS account with the necessary permissions
 
-## How to use
+## Contents
 
-1. Set up a Python virtual environment:
-
-```
-python -m venv .env
-source .env/bin/activate # On Linux/macOS
-```
-
-2. Install the required dependencies:
-
-```
-pip install -r requirements.txt
-```
-
-3. Deploy the stack:
-
-```
-cdk deploy
-```
+- `app.py`: The main CDK application script.
+- `cdk_ocean/cdk_ocean_stack.py`: The CDK stack definition for provisioning the EKS cluster with Ocean.
+- `controller/values.yaml`: The values file for the Spotinst Ocean Controller Helm chart.
+- `lib/util/manifest_reader.py`: A utility script for loading and processing YAML files.
+- `requirements.txt`: The required dependencies for the CDK application.
+- `cdk.json`: The CDK application configuration file.
 
 ## Code Overview
 
