@@ -11,6 +11,10 @@ This repository contains examples and complete CloudFormation templates for inst
 ```
 https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.yaml
 ```
+#### Restrictive ReadOnly with CUR creation:
+```
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only-with-cur-and-bucket.yaml
+```
 #### Restrictive ReadOnly with limited roles for assuming:
 ```
 https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only-limited-assume.yaml
@@ -24,6 +28,10 @@ https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restr
 #### Restrictive Full Permission:
 ```
 https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.yaml
+```
+#### Restrictive Full Permissions with CUR creation:
+```
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services-with-cur-and-bucket.yaml
 ```
 #### Restrictive Full EC2 Only Permission:
 ```

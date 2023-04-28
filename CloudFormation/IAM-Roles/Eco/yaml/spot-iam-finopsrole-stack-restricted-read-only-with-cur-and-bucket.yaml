@@ -17,8 +17,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub
-          - '${CostAndUsageBucket}${RandomGUID}'
-          - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
+      - '${CostAndUsageBucket}${RandomGUID}'
+      - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
   CostAndUsageReport:
     Type: AWS::CUR::ReportDefinition
     Properties:
@@ -26,8 +26,8 @@ Resources:
       TimeUnit: HOURLY
       Format: Parquet
       Compression: Parquet
-      S3Bucket: !Ref CostAndUsageBucket
-      S3Prefix: cost-and-usage-reports/
+      S3Bucket: !Ref SpotCurBucket
+      S3Prefix: cost-and-usage-reports
       S3Region: us-east-1
       AdditionalSchemaElements: 
         - RESOURCES
@@ -35,31 +35,48 @@ Resources:
         - ATHENA
       RefreshClosedReports: true
       ReportVersioning: OVERWRITE_REPORT
-
+    DependsOn: 
+    - SpotCurBucket
+    - S3BucketPolicy
   S3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: !Ref CostAndUsageBucket
-      PolicyDocument:
-        Version: '2012-10-17'
+      Bucket: !Ref SpotCurBucket
+      PolicyDocument:     
+        Version: '2008-10-17'
         Statement:
-          - Sid: AllowCostAndUsageReportPut
-            Effect: Allow
-            Principal:
-              Service:
-                - billingreports.amazonaws.com
-            Action:
-              - "s3:PutObject"
-            Resource: !Sub "arn:aws:s3:::${CostAndUsageBucket}/*"
-          - Sid: AllowCostAndUsageReport
-            Effect: Allow
-            Principal:
-              Service:
-                - billingreports.amazonaws.com
-            Action:
-              - "s3:GetBucketAcl"
-              - "s3:GetBucketPolicy"
-            Resource: !Sub "arn:aws:s3:::${CostAndUsageBucket}"
+        - Sid: AllowCostAndUsageReport
+          Effect: Allow
+          Principal:
+            Service: billingreports.amazonaws.com
+          Action:
+          - s3:GetBucketAcl
+          - s3:GetBucketPolicy
+          Resource: !Sub
+          - 'arn:aws:s3:::${SpotCurBucket}'
+          - SpotCurBucket: !Ref SpotCurBucket
+          Condition:
+            StringEquals:
+              aws:SourceArn: !Sub 
+              - 'arn:aws:cur:us-east-1:${AccountId}:definition/*'
+              - AccountId: !Ref AWS::AccountId
+              aws:SourceAccount: !Ref AWS::AccountId
+        - Sid: AllowCostAndUsageReportPut
+          Effect: Allow
+          Principal:
+            Service: billingreports.amazonaws.com
+          Action:
+          - s3:PutObject
+          Resource: !Sub
+          - 'arn:aws:s3:::${SpotCurBucket}/*'
+          - SpotCurBucket: !Ref SpotCurBucket
+          Condition:
+            StringEquals:
+              aws:SourceArn: !Sub 
+              - 'arn:aws:cur:us-east-1:${AccountId}:definition/*'
+              - AccountId: !Ref AWS::AccountId
+              aws:SourceAccount: !Ref AWS::AccountId
+    DependsOn: SpotCurBucket
   SpotFinOpsManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
