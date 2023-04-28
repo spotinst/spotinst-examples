@@ -5,16 +5,18 @@ Outputs:
 Parameters:
   CostAndUsageBucket:
     Type: String
-    Description: The bucket name of where the *HOURLY* Cost and Usage Report is located. https://console.aws.amazon.com/billing/home?#/reports
+    Description: The bucket name where the CUR will be placed.
+    Default: spot-io-cur-bucket
   RoleName:
     Type: String
-    Default: SpotByNetApp_Finops_ReadOnly
+    Default: SpotByNetApp_Finops_Role
   PolicyName:
     Type: String
     Default: SpotByNetApp_Finops_ReadOnly_Policy
 Resources:
   SpotCurBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       BucketName: !Sub
       - '${CostAndUsageBucket}${RandomGUID}'
