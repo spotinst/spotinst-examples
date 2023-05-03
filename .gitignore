@@ -4,7 +4,7 @@
 __pycache__/
 spot.egg-info/
 /CloudFormation/IAM-Roles/Eco/tree-md
-
+.history
 *.swp
 package-lock.json
 __pycache__

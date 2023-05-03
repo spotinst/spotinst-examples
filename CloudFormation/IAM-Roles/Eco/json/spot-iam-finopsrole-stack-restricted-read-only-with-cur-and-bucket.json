@@ -13,11 +13,12 @@
     "Parameters": {
         "CostAndUsageBucket": {
             "Type": "String",
-            "Description": "The bucket name of where the *HOURLY* Cost and Usage Report is located. https://console.aws.amazon.com/billing/home?#/reports"
+            "Description": "The bucket name where the CUR will be placed.",
+            "Default": "spot-io-cur-bucket"
         },
         "RoleName": {
             "Type": "String",
-            "Default": "SpotByNetApp_Finops_ReadOnly"
+            "Default": "SpotByNetApp_Finops_Role"
         },
         "PolicyName": {
             "Type": "String",
@@ -27,6 +28,7 @@
     "Resources": {
         "SpotCurBucket": {
             "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
             "Properties": {
                 "BucketName": {
                     "Fn::Sub": [
@@ -68,9 +70,9 @@
                 "Format": "Parquet",
                 "Compression": "Parquet",
                 "S3Bucket": {
-                    "Ref": "CostAndUsageBucket"
+                    "Ref": "SpotCurBucket"
                 },
-                "S3Prefix": "cost-and-usage-reports/",
+                "S3Prefix": "cost-and-usage-reports",
                 "S3Region": "us-east-1",
                 "AdditionalSchemaElements": [
                     "RESOURCES"
@@ -80,51 +82,100 @@
                 ],
                 "RefreshClosedReports": true,
                 "ReportVersioning": "OVERWRITE_REPORT"
-            }
+            },
+            "DependsOn": [
+                "SpotCurBucket",
+                "S3BucketPolicy"
+            ]
         },
         "S3BucketPolicy": {
             "Type": "AWS::S3::BucketPolicy",
             "Properties": {
                 "Bucket": {
-                    "Ref": "CostAndUsageBucket"
+                    "Ref": "SpotCurBucket"
                 },
                 "PolicyDocument": {
-                    "Version": "2012-10-17",
+                    "Version": "2008-10-17",
                     "Statement": [
-                        {
-                            "Sid": "AllowCostAndUsageReportPut",
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": [
-                                    "billingreports.amazonaws.com"
-                                ]
-                            },
-                            "Action": [
-                                "s3:PutObject"
-                            ],
-                            "Resource": {
-                                "Fn::Sub": "arn:aws:s3:::${CostAndUsageBucket}/*"
-                            }
-                        },
                         {
                             "Sid": "AllowCostAndUsageReport",
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": [
-                                    "billingreports.amazonaws.com"
-                                ]
+                                "Service": "billingreports.amazonaws.com"
                             },
                             "Action": [
                                 "s3:GetBucketAcl",
                                 "s3:GetBucketPolicy"
                             ],
                             "Resource": {
-                                "Fn::Sub": "arn:aws:s3:::${CostAndUsageBucket}"
+                                "Fn::Sub": [
+                                    "arn:aws:s3:::${SpotCurBucket}",
+                                    {
+                                        "SpotCurBucket": {
+                                            "Ref": "SpotCurBucket"
+                                        }
+                                    }
+                                ]
+                            },
+                            "Condition": {
+                                "StringEquals": {
+                                    "aws:SourceArn": {
+                                        "Fn::Sub": [
+                                            "arn:aws:cur:us-east-1:${AccountId}:definition/*",
+                                            {
+                                                "AccountId": {
+                                                    "Ref": "AWS::AccountId"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "aws:SourceAccount": {
+                                        "Ref": "AWS::AccountId"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Sid": "AllowCostAndUsageReportPut",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "billingreports.amazonaws.com"
+                            },
+                            "Action": [
+                                "s3:PutObject"
+                            ],
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "arn:aws:s3:::${SpotCurBucket}/*",
+                                    {
+                                        "SpotCurBucket": {
+                                            "Ref": "SpotCurBucket"
+                                        }
+                                    }
+                                ]
+                            },
+                            "Condition": {
+                                "StringEquals": {
+                                    "aws:SourceArn": {
+                                        "Fn::Sub": [
+                                            "arn:aws:cur:us-east-1:${AccountId}:definition/*",
+                                            {
+                                                "AccountId": {
+                                                    "Ref": "AWS::AccountId"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "aws:SourceAccount": {
+                                        "Ref": "AWS::AccountId"
+                                    }
+                                }
                             }
                         }
                     ]
                 }
-            }
+            },
+            "DependsOn": "SpotCurBucket"
         },
         "SpotFinOpsManagedPolicy": {
             "Type": "AWS::IAM::ManagedPolicy",
