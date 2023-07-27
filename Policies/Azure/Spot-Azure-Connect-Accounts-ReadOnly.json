@@ -30,7 +30,6 @@
       "Microsoft.Network/networkInterfaces/read",
       "Microsoft.Network/networkInterfaces/ipconfigurations/read",
       "Microsoft.Network/networkSecurityGroups/read",
-      "Microsoft.Network/networkSecurityGroups/join/action",
       "Microsoft.Network/publicIPAddresses/read",
       "Microsoft.Network/virtualNetworks/read",
       "Microsoft.Network/virtualNetworks/subnets/read",
