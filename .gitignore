@@ -11,6 +11,15 @@ __pycache__
 .pytest_cache
 .venv
 *.egg-info
+*.auto.tfvars
+*.gitignore
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
 
 # CDK asset staging directory
 .cdk.staging
