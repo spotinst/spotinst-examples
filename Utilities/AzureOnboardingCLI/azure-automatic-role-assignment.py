@@ -40,12 +40,12 @@ def create_spot_account(name, token):
     """
     Creates a spot account with the given name and token.
 
-    :param name: The name of the spot account.
-    :type name: str
-    :param token: The authentication token.
-    :type token: str
-    :return: The ID of the created spot account.
-    :rtype: str
+    Args:
+        name (str): The name of the spot account.
+        token (str): The authentication token.
+
+    Returns:
+        str: The ID of the created account.
     """
     session = SpotinstSession(auth_token=token)
     client = session.client("admin")
@@ -71,7 +71,7 @@ def run_command(cmd, *args):
         >>> run_command("ls", "-l")
         {'file1.txt': 'rw-r--r--', 'file2.txt': 'rw-rw-r--'}
     """
-    print("Run command: {}".format(cmd))
+    print(f"Run command: {cmd}")
 
     cmd_args = cmd.split()
     cmd_to_run = cmd_args + list(args)
@@ -86,13 +86,11 @@ def run_command(cmd, *args):
     # except subprocess.CalledProcessError as exc:
     #    print("Status : FAIL", exc.returncode, exc.output)
     # else:
-    #    print("Output: \n{}\n".format(output))
+    #    print(f"Output: \n{output}\n")
 
     if run_process_result.returncode != 0:
         raise Exception(
-            "Failed to run the command: {}. Errors: {}".format(
-                cmd, run_process_result.stderr
-            )
+            f"Failed to run the command: {cmd}. Errors: {run_process_result.stderr}"
         )
     else:
         # Remove ANSI escape sequences from a string
@@ -101,7 +99,7 @@ def run_command(cmd, *args):
 
         result = json.loads(cleaned_command_result)
 
-        print("Succeeded to run command: {}".format(cmd))
+        print("Succeeded to run command: {cmd}")
 
     return result
 
@@ -118,12 +116,10 @@ def display_result(subscription, create_or_get_service_principal_response):
         None
     """
     print("Your credentials details:")
-    print("Client Id: {}".format(create_or_get_service_principal_response["appId"]))
-    print(
-        "Client Secret {}".format(create_or_get_service_principal_response["password"])
-    )
-    print("Tenant Id:  {}".format(create_or_get_service_principal_response["tenant"]))
-    print("Subscription Id: {}".format(subscription))
+    print(f"Application (client) ID: {create_or_get_service_principal_response['appId']}")
+    print(f"Client Secret: {create_or_get_service_principal_response['password']}")
+    print(f"Tenant ID: {create_or_get_service_principal_response['tenant']}")
+    print(f"Subscription ID: {subscription}")
 
 
 def set_azure_credentials(
@@ -194,19 +190,26 @@ def build_custom_role(custom_role_name, custom_role_json_local_path, subscriptio
 
 
 def create_required_parameters_for_spot_registrations(
-    subscription, custom_role_name, custom_role_json_local_path, service_principal_name
+    subscription,
+    custom_role_name,
+    custom_role_json_local_path,
+    service_principal_name,
+    app_registration_id=None,
 ):
-    does_subscription_exist = does_subscription_exist_for_account(subscription)
-
-    if does_subscription_exist:
+    if does_subscription_exist_for_account(subscription):
         custom_role_name = create_custom_role(
             custom_role_name, custom_role_json_local_path, subscription
         )
         print("Waiting 90 seconds for role to propagate.")
         time.sleep(90)
-        create_or_get_service_principal_response = create_service_principal(
-            custom_role_name, service_principal_name, subscription
-        )
+        if app_registration_id is not None:
+            create_or_get_service_principal_response = get_service_principal(
+                app_registration_id, custom_role_name, subscription, service_principal_name
+            )
+        else:
+            create_or_get_service_principal_response = create_service_principal(
+                custom_role_name, service_principal_name, subscription
+            )
 
         result = create_or_get_service_principal_response
     else:
@@ -214,6 +217,31 @@ def create_required_parameters_for_spot_registrations(
 
     return result
 
+
+def get_service_principal(app_registration_id, custom_role_name, subscription, spot_account_id):
+    """
+    Generate a service principal for the given app registration ID, assign a custom role to the service principal, create a secret for the app registration, and return the result of creating the secret.
+
+    Parameters:
+    - app_registration_id (str): The ID of the app registration.
+    - custom_role_name (str): The name of the custom role to assign to the service principal.
+    - subscription (str): The ID of the subscription.
+
+    Returns:
+    - create_secret_result (dict): The result of creating the secret for the app registration.
+    """
+    app_reg_show_cmd = f"az ad sp show --id {app_registration_id}"
+    run_command(app_reg_show_cmd)
+
+    # Assign the custom role to the service principal
+    app_reg_role_assignment_cmd = f"az role assignment create --assignee {app_registration_id} --role {custom_role_name} --scope /subscriptions/{subscription}"
+    run_command(app_reg_role_assignment_cmd)
+
+    # Create a secret for the App Registration
+    create_secret_cmd = f"az ad app credential reset --id {app_registration_id} --append --display-name {spot_account_id}"
+    create_secret_result = run_command(create_secret_cmd)
+
+    return create_secret_result
 
 def does_subscription_exist_for_account(subscription):
     """
@@ -232,11 +260,7 @@ def does_subscription_exist_for_account(subscription):
     )
 
     if account_property_with_subscription is not None:
-        print(
-            "Found the subscription: {} for account: {}".format(
-                subscription, account_property_with_subscription
-            )
-        )
+        print(f"Found the subscription: {subscription} for account: {account_property_with_subscription}")
         return True
     else:
         return False
@@ -255,12 +279,10 @@ def create_service_principal(custom_role_name, service_principal_name, subscript
         str: The result of creating the service principal.
     """
     print("Create service principal")
-    create_service_principal_cmd = "az ad sp create-for-rbac --name {} --role {} --scopes /subscriptions/{}".format(
-        service_principal_name, custom_role_name, subscription
-    )
+    create_service_principal_cmd = f"az ad sp create-for-rbac --name {service_principal_name} --role {custom_role_name} --scopes /subscriptions/{subscription}"
     result = run_command(create_service_principal_cmd)
 
-    print("Finished to create service principal: {}".format(result))
+    print(f"Finished to create service principal: {result}")
 
     return result
 
@@ -290,7 +312,7 @@ def create_custom_role(custom_role_name, custom_role_json_local_path, subscripti
     )
 
     result = create_custom_role_response["roleName"]
-    print("Finished to create custom role: {}".format(result))
+    print(f"Finished to create custom role: {result}")
 
     return result
 
@@ -340,6 +362,9 @@ def main():
     parser.add_argument(
         "--customRoleJsonPath", required=False, help="Custom Role Json File Path"
     )
+    parser.add_argument(
+        "--appRegistrationId", required=False, help="Existing App Registration ID"
+    )
     args = parser.parse_args()
 
     subscription = args.subscription
@@ -350,24 +375,21 @@ def main():
     if custom_role_json_local_path is None:
         print("WARNING: --customRoleJsonPath not found, using default.")
 
-    print(
-        "Start creating required credentials parameters for Spot registration. Subscription: {0}".format(
-            subscription
-        )
-    )
+    print(f"Start creating required credentials parameters for Spot registration. Subscription: {subscription}")
 
     try:
         check_azure_cli_installed()
-        #login_to_azure()
-        name = get_subscription_name(subscription)
-        account_id = create_spot_account(name, token)
-        service_principal_name = f"Spot-{name}-{account_id}".replace(" ", "")
+        # login_to_azure()
+        subscription_name = get_subscription_name(subscription)
+        account_id = create_spot_account(subscription_name, token)
+        service_principal_name = f"Spot-{subscription_name}-{account_id}".replace(" ", "")
         required_parameters_response = (
             create_required_parameters_for_spot_registrations(
                 subscription,
                 custom_role_name,
                 custom_role_json_local_path,
                 service_principal_name,
+                args.appRegistrationId,
             )
         )
         if account_id is not None and token is not None:
@@ -383,7 +405,7 @@ def main():
 
         print("Finished creating required credentials parameters for Spot registration")
     except Exception as e:
-        print("Failed to create required credentials. Errors: {}".format(e))
+        print(f"Failed to create required credentials. Errors: {e}")
 
 
 if __name__ == "__main__":
