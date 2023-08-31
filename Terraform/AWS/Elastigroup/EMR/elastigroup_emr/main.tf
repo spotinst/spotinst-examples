@@ -11,12 +11,6 @@ provider "spotinst" {
   account = var.spot_account
 }
 
-locals {
-  cmd = "${path.module}/scripts/get-emr"
-  cluster_id = lookup(data.external.cluster_id.result, "cluster_id", "fail" )
-  dns_name = lookup(data.external.dns_name.result, "dns_name", "fail")
-}
-
 # Create a Elastigroup with EMR integration(Mr Scaler) with New strategy
 resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   name                = var.emr_name
@@ -131,15 +125,4 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
 }
 
 
-### Call script to get the cluster ID using Spot APIs ###
-data "external" "cluster_id" {
-    depends_on = [spotinst_mrscaler_aws.Terraform-MrScaler-01]
-    program = [local.cmd, "get-logs", spotinst_mrscaler_aws.Terraform-MrScaler-01.id]
-}
-
-### Call script to get the DNS name/Ip address from the cluster###
-data "external" "dns_name" {
-  depends_on = [data.external.cluster_id]
-  program = [local.cmd, "get-dns", local.cluster_id, var.region]
-}
 
