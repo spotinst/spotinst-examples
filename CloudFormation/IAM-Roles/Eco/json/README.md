@@ -11,6 +11,10 @@ This repository contains examples and complete CloudFormation templates for inst
 ```
 https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only.json
 ```
+#### Restrictive ReadOnly with CUR creation:
+```
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only-with-cur-and-bucket.json
+```
 #### Restrictive ReadOnly with limited roles for assuming:
 ```
 https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only-limited-assume.json
@@ -21,13 +25,17 @@ https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restr
 ```
 
 ### Full Permissions
-#### Restrictive Full Permission:
+#### Restrictive Full Permissions:
 ```
-https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-ec2-only.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
+```
+#### Restrictive Full Permissions with CUR creation:
+```
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services-with-cur-and-bucket.json
 ```
 #### Restrictive Full EC2 Only Permission:
 ```
-https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services.json
+https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-ec2-only.json
 ```
 #### Restrictive Full Permission with limited roles for assuming:
 ```

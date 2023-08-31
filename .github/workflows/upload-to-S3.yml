@@ -1,0 +1,55 @@
+name: Upload to S3
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Policies/AWS/*.json'
+      - 'Policies/Azure/*.json'
+      - 'Policies/GCP/*.yaml'
+      - 'CloudFormation/IAM-Roles/Eco/json/*.json'
+      - 'CloudFormation/IAM-Roles/Eco/yaml/*.yaml'
+      - 'CloudFormation/IAM-Roles/Elastigroup_Ocean/*.yaml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::303703646777:role/spotinst-examples-github-actions-role
+        role-duration-seconds: 900
+        aws-region: us-east-1
+
+    - name: Upload changed files to the root of the S3 bucket
+      run: |
+        directories=(
+          "Policies/AWS"
+          "Policies/Azure"
+          "Policies/GCP"
+          "CloudFormation/IAM-Roles/Eco/json"
+          "CloudFormation/IAM-Roles/Eco/yaml"
+          "CloudFormation/IAM-Roles/Elastigroup_Ocean"
+        )
+
+        changed_files=$(git diff --name-only --diff-filter=d HEAD^ HEAD)
+        for file in $changed_files; do
+          for dir in "${directories[@]}"; do
+            if [[ $file == $dir/*.json || $file == $dir/*.yaml ]]; then
+              aws s3 cp "$file" "s3://spot-connect-account-cf/$(basename "$file")" --acl public-read
+              break
+            fi
+          done
+        done

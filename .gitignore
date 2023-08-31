@@ -4,3 +4,23 @@
 __pycache__/
 spot.egg-info/
 /CloudFormation/IAM-Roles/Eco/tree-md
+.history
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+*.egg-info
+*.auto.tfvars
+*.gitignore
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

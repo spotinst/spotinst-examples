@@ -1,0 +1,147 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  CostAndUsageBucket:
+    Type: String
+    Description: The bucket name where the CUR will be placed.
+    Default: spot-io-cur-bucket
+  RoleName:
+    Type: String
+    Default: SpotByNetApp_Finops_Role
+  PolicyName:
+    Type: String
+    Default: SpotByNetApp_Finops_Policy
+  Token:
+    Description: The API Token for Spot.io. Only needed if selecting full analysis.
+    Type: String
+    NoEcho: true
+  OrganizationOU:
+    Description: The OU ID to deploy the stackset to.
+    Type: String
+  AnalysisType:
+    Type: String
+    Description: Choose "Full" or "Eco" to select either a full analysis or just an Eco one. 
+    Default: Full
+    AllowedValues:
+      - Full
+      - Eco
+  EcoPermissionScope:
+    Type: String
+    Description: Choose "Full" or "Read Only" to select either a full permission policy to activate Eco, or a read only policy for analysis. 
+    Default: Read Only
+    AllowedValues:
+      - Full
+      - Read Only
+  PermissionScope:
+    Type: String
+    Description: Choose "Full" or "Read Only" to create either full or read only policy for elastigroup/ocean.
+    Default: Read Only
+    AllowedValues:
+      - Full
+      - Read Only
+Conditions:
+  IsReadOnly:
+    Fn::Equals:
+      - Ref: PermissionScope
+      - Read Only
+  IsFullPerms:
+    Fn::Equals:
+      - Ref: PermissionScope
+      - Full
+  IsFullAnalysis:
+    Fn::Equals:
+      - Ref: AnalysisType
+      - Full
+  EcoActivate:
+    Fn::Equals:
+      - Ref: EcoPermissionScope
+      - Full
+  EcoReadOnly:
+    Fn::Equals:
+      - Ref: EcoPermissionScope
+      - Read Only
+  ReadOnlyStackset:
+    Fn::And:
+      - Condition: IsFullAnalysis
+      - Condition: IsReadOnly
+  FullPermissionsStackset:
+    Fn::And:
+      - Condition: IsFullAnalysis
+      - Condition: IsFullPerms
+Resources:
+  EcoStackReadOnly:
+    Type: AWS::CloudFormation::Stack
+    Condition: EcoReadOnly
+    Properties:
+      TemplateURL: >-
+        https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-read-only-with-cur-and-bucket.yaml
+      Parameters:
+        CostAndUsageBucket:
+          Ref: CostAndUsageBucket
+        RoleName:
+          Ref: RoleName
+        PolicyName:
+          Ref: PolicyName
+  EcoStackFullPermissions:
+    Type: AWS::CloudFormation::Stack
+    Condition: EcoActivate
+    Properties:
+      TemplateURL: >-
+        https://spot-connect-account-cf.s3.amazonaws.com/spot-iam-finopsrole-stack-restricted-full-permissions-all-services-with-cur-and-bucket.yaml
+      Parameters:
+        CostAndUsageBucket:
+          Ref: CostAndUsageBucket
+        RoleName:
+          Ref: RoleName
+        PolicyName:
+          Ref: PolicyName
+  StacksetReadOnly:
+    Type: AWS::CloudFormation::StackSet
+    Condition: ReadOnlyStackset
+    Properties:
+      TemplateURL: >-
+        https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset-ReadOnly.yaml
+      Parameters:
+        - ParameterKey: Token
+          ParameterValue:
+            Ref: Token
+      StackSetName: Spot-IO-ReadOnly-Stackset
+      Description: >-
+        Stackset creates spot sub accounts in your spot Org, and creates the IAM
+        role in each AWS account, and then connects them.
+      PermissionModel: SERVICE_MANAGED
+      Capabilities:
+        - CAPABILITY_NAMED_IAM
+        - CAPABILITY_AUTO_EXPAND
+      AutoDeployment:
+        Enabled: true
+        RetainStacksOnAccountRemoval: false
+      ManagedExecution:
+        Active: true
+      StackInstancesGroup:
+        - DeploymentTargets:
+            OrganizationalUnitIds:
+              - Ref: OrganizationOU
+          Regions:
+            - Ref: AWS::Region
+  StacksetFullPermissions:
+    Type: AWS::CloudFormation::StackSet
+    Condition: FullPermissionsStackset
+    Properties:
+      TemplateURL: https://spot-connect-account-cf.s3.amazonaws.com/Spot-AWS-Stackset.yaml
+      Parameters:
+        - ParameterKey: Token
+          ParameterValue:
+            Ref: Token
+      StackSetName: Spot-IO-FullPermissions-Stackset
+      Description: >-
+        Stackset creates spot sub accounts in your spot Org, and creates the IAM
+        role in each AWS account, and then connects them.
+      PermissionModel: SERVICE_MANAGED
+      Capabilities:
+        - CAPABILITY_NAMED_IAM
+        - CAPABILITY_AUTO_EXPAND
+      AutoDeployment:
+        Enabled: true
+        RetainStacksOnAccountRemoval: false
+      ManagedExecution:
+        Active: true

@@ -1,0 +1,19 @@
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: spot-ocean-metrics
+        metrics_path: '/metrics'
+        scrape_interval: 30s
+        static_configs: 
+          - targets: ['spot-ocean-metric-exporter.kube-system.svc.cluster.local:5050']  
+
+    ## They are there https://grafana.com/orgs/artursirota/hosted-metrics/
+    additionalRemoteWrite:
+      - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
+        basicAuth:
+            username:
+                  name: kubepromsecret
+                  key: username
+            password:
+                  name: kubepromsecret
+                  key: password
