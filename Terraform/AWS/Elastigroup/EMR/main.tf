@@ -74,9 +74,3 @@ module "elastigroup_emr" {
 output "eg_id" {
   value = module.elastigroup_emr.elastigroup_id
 }
-output "cluster_id" {
-  value = module.elastigroup_emr.cluster_id
-}
-output "ip" {
-  value = module.elastigroup_emr.ip
-}
