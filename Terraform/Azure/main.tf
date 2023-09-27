@@ -85,7 +85,7 @@ module "ocean-aks-np" {
   aks_infrastructure_resource_group_name   = "MC_${azurerm_resource_group.rg.name}_${azurerm_kubernetes_cluster.aks.name}_${azurerm_resource_group.rg.location}"
   aks_resource_group_name                  = azurerm_resource_group.rg.name
   autoscaler_is_enabled                    = var.autoscaler_is_enabled
-  availability_zones                       = [1, 2, 3]
+  availability_zones                       = var.availability_zones
 }
 
 // Configuring the Spotinst Ocean AKS Virtual Node Group (VNG) module

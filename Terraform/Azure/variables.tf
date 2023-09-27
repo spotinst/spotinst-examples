@@ -39,3 +39,9 @@ variable "autoscaler_is_enabled" {
   type        = bool
   default     = true
 }
+
+variable "availability_zones" {
+  description = "Availability Zones"
+  type        = list(number)
+  default     = [1, 2, 3]
+}
