@@ -16,12 +16,12 @@ This is a Spot.io bulk onboarding cloudshell script that can be ran directly in 
 ## Automation Flow
 All assets created by the script are on a per project basis for security purposes. Each connected project will have a unique Spot.io token resticted to the matching GC service account within the target project. 
 
-*Iterate through the input list of project
-**Create GC Service Account 
-***Create and download Service Account Key
-****Create Spot.io account
-*****Create unique programmatic user API token 
-*****Import GC account using Service Account Key, Spot.io Acct number and unique programmatic API user token
+. Iterate through the input list of project
+.. Create GC Service Account 
+... Create and download Service Account Key
+.... Create Spot.io account
+..... Create unique programmatic user API token 
+...... Import GC account using Service Account Key, Spot.io Acct number and unique programmatic API user token
 (loop)
 
 ## Deployment
