@@ -1,5 +1,5 @@
 
-# Spot.io GCP Cloudshell Bulk Onboarder
+# Spot.io GC Cloudshell Bulk Onboarder
 
 This is a Spot.io bulk onboarding cloudshell script that can be ran directly in a GC console terminal. It creates GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot API and gcloud commands. It takes in four parameters; spot acct, spot token, csv list of GCP projects and read-only (bool).
 
