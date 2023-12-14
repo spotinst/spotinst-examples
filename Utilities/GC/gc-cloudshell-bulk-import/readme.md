@@ -28,7 +28,7 @@ All assets created by the script are on a per project basis for security purpose
 To deploy this script run the following shell commands
 
 ```bash
-  wget URL https://s3-url-tbd/spot_onboarder.sh
+  wget https://s3-url-tbd/spot_onboarder.sh
   chmod +x spot_onboarder.sh
 ```
 
