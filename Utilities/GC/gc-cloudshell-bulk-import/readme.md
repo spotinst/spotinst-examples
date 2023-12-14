@@ -1,10 +1,10 @@
 
 # Spot.io GC Cloudshell Bulk Onboarder
 
-This is a Spot.io bulk onboarding cloudshell script that can be ran directly in a GC console terminal. It creates GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot API and gcloud commands. It takes in four parameters; spot acct, spot token, csv list of GCP projects and read-only (bool).
+This is a Spot.io bulk onboarding cloudshell script that can be ran directly in a GC console terminal. It creates GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot API and gcloud commands. 
 
 ## Prerequisites
-* A Spot.io account is required with a provisioned API admin token. See more [here](https://docs.spot.io/administration/api/create-api-token) if you need to setup a token.
+* A Spot.io account is required with a provisioned API admin token. See [here](https://docs.spot.io/administration/api/create-api-token) if you need to setup a token.
 * GC Projects must have the Compute Engine API enabled. You can check the status for each project using the following url. https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=#####insert_project_name######
 * A single, comma separated string of GC Projects that need to be onboarded.
 * GC Admin access to all target projects and access to the GC cloudshell console
