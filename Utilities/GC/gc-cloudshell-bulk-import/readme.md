@@ -21,7 +21,7 @@ All assets created by the script are on a per project basis for security purpose
 ... Create and download Service Account Key\
 .... Create Spot.io account\
 ..... Create unique programmatic user API token\
-...... Import GC account using Service Account Key, Spot.io Acct number and unique programmatic API user token\
+...... Import GC project using the downloaded Service Account Key, Spot.io Acct ID and unique programmatic API user token\
 (loop)
 
 ## Deployment
