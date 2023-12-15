@@ -1,7 +1,9 @@
 
 # Spot.io GC Cloudshell Bulk Onboarder
 
-This is a Spot.io bulk onboarding cloudshell script that can be ran directly in a GC console terminal. It creates GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot API and gcloud commands. 
+
+Spot.io GC Cloudshell Bulk Onboarder is a bulk GC project import tool that can be ran directly in the GC console terminal. It creates Spot.io required GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot.io API and gcloud commands. 
+
 
 ## Prerequisites
 * A Spot.io account is required with a provisioned API admin token. See [here](https://docs.spot.io/administration/api/create-api-token) if you need to setup a token.
@@ -10,7 +12,7 @@ This is a Spot.io bulk onboarding cloudshell script that can be ran directly in 
 * GC Admin access to all target projects and access to the GC cloudshell console
 
 ## Limitations and considerations
-* There is no rollback feature for this script. Duplicate assets will be generated if the script is run to onboard the same project twice. Any duplicate assets created in GC will need to be cleaned up manually.
+* There isn't a rollback feature for this script. Duplicate assets will be generated if the script is run more than once to onboard the same project. All duplicate assets created in will need to be cleaned up manually.
 * Once the GC read-only Roles have been deployed; this tool cannot upgrade deployed Roles to full permissions down the road.
 
 ## Automation Flow
@@ -39,10 +41,20 @@ To deploy this script run the following shell commands
 
 ```
 
+## Logging
+The script will generate a lot of log prints. It would be best if you pipe them to a log file for follow-up analysis. 
+
+```bash
+  
+  ./spot_onboarder.sh spot-acct-id apit-token-value csv-list-of-projects true >> spot_onboarder.log
+
+```
+
+
 ## Input Parameters
-* (String) Spot.io account ID - act-00000000
+* (String) Spot.io account ID - Example: act-00000000
 * (String) API token
 * (String) CSV list of GC Projects
-* (boolean) Read-only Role deployment flag 
+* (boolean) Read-only Role deployment flag - Default: false
 
 
