@@ -5,14 +5,14 @@
 # 1. spot_account_id: The Spot.io account ID. No default value.
 # 2. spot_token: The Spot.io token. No default value.
 # 3. project_ids: A comma-separated list of project IDs. No default value.
-# 4. read_only: A boolean indicating whether the account should be read-only. Defaults to true.
+# 4. read_only: A boolean indicating whether the account should be read-only. Defaults to false.
 create_service_account() {
     local service_account_name="spot-io-$(openssl rand -hex 4)"
     local spot_role_name="spot_io_Role_$(openssl rand -hex 4)"
     local spot_account_id=$1
     local spot_token=$2
     local project_ids=($(echo $3 | tr "," "\n"))
-    local read_only=${4:-true}
+    local read_only=${4:-false}
     local ROLE_YML="spotinst_service_account_role.yml"
     local ROLE_URI="https://spotinst-public.s3.amazonaws.com/assets/gcp/spotinst-service-role.yaml"
     
