@@ -19,6 +19,9 @@ create_service_account() {
     if [ "$read_only" = true ] ; then
         ROLE_URI="https://spot-connect-account-cf.s3.amazonaws.com/spot-gcp-service-role-read-only.yaml"
     fi
+    
+    # Downloading spotinst-service-role.yml to local folder
+        curl ${ROLE_URI} -o ${ROLE_YML}
 
     if [ -z "$spot_account_id" ] || [ -z "$spot_token" ]; then
         echo "Spot account ID or token is not provided:"
@@ -29,8 +32,7 @@ create_service_account() {
 
     for project_id in "${project_ids[@]}"
     do
-        # Downloading spotinst-service-role.yml to local folder
-        curl ${ROLE_URI} -o ${ROLE_YML}
+        
         # enable service management API
         gcloud services enable servicemanagement --project ${project_id}
         # create spotinst role from file
