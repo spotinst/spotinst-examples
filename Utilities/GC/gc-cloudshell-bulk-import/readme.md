@@ -2,21 +2,21 @@
 # Spot.io GC Cloudshell Bulk Onboarder
 
 
-Spot.io GC Cloudshell Bulk Onboarder is a bulk GC project import tool that can be ran directly in the GC console terminal. It creates Spot.io required GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot.io API and gcloud commands. 
+Spot.io GC Cloudshell Bulk Onboarder is a bulk project import tool that can be ran directly in the GC console terminal. It creates Spot.io required GC roles, service accounts, a Spot.io token per project and will onboard GC projects to the Spot console using the Spot.io API and gcloud commands. 
 
 
 ## Prerequisites
-* A Spot.io account is required with a provisioned API admin token. See [here](https://docs.spot.io/administration/api/create-api-token) if you need to setup a token.
+* An active Spot.io account is required with a provisioned API admin token. See [here](https://docs.spot.io/administration/api/create-api-token) if you need to setup a token.
 * GC Projects must have the Compute Engine API enabled. You can check the status for each project using the following url. https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=#####insert_project_name######
-* A single, comma separated string of GC Projects that need to be onboarded.
+* A single, comma separated string of GC Projects that needs onboarding.
 * GC Admin access to all target projects and access to the GC cloudshell console
 
 ## Limitations and considerations
-* There isn't a rollback feature for this script. Duplicate assets will be generated if the script is run more than once to onboard the same project. All duplicate assets created in will need to be cleaned up manually.
-* Once the GC read-only Roles have been deployed; this tool cannot upgrade deployed Roles to full permissions down the road.
+* There is no rollback feature for this tool. Duplicate assets will be generated if the script is run more than once to onboard the same project. All duplicate assets created in GC will need to be cleaned up manually.
+* Once the GC read-only Roles have been deployed; this tool cannot upgrade deployed Role policies to full permissions at a later date.
 
 ## Automation Flow
-All assets created by the script are on a per project basis for security purposes. Each connected project will have a unique Spot.io token resticted to the matching GC service account within the target project. 
+All assets created by the tool are on a per project basis for security purposes. Each connected project will have a unique Spot.io token restricted to the matching GC service account. 
 
 . Iterate through the input list of projects\
 .. Create GC Service Account\
