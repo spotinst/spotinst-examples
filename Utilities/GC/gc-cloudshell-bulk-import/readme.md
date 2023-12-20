@@ -37,7 +37,7 @@ To deploy this script run the following shell commands
 ## Script Usage Example
 ```bash
   
-  ./spot_onboarder.sh spot-acct-id apit-token-value csv-list-of-projects false
+  ./spot_onboarder.sh api-token-value csv-list-of-projects false
 
 ```
 
@@ -46,13 +46,12 @@ The script will generate a lot of log prints. It would be best if you pipe them 
 
 ```bash
   
-  ./spot_onboarder.sh spot-acct-id apit-token-value csv-list-of-projects false >> spot_onboarder.log
+  ./spot_onboarder.sh api-token-value csv-list-of-projects false >> spot_onboarder.log
 
 ```
 
 
 ## Input Parameters
-* (String) Spot.io account ID - Example: act-00000000
 * (String) API token
 * (String) CSV list of GC Projects
 * (boolean) Read-only Role deployment flag - Default: false

@@ -1,18 +1,16 @@
 #!/bin/bash
 
-# Function to create a service account and download its key; Create annd connect GCP project to Spot.io account using a programitc user token
+# Function to create a service account and download its key; Create and connect GCP project to Spot.io account using a programmatic user token
 # Parameters:
-# 1. spot_account_id: The Spot.io account ID. No default value.
-# 2. spot_token: The Spot.io token. No default value.
-# 3. project_ids: A comma-separated list of project IDs. No default value.
-# 4. read_only: A boolean indicating whether the account should be read-only. Defaults to false.
+# 1. spot_token: The Spot.io token. No default value.
+# 2. project_ids: A comma-separated list of project IDs. No default value.
+# 3. read_only: A boolean indicating whether the account should be read-only. Defaults to false.
 create_service_account() {
     local service_account_name="spot-io-$(openssl rand -hex 4)"
     local spot_role_name="spot_io_Role_$(openssl rand -hex 4)"
-    local spot_account_id=$1
-    local spot_token=$2
-    local project_ids=($(echo $3 | tr "," "\n"))
-    local read_only=${4:-false}
+    local spot_token=$1
+    local project_ids=($(echo $2 | tr "," "\n"))
+    local read_only=${3:-false}
     local ROLE_YML="spotinst_service_account_role.yml"
     local ROLE_URI="https://spotinst-public.s3.amazonaws.com/assets/gcp/spotinst-service-role.yaml"
     
@@ -21,18 +19,15 @@ create_service_account() {
     fi
     
     # Downloading spotinst-service-role.yml to local folder
-        curl ${ROLE_URI} -o ${ROLE_YML}
+    curl ${ROLE_URI} -o ${ROLE_YML}
 
-    if [ -z "$spot_account_id" ] || [ -z "$spot_token" ]; then
-        echo "Spot account ID or token is not provided:"
-        echo "Spot Account ID: ${spot_account_id}"
+    if [ -z "$spot_token" ]; then
         echo "Spot Token: ${spot_token}"
         exit -1
     fi
 
     for project_id in "${project_ids[@]}"
     do
-        
         # enable service management API
         gcloud services enable servicemanagement --project ${project_id}
         # create spotinst role from file
