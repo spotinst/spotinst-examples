@@ -22,6 +22,9 @@
     "PolicyName": {
       "Type": "String",
       "Default": "SpotByNetApp_Finops_ReadOnly_Policy"
+    },
+    "ExternalId": {
+      "Type": "String"
     }
   },
   "Resources": {
@@ -294,7 +297,14 @@
                   "arn:aws:iam::627743545735:root"
                 ]
               },
-              "Effect": "Allow"
+              "Effect": "Allow",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "ExternalId"
+                  }
+                }
+              }
             }
           ]
         },
