@@ -17,6 +17,8 @@ Parameters:
   PolicyName:
     Type: String
     Default: SpotByNetApp_Finops_ReadOnly_Policy
+  ExternalId:
+    Type: String
 Resources:
   SpotFinOpsManagedPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
@@ -215,6 +217,9 @@ Resources:
                 - 'arn:aws:iam::884866656237:root'
                 - 'arn:aws:iam::627743545735:root'
             Effect: Allow
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref 'ExternalId'
       Description: Spot by NetApp ReadOnly Finops IAM Role
       ManagedPolicyArns:
         - Ref: SpotFinOpsManagedPolicy
