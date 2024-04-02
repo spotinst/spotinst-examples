@@ -413,6 +413,8 @@ def get_or_create_custom_role(custom_role_name, custom_role_json_local_path, sub
             custom_role_name, custom_role_json_local_path, subscription
         )
 
+        # the spot core product custom role is defined in the REST API format (slightly different  than the CLI format)
+        # so use the az rest command
         custom_role_id = uuid.uuid4()
         create_custom_role_cmd = "az rest --method put"
         create_custom_role_response = run_command(
@@ -421,10 +423,7 @@ def get_or_create_custom_role(custom_role_name, custom_role_json_local_path, sub
             "--body", custom_role
         )
 
-        #f'https://management.azure.com/subscriptions/{subscription}/providers/Microsoft.Authorization/roleDefinitions/{custom_role_id}?api-version=2022-04-01'
-        #f'az rest --method put --url https://management.azure.com/subscriptions/<subscriptionId>/resourceGroups/<resourceGroup>/providers/Microsoft.ContainerRegistry/registries/<containerRegistryName>?api-version=2023-01-01-preview --body "{'location': '<locationName>', 'sku': {'name': '<skuName>'}, 'properties': {'adminUserEnabled': '<propertyValue>'}}"'
-
-        '''
+        ''' If using a custom role in the CLI format, use the `az role definition create` command
         create_custom_role_cmd = "az role definition create"
         create_custom_role_response = run_command(
             create_custom_role_cmd, "--role-definition", custom_role
