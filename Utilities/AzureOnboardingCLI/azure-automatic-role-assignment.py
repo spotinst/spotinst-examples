@@ -4,11 +4,10 @@ import argparse
 import re
 import subprocess
 import time
+import uuid
 from datetime import datetime
 
 import requests
-from azure.identity import DefaultAzureCredential
-from azure.mgmt.subscription import SubscriptionClient
 from requests import ConnectTimeout
 from spotinst_sdk2 import SpotinstSession
 from spotinst_sdk2.client import Client, SpotinstClientException
@@ -16,8 +15,8 @@ from spotinst_sdk2.models.setup.azure import *
 
 CUSTOM_ROLE_NAME = "{customRoleName}"
 SUBSCRIPTION_ID = "{subscriptionId}"
-CUSTOM_ROLE_PERMISSION_URL = (
-    "https://nirtest2.s3-us-west-2.amazonaws.com/custom_role_file.json"
+CORE_PRODUCT_CUSTOM_ROLE_URL = (
+    "https://spotinst-public.s3.amazonaws.com/assets/azure/custom_role_file.json"
 )
 HTTP_OK_RESPONSE_STATUSES = range(200, 300)
 SPOT_API_BASE_URL = 'https://api.spotinst.io'
@@ -36,6 +35,11 @@ class BuiltInAzureRoles:
 class LogLevel:
     ERROR = "ERROR"
     INFO = "INFO"
+
+
+# Pass through argument to subprocess.run(). See documentation there for additional information. When running in Windows
+# and seeing errors executing commands, it may be helpful to use `shell=True`.
+run_in_shell = False
 
 
 def log(message, log_level=LogLevel.INFO):
@@ -62,11 +66,10 @@ def get_subscription_name(subscription_id):
     Returns:
         str: The display name of the subscription.
     """
-    credential = DefaultAzureCredential()
-    subscription_client = SubscriptionClient(credential)
-    subscription = subscription_client.subscriptions.get(subscription_id)
+    subscription_display_name = run_command(
+        f'az account subscription show --subscription-id {subscription_id} --query displayName')
 
-    return subscription.display_name
+    return subscription_display_name
 
 
 def get_or_create_spot_account(subscription_id, name, token):
@@ -137,16 +140,8 @@ def run_command(cmd, *args):
     cmd_to_run = cmd_args + list(args)
 
     run_process_result = subprocess.run(
-        cmd_to_run, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+        cmd_to_run, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8", shell=run_in_shell
     )  # Maybe need to change to check output because in python there isn't encoding
-
-    # try:
-    #    output = subprocess.check_output(
-    #        cmnd, stderr=subprocess.STDOUT)
-    # except subprocess.CalledProcessError as exc:
-    #    print("Status : FAIL", exc.returncode, exc.output)
-    # else:
-    #    print(f"Output: \n{output}\n")
 
     if run_process_result.returncode != 0:
         raise Exception(
@@ -247,7 +242,7 @@ def build_custom_role(custom_role_name, custom_role_json_local_path, subscriptio
                 .replace(CUSTOM_ROLE_NAME, custom_role_name)
             )
     else:
-        get_custom_role_from_s3_response = requests.get(CUSTOM_ROLE_PERMISSION_URL)
+        get_custom_role_from_s3_response = requests.get(CORE_PRODUCT_CUSTOM_ROLE_URL)
 
         if get_custom_role_from_s3_response.status_code in HTTP_OK_RESPONSE_STATUSES:
             result = (
@@ -417,12 +412,26 @@ def get_or_create_custom_role(custom_role_name, custom_role_json_local_path, sub
         custom_role = build_custom_role(
             custom_role_name, custom_role_json_local_path, subscription
         )
+
+        # the spot core product custom role is defined in the REST API format (slightly different from the CLI format)
+        # so use the az rest command
+        custom_role_id = uuid.uuid4()
+        create_custom_role_cmd = "az rest --method put"
+        create_custom_role_response = run_command(
+            create_custom_role_cmd,
+            "--url", f"https://management.azure.com/subscriptions/{subscription}/providers/Microsoft.Authorization/roleDefinitions/{custom_role_id}?api-version=2022-04-01",
+            "--body", custom_role
+        )
+        result = create_custom_role_response["properties"]["roleName"]
+
+        ''' If using a custom role in the CLI format, use the `az role definition create` command
         create_custom_role_cmd = "az role definition create"
         create_custom_role_response = run_command(
             create_custom_role_cmd, "--role-definition", custom_role
         )
-
         result = create_custom_role_response["roleName"]
+        '''
+
         log(f"Finished to create custom role: {result}")
     else:
         result = get_custom_role_response[0]["roleName"]
@@ -470,7 +479,7 @@ def check_azure_cli_installed():
     """
     az_cmd = "az"
     exit_code = subprocess.call(
-        az_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        az_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=run_in_shell
     )
     if exit_code != 0:
         raise Exception(
@@ -503,7 +512,12 @@ def main():
     parser.add_argument(
         "--appRegistrationId", required=False, help="Existing App Registration ID"
     )
+    parser.add_argument('--shell', default=False, action='store_true',
+        help="The command will be executed through the shell. May be helpful if seeing errors when running in Windows.")
     args = parser.parse_args()
+
+    global run_in_shell
+    run_in_shell = args.shell
 
     subscription_id = args.subscription
     if subscription_id is None:
