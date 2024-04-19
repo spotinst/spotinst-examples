@@ -48,12 +48,22 @@ def log(message, log_level=LogLevel.INFO):
 
 def get_all_subscriptions_in_tenant():
     """
-    Retrieves all the subscriptions in the tenant (that the use can access).
+    Retrieves all the subscriptions in the tenant.
     Returns:
         list(str): The subscription ids in the tenant.
     """
     subscription_ids = run_command("az account subscription list --query [].subscriptionId")
     return subscription_ids
+
+
+def get_active_tenant():
+    """
+    Gets the active tenant.
+    Returns:
+        str: The tenant id.
+    """
+    tenant_id = run_command("az account show --query tenantId")
+    return tenant_id
 
 
 def get_subscription_name(subscription_id):
@@ -160,22 +170,24 @@ def run_command(cmd, *args):
     return result
 
 
-def display_result(subscription, create_or_get_service_principal_response):
+def display_app_result(subscription_id, tenant_id, app_registration_id, client_secret):
     """
-    Display the result of the subscription and create/get service principal response.
+    Display the result of the subscription and service principal.
 
     Args:
-        subscription (str): The subscription ID.
-        create_or_get_service_principal_response (dict): The response from the create or get service principal API.
+        subscription_id (str): The subscription id.
+        tenant_id (str): The tenant id.
+        app_registration_id (str): The application registration id associated with the service principal.
+        client_secret (str): The client secret associated with the service principal.
 
     Returns:
         None
     """
     log("Your credentials details:")
-    log(f"Application (client) ID: {create_or_get_service_principal_response['appId']}")
-    log(f"Client Secret: {create_or_get_service_principal_response['password']}")
-    log(f"Tenant ID: {create_or_get_service_principal_response['tenant']}")
-    log(f"Subscription ID: {subscription}")
+    log(f"Application Registration ID: {app_registration_id}")
+    log(f"Client Secret: {client_secret}")
+    log(f"Tenant ID: {tenant_id}")
+    log(f"Subscription ID: {subscription_id}")
 
 
 def set_azure_credentials(
@@ -254,68 +266,66 @@ def build_custom_role(custom_role_name, custom_role_json_local_path, subscriptio
     return result
 
 
-def create_required_parameters_for_spot_registrations(
-    subscription,
-    custom_role_name,
-    custom_role_json_local_path,
-    service_principal_name,
-    products,
-    app_registration_id=None
-):
-    if does_subscription_exist_for_account(subscription):
-        roles = []
-        if Products.CORE in products:
-            custom_role_name = get_or_create_custom_role(
-                custom_role_name, custom_role_json_local_path, subscription
-            )
-            roles.append(custom_role_name)
+def get_roles_for_products(products, custom_role_name, custom_role_json_local_path, subscription):
+    roles = []
+    if Products.CORE in products:
+        custom_role_name = get_or_create_custom_role(
+            custom_role_name, custom_role_json_local_path, subscription
+        )
+        roles.append(custom_role_name)
 
-        if Products.COST_INTELLIGENCE in products:
-            # cost intelligence requires the Azure built-in READER role
-            roles.append(BuiltInAzureRoles.READER)
-
-        if app_registration_id is not None:
-            create_or_get_service_principal_response = get_service_principal(
-                app_registration_id, roles, subscription, service_principal_name
-            )
-        else:
-            create_or_get_service_principal_response = create_service_principal(
-                roles, service_principal_name, subscription
-            )
-
-        result = create_or_get_service_principal_response
-    else:
-        raise Exception("Could not find the subscription in account subscriptions")
-
-    return result
+    if Products.COST_INTELLIGENCE in products:
+        # cost intelligence requires the Azure built-in READER role
+        roles.append(BuiltInAzureRoles.READER)
+    
+    return roles
 
 
-def get_service_principal(app_registration_id, roles, subscription, credential_name):
+def create_client_secret(app_registration_id, credential_name):
     """
-    Generate a service principal for the given app registration ID, assign a custom role to the service principal, create a secret for the app registration, and return the result of creating the secret.
+    Create a secret for the App Registration
 
     Parameters:
     - app_registration_id (str): The ID of the app registration.
-    - roles (list(str)): The names of the roles to assign to the service principal.
-    - subscription (str): The ID of the subscription.
     - credential_name (str): The display name to use for the credential.
 
     Returns:
     - create_secret_result (dict): The result of creating the secret for the app registration.
     """
-    app_reg_show_cmd = f"az ad sp show --id {app_registration_id}"
-    run_command(app_reg_show_cmd)
-
-    # Assign the roles to the service principal
-    for role in roles:
-        app_reg_role_assignment_cmd = f"az role assignment create --assignee {app_registration_id} --role {role} --scope /subscriptions/{subscription}"
-        run_command(app_reg_role_assignment_cmd)
-
-    # Create a secret for the App Registration
     create_secret_cmd = f"az ad app credential reset --id {app_registration_id} --append --display-name {credential_name}"
-    create_secret_result = run_command(create_secret_cmd)
+    result = run_command(create_secret_cmd)
 
-    return create_secret_result
+    return (result["appId"], result["password"], result["tenant"])
+
+
+def assign_roles(app_registration_id, roles, subscription):
+    """
+    Assign the roles to the service principal.
+
+    Parameters:
+    - app_registration_id (str): The app registration id for the service principal.
+      see https://learn.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-create
+    - roles (list(str)): The names of the roles to assign to the service principal.
+    - subscription (str): The ID of the subscription.
+    """
+    # Get the object_id for the service principal. This is used with --assignee-object-id to avoid errors caused by propagation latency in AAD Graph.
+    # see https://learn.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-create
+    get_app_object_id_cmd = f"az ad sp show --id {app_registration_id}"
+    object_id_result = run_command(get_app_object_id_cmd)
+    app_object_id = object_id_result.get('id')
+
+    for role in roles:
+        app_reg_role_assignment_cmd = f"az role assignment create --assignee-object-id {app_object_id} --assignee-principal-type ServicePrincipal"
+        try:
+            run_command(app_reg_role_assignment_cmd,
+                        "--role", role,
+                        "--scope", f"/subscriptions/{subscription}")
+        except:
+            # the role assignment may have failed because of propagation latency. try again after a brief delay
+            time.sleep(15)
+            run_command(app_reg_role_assignment_cmd,
+                        "--role", role,
+                        "--scope", f"/subscriptions/{subscription}")
 
 
 def does_subscription_exist_for_account(subscription):
@@ -341,53 +351,33 @@ def does_subscription_exist_for_account(subscription):
         return False
 
 
-def create_service_principal(roles, service_principal_name, subscription):
+def create_service_principal(service_principal_name):
     """
-    Creates a service principal with the given custom role name, service principal name, and subscription.
+    Creates a new app registration and corresponding service principal.
 
     Args:
-        roles (list(str)): The names of the roles to assign to the service principal.
         service_principal_name (str): The name of the service principal.
-        subscription (str): The subscription ID.
 
     Returns:
-        str: The result of creating the service principal.
+        (str1, str2, str3) where:
+            str1: The ID of the app registration.
+            str2: The client secret that is the result of creating the service principal
+            str3: The tenant id where app registration and service principal reside
     """
     log("Creating service principal")
     create_service_principal_cmd = f"az ad sp create-for-rbac"
 
     result = run_command(create_service_principal_cmd,
                          "--name", service_principal_name)
-    app_registration_id = result.get('appId')
-
-    # Get the object_id for the service principal. This is used with --assignee-object-id to avoid errors caused by propagation latency in AAD Graph.
-    # see https://learn.microsoft.com/en-us/cli/azure/role/assignment?view=azure-cli-latest#az-role-assignment-create
-    get_app_object_id_cmd = f"az ad sp show --id {app_registration_id}"
-    object_id_result = run_command(get_app_object_id_cmd)
-    app_object_id = object_id_result.get('id')
-
-    # Assign the roles to the service principal
-    for role in roles:
-        app_reg_role_assignment_cmd = f"az role assignment create --assignee-object-id {app_object_id} --assignee-principal-type ServicePrincipal"
-        try:
-            run_command(app_reg_role_assignment_cmd,
-                        "--role", role,
-                        "--scope", f"/subscriptions/{subscription}")
-        except:
-            # the role assignment may have failed because of propagation latency. try again after a brief delay
-            time.sleep(15)
-            run_command(app_reg_role_assignment_cmd,
-                        "--role", role,
-                        "--scope", f"/subscriptions/{subscription}")
 
     log(f"Finished creating service principal: {result}")
 
-    return result
+    return (result["appId"], result["password"], result["tenant"])
 
 
 def get_or_create_custom_role(custom_role_name, custom_role_json_local_path, subscription):
     """
-    Creates a custom role with the given parameters.
+    Creates a custom role with the given parameters if the role does not already exist.
 
     Args:
         custom_role_name (str): The name of the custom role.
@@ -488,6 +478,13 @@ def check_azure_cli_installed():
 
 
 def register_products(spot_account_id, token, products):
+    """
+    Enrolls the spot account in the specified Spot products by communicating with the Spot api.
+    Args:
+        spot_account_id: The Spot account to enroll products for.
+        token: The Spot api token.
+        products: A string representing which products to enroll in.
+    """
     session = SpotinstSession(auth_token=token, base_url=SPOT_API_BASE_URL)
     client = Client(session=session.session)
     if Products.COST_INTELLIGENCE in products:
@@ -498,26 +495,52 @@ def register_products(spot_account_id, token, products):
                          entity_name="cost-intelligence-enrollment")
 
 
-def main():
+def parse_args():
+    """
+    Retrieve the command line arguments.
+    """
     parser = argparse.ArgumentParser(
         description="Create required parameters for Spot registration"
     )
-    parser.add_argument("--subscription", required=False, help="Azure Subscription ID")
-    parser.add_argument("--token", required=True, help="Spot Organization Token")
-    parser.add_argument("--customRoleName", required=True, help="Custom Role Name")
+
+    # Target Azure subscriptions
+    parser.add_argument("--subscription", required=False, help="Azure Subscription ID to connect to Spot account. If unspecified all subscriptions in current tenant will be onboarded.")
+    
+    # Spot configuration
+    parser.add_argument("--token", required=True, help="Spot organization token.")
     parser.add_argument("--products", required=False, help="Products to register (e.g. core, cost-intelligence)")
-    parser.add_argument(
-        "--customRoleJsonPath", required=False, help="Custom Role Json File Path"
-    )
-    parser.add_argument(
-        "--appRegistrationId", required=False, help="Existing App Registration ID"
-    )
+
+    # Azure resource configuration
+    parser.add_argument("--skipResourceCreation", default=False, action="store_true", help="Skip creating any resources in Azure.  Only creates Spot resources.")
+    parser.add_argument("--customRoleName", default="Spot-CoreRole", required=False, help="Name to use for the custom role.")
+    parser.add_argument("--customRoleJsonPath", required=False, help="Custom role Json file path. If specified will not use the default role.")
+    parser.add_argument("--appRegistrationId", required=False, help="Existing App Registration ID. If specified will not create a new app registration.")
+    parser.add_argument("--clientSecret", required=False, help="Client secret for the app registration. If specified will not create a new client secret.")
+
+    # other options    
     parser.add_argument('--shell', default=False, action='store_true',
         help="The command will be executed through the shell. May be helpful if seeing errors when running in Windows.")
+
     args = parser.parse_args()
 
+    # custom argument validation
+    if args.skipResourceCreation and not (args.appRegistrationId and args.clientSecret):
+        parser.error("Argument --skipResourceCreation requires --appRegistrationId and --clientSecret to be specified.")
+
+    return args
+
+
+def main():
+    # command line arguments
+    args = parse_args()
+
+    # shell configuration
     global run_in_shell
     run_in_shell = args.shell
+
+    # assign args
+    if args.skipResourceCreation:
+        log("Argument `--skipResourceCreation` specified, no Azure resources will be created.")
 
     subscription_id = args.subscription
     if subscription_id is None:
@@ -528,16 +551,21 @@ def main():
         log("Optional argument `--product` not specified, defaulting to `core` product.")
         products = f"{Products.CORE}"
 
-    token = args.token
     custom_role_name_base = args.customRoleName
     custom_role_json_local_path = args.customRoleJsonPath
 
-    if custom_role_json_local_path is None:
+    if not args.skipResourceCreation and custom_role_json_local_path is None:
         log("Optional argument `--customRoleJsonPath` not specified, using recommended custom role definition.")
+
+    token = args.token
+    app_registration_id = args.appRegistrationId
+    client_secret = args.clientSecret
 
     try:
         check_azure_cli_installed()
 
+        # Subscriptions / tenant
+        tenant_id = get_active_tenant()
         if subscription_id:
             subscription_ids = [subscription_id]
         else:
@@ -545,41 +573,53 @@ def main():
             subscription_ids = get_all_subscriptions_in_tenant()
             log(f"Found {len(subscription_ids)} subscriptions in tenant.")
 
+        # App registration
+        if not args.skipResourceCreation:
+            service_principal_name = "Spot-App"
+            should_create_app = args.appRegistrationId is None
+            if should_create_app:
+                # create the app registration
+                (app_registration_id, client_secret, tenant) = create_service_principal(service_principal_name)
+            else:
+                # if the client secret was not supplied, create a new one
+                should_reset_client_secret = client_secret is None
+                if should_reset_client_secret:
+                    (app_registration_id, client_secret, tenant) = create_client_secret(app_registration_id, service_principal_name)
+
         number_successfully_onboarded = 0
         failed_subscriptions = []
 
+        # process each subscription specified
         for index, subscription_id in enumerate(subscription_ids):
             try:
-                subscription_name = ""
                 subscription_name = get_subscription_name(subscription_id)
                 log(f"Onboarding subscription {index+1} of {len(subscription_ids)} ({subscription_name} - {subscription_id})")
 
                 account_id = get_or_create_spot_account(subscription_id, subscription_name, token)
-                custom_role_name = f"{custom_role_name_base}_{account_id}"
+                
+                # only create Azure resources (app registration, client secret, custom role, et al.) if specified
+                if not args.skipResourceCreation:
+                    custom_role_name = f"{custom_role_name_base}_{account_id}"
+                    roles = get_roles_for_products(products, custom_role_name, custom_role_json_local_path, subscription_id)
+                    
+                    # assign the roles to the service principal
+                    assign_roles(app_registration_id, roles, subscription_id)
 
-                service_principal_name = f"Spot-{subscription_name}-{account_id}".replace(" ", "")
-                required_parameters_response = (
-                    create_required_parameters_for_spot_registrations(
-                        subscription_id,
-                        custom_role_name,
-                        custom_role_json_local_path,
-                        service_principal_name,
-                        products,
-                        args.appRegistrationId
-                    )
+                # set the credentials in Spot
+                set_azure_credentials(
+                    token,
+                    account_id,
+                    app_registration_id,
+                    client_secret,
+                    tenant_id,
+                    subscription_id,
                 )
-                if account_id is not None and token is not None:
-                    set_azure_credentials(
-                        token,
-                        account_id,
-                        required_parameters_response["appId"],
-                        required_parameters_response["password"],
-                        required_parameters_response["tenant"],
-                        subscription_id,
-                    )
 
+                # register the selected products in Spot
                 register_products(account_id, token, products)
-                display_result(subscription_id, required_parameters_response)
+
+                if not args.clientSecret:
+                    display_app_result(subscription_id, tenant_id, app_registration_id, client_secret)
 
                 log(f"Completed onboarding subscription {index+1} of {len(subscription_ids)} ({subscription_name} - {subscription_id})\n")
                 number_successfully_onboarded += 1
