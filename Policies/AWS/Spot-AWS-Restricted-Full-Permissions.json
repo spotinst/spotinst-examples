@@ -112,6 +112,7 @@
         "iam:GetPolicyVersion",
         "iam:ListPolicies",
         "iam:GetPolicy",
+        "iam:PassRole",
         "iam:ListAttachedRolePolicies",
         "organizations:ListAccounts",
         "iam:CreateServiceLinkedRole"

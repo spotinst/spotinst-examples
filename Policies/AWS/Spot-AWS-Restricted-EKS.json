@@ -117,7 +117,9 @@
     {
       "Sid": "AccessEks",
       "Action": [
-        "eks:ListClusters"
+        "eks:ListClusters",
+        "eks:DescribeNodegroup",
+        "eks:ListNodegroups"
       ],
       "Effect": "Allow",
       "Resource": [
