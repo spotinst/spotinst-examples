@@ -506,7 +506,7 @@ def parse_args():
 
     # Target Azure subscriptions
     parser.add_argument("--subscription", required=False, help="Azure Subscription ID to connect to Spot account. If unspecified all subscriptions in current tenant will be onboarded.")
-    parser.add_argument("--subscriptionCsvFileName", required=False, help="File path to csv list of subscriptions to connect to Spot accounts.")
+    parser.add_argument("--subscriptionFileName", required=False, help="File path to csv list of subscriptions to connect to Spot accounts.")
     
     # Spot configuration
     parser.add_argument("--token", required=True, help="Spot organization token.")
@@ -547,8 +547,8 @@ def main():
     subscription_id = args.subscription
     if subscription_id is None:
         log("Optional argument `--subscription` not specified, looking for csv list or will default to tenant scope.")
-        if args.subscriptionCsvFileName != "":
-            subscription_id_csv_file_name = args.subscriptionCsvFileName
+        if args.subscriptionFileName != "":
+            subscription_id_list_file_name = args.subscriptionFileName
             log("will look for csv file in local path and try to open")
     
     if subscription_id is None:
@@ -576,11 +576,11 @@ def main():
         tenant_id = get_active_tenant()
         if subscription_id:
             subscription_ids = [subscription_id]
-        elif subscription_id_csv_file_name:
-            with open(subscription_id_csv_file_name, newline='\n') as f:
-                reader = csv.reader(f)
-                data = list(reader)
-            subscription_ids = data
+        elif subscription_id_list_file_name:
+            f = open(subscription_id_list_file_name, 'r') 
+            data = f.read()
+            subscription_ids = str.split(data,"\n")
+            f.close()
         else:
             ensure_azure_cli_automatic_extension_install_enabled()
             subscription_ids = get_all_subscriptions_in_tenant()
