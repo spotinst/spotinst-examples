@@ -6,7 +6,6 @@ import subprocess
 import time
 import uuid
 from datetime import datetime
-import csv
 
 import requests
 from requests import ConnectTimeout
