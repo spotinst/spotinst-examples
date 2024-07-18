@@ -505,7 +505,7 @@ def parse_args():
 
     # Target Azure subscriptions
     parser.add_argument("--subscription", required=False, help="Azure Subscription ID to connect to Spot account. If unspecified all subscriptions in current tenant will be onboarded.")
-    parser.add_argument("--subscriptionFileName", required=False, help="File path to csv list of subscriptions to connect to Spot accounts.")
+    parser.add_argument("--subscriptionFileName", required=False, help="File path to txt list of subscriptions to connect to Spot accounts.")
     
     # Spot configuration
     parser.add_argument("--token", required=True, help="Spot organization token.")
@@ -545,10 +545,10 @@ def main():
 
     subscription_id = args.subscription
     if subscription_id is None:
-        log("Optional argument `--subscription` not specified, looking for csv list or will default to tenant scope.")
+        log("Optional argument `--subscription` not specified, looking for txt list or will default to tenant scope.")
         if args.subscriptionFileName != "":
             subscription_id_list_file_name = args.subscriptionFileName
-            log("will look for csv file in local path and try to open")
+            log("will look for txt file in local path and try to open")
     
     if subscription_id is None:
         log("Optional argument `--subscription` not specified, defaulting to tenant scope.")
