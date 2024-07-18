@@ -505,6 +505,7 @@ def parse_args():
 
     # Target Azure subscriptions
     parser.add_argument("--subscription", required=False, help="Azure Subscription ID to connect to Spot account. If unspecified all subscriptions in current tenant will be onboarded.")
+    parser.add_argument("--subscriptionFileName", required=False, help="File path to txt list of subscriptions to connect to Spot accounts.")
     
     # Spot configuration
     parser.add_argument("--token", required=True, help="Spot organization token.")
@@ -544,8 +545,14 @@ def main():
 
     subscription_id = args.subscription
     if subscription_id is None:
+        log("Optional argument `--subscription` not specified, looking for txt list or will default to tenant scope.")
+        if args.subscriptionFileName != "":
+            subscription_id_list_file_name = args.subscriptionFileName
+            log("will look for txt file in local path and try to open")
+    
+    if subscription_id is None:
         log("Optional argument `--subscription` not specified, defaulting to tenant scope.")
-
+        
     products = args.products
     if products is None:
         log("Optional argument `--product` not specified, defaulting to `core` product.")
@@ -568,6 +575,11 @@ def main():
         tenant_id = get_active_tenant()
         if subscription_id:
             subscription_ids = [subscription_id]
+        elif subscription_id_list_file_name:
+            f = open(subscription_id_list_file_name, 'r') 
+            data = f.read()
+            subscription_ids = str.split(data,"\n")
+            f.close()
         else:
             ensure_azure_cli_automatic_extension_install_enabled()
             subscription_ids = get_all_subscriptions_in_tenant()
