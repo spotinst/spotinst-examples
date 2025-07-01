@@ -8,8 +8,9 @@ Connect-AzAccount -TenantId $tenantId
 # Register the app
 $app = New-AzADApplication -DisplayName $appName
 
-# Create a service principal
-New-AzADServicePrincipal -ApplicationId $app.AppId
+# Create a service principal and get its ID
+$sp = New-AzADServicePrincipal -ApplicationId $app.AppId
+$principalId = $sp.Id
 
 # Delete all secret keys
 $secretKeys = Get-AzADAppCredential -ApplicationId $appId
@@ -31,8 +32,27 @@ New-AzRoleAssignment -ApplicationId $appId -RoleDefinitionName "Savings plan Rea
 # assign cost management reader role
 New-AzRoleAssignment -ApplicationId $appId -RoleDefinitionName "Cost Management Reader" -Scope "/providers/Microsoft.Management/managementGroups/$tenantId"
 
-# assign enrollment reader role
-New-AzRoleAssignment -ApplicationId $appId -RoleDefinitionName "Enrollment Reader" -Scope "/providers/Microsoft.Billing/billingAccounts/$billingAccountId"
+# Generate a UUID for the role assignment ID
+$ROLE_ASSIGNMENT_ID = [guid]::NewGuid().ToString().ToLower()
+$ROLE_DEF_ID = "24f8edb6-1668-4659-b5e2-40bb5f3a7d7e"
+$API_VERSION = "2019-10-01-preview"
+$SCOPE = "providers/Microsoft.Billing/billingAccounts/$billingAccountId"
+$ACCESS_TOKEN = az account get-access-token --resource https://management.azure.com/ --query accessToken -o tsv
+$DATA = @{
+    properties = @{
+        roleDefinitionId    = "/$SCOPE/billingRoleDefinitions/$ROLE_DEF_ID"
+        principalTenantId   = $tenantId
+        principalId         = $principalId
+    }
+} | ConvertTo-Json
+$headers = @{
+    "Content-Type"  = "application/json"
+    "Authorization" = "Bearer $ACCESS_TOKEN"
+}
+Invoke-RestMethod -Method Put `
+    -Uri "https://management.azure.com/$SCOPE/billingRoleAssignments/$ROLE_ASSIGNMENT_ID?api-version=$API_VERSION" `
+    -Headers $headers `
+    -Body $DATA
 
 
 # Output app details
