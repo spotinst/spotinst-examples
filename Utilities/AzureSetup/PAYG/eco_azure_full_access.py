@@ -1,5 +1,6 @@
 import requests
 from azure.identity import DefaultAzureCredential
+import uuid
 
 # Set up the necessary variables
 TENANT_ID = "{{tenant_id}}"
@@ -38,7 +39,7 @@ object_id = resp.json()["id"]
 # assign reservation reader role
 role_definition_id = "582fc458-8989-419f-a480-75249bc5db7e"
 scope = "providers/Microsoft.Capacity"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -51,7 +52,7 @@ resp.raise_for_status()
 # assign reservation purchaser role
 role_definition_id = "f7b75c60-3036-4b75-91c3-6b41c27c1689"
 scope = f"providers/Microsoft.Management/managementGroups/{TENANT_ID}"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -64,7 +65,7 @@ resp.raise_for_status()
 # assign reservation administrator role
 role_definition_id = "a8889054-8d42-49c9-bc1c-52486c10e7cd"
 scope = "providers/Microsoft.Capacity"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -77,7 +78,7 @@ resp.raise_for_status()
 # assign savings plan purchaser role
 role_definition_id = "3d24a3a0-c154-4f6f-a5ed-adc8e01ddb74"
 scope = f"providers/Microsoft.Management/managementGroups/{TENANT_ID}"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -90,7 +91,7 @@ resp.raise_for_status()
 # assign savings plan administrator role
 role_definition_id = "433febaf-a31d-4d4f-8dc8-b4593b39bda5"
 scope = "providers/Microsoft.BillingBenefits"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -103,7 +104,7 @@ resp.raise_for_status()
 # assign cost management reader role
 role_definition_id = "72fafb9e-0641-4937-9268-a91bfd8191a3"
 scope = f"providers/Microsoft.Management/managementGroups/{TENANT_ID}"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",

@@ -13,7 +13,7 @@ SECRET_KEY=$(az ad app credential reset --id $APP_ID --output json --query passw
 SECRET_KEY=$(echo $SECRET_KEY | tr -d '"')
 
 # Create service principal
-az ad sp create --id $APP_ID
+PRINCIPAL_ID=$(az ad sp create --id $APP_ID --output json --query id | tr -d '"')
 
 # Role assignments
 # assign reservation reader role
@@ -25,8 +25,17 @@ az role assignment create --assignee $APP_ID --role "Savings plan Reader" --scop
 # assign cost management reader role
 az role assignment create --assignee $APP_ID --role "Cost Management Reader" --scope "/providers/Microsoft.Management/managementGroups/${TENANT_ID}"
 
-# assign billing reader role
-az role assignment create --assignee $APP_ID --role "Billing Reader" --scope "/providers/Microsoft.Billing/billingAccounts/${BILLING_ACCOUNT_ID}"
+# assign Billing Reader role using REST API
+ROLE_DEF_ID="50000000-aaaa-bbbb-cccc-100000000002"
+API_VERSION="2019-10-01-preview"
+SCOPE="providers/Microsoft.Billing/billingAccounts/${BILLING_ACCOUNT_ID}"
+ACCESS_TOKEN=$(az account get-access-token --resource https://management.azure.com/ --query accessToken -o tsv)
+DATA='{\"Properties\": {\"RoleDefinitionId\": \"/${SCOPE}/billingRoleDefinitions/${ROLE_DEF_ID}\", \"PrincipalId\": \"${PRINCIPAL_ID}\"}}'
+curl -X POST \
+  "https://management.azure.com/${SCOPE}/createBillingRoleAssignment?api-version=${API_VERSION}" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "${DATA}"
 
 
 # Print registered app info

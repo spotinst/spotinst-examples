@@ -1,5 +1,6 @@
 import requests
 from azure.identity import DefaultAzureCredential
+import uuid
 
 from Utilities.AzureSetup.CSP.eco_azure_full_access import BILLING_ACCOUNT_ID
 
@@ -41,7 +42,7 @@ object_id = resp.json()["id"]
 # assign reservation reader role
 role_definition_id = "582fc458-8989-419f-a480-75249bc5db7e"
 scope = "providers/Microsoft.Capacity"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -54,7 +55,7 @@ resp.raise_for_status()
 # assign cost management reader role
 role_definition_id = "72fafb9e-0641-4937-9268-a91bfd8191a3"
 scope = f"providers/Microsoft.Management/managementGroups/{TENANT_ID}"
-role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/providers/Microsoft.Authorization/roleAssignments/{str(uuid.uuid4())}?api-version=2022-04-01"
 data = {
     "properties": {
         "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
@@ -67,14 +68,14 @@ resp.raise_for_status()
 # assign billing reader role
 role_definition_id = "50000000-aaaa-bbbb-cccc-100000000002"
 scope = f"providers/Microsoft.Billing/billingAccounts/{BILLING_ACCOUNT_ID}"
-role_assignments_url = f"https://management.azure.com/{scope}/createBillingRoleAssignment/{role_definition_id}?api-version=2022-04-01"
+role_assignments_url = f"https://management.azure.com/{scope}/createBillingRoleAssignment?api-version=2019-10-01-preview"
 data = {
-    "properties": {
-        "roleDefinitionId": f"{scope}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}",
-        "principalId": object_id
+    "Properties": {
+        "RoleDefinitionId": f"{scope}/billingRoleDefinitions/{role_definition_id}",
+        "PrincipalId": object_id
     }
 }
-resp = requests.put(url=role_assignments_url, headers=management_header, json=data)
+resp = requests.post(url=role_assignments_url, headers=management_header, json=data)
 resp.raise_for_status()
 
 

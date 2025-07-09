@@ -1,0 +1,464 @@
+{
+	"info": {
+		"_postman_id": "92aa972e-8f3a-4984-84fd-84c1c5ca4d4a",
+		"name": "Eco Azure Onboarding",
+		"description": "The list of APIs Rest Endpoints for completing onboarding to the Eco Azure product. Includes tasks like the following:\n\n- Create an App Registration\n    \n- Create an App Registration Secret\n    \n- Create an App Registration Service Principal\n    \n- Create Role Assignments to the Registered App\n    \n    - Role for Reading Reservations\n        \n    - Role for Reading Savings Plans\n        \n    - Role for Tenanat Cost and Billing Reader\n        \n    - Role for Billing account Read (for EA customers)\n        \n    - Role for Billing profiles Read (for MCA customers)\n        \n    - Role for managing existing Reservations (for paying customers)\n        \n    - Role for managing existing Savings Plans (for paying customers)\n        \n    - Role for purchasing new Reservations (for paying customers)\n        \n    - Role for purchasing new Savings Plans (for paying customers)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "2995178"
+	},
+	"item": [
+		{
+			"name": "Create App Registration",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{graph_bearer_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"displayName\": \"{{app_display_name}}\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{graph_api}}/v1.0/applications"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Service Principal",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{graph_bearer_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"appId\": \"{{app_id}}\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{graph_api}}/v1.0/servicePrincipals"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Secret Key",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{graph_bearer_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"passwordCredential\": {}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{graph_api}}/v1.0/applications(appId='{{app_id}}')/addPassword"
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Cost Management Reader",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleDefinitions/72fafb9e-0641-4937-9268-a91bfd8191a3\",\n        \"principalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleAssignments/{{$guid}}?api-version=2022-04-01",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Management",
+						"managementGroups",
+						"{{tenant_id}}",
+						"providers",
+						"Microsoft.Authorization",
+						"roleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2022-04-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Reservation Reader",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Capacity/providers/Microsoft.Authorization/roleDefinitions/582fc458-8989-419f-a480-75249bc5db7e\",\n        \"principalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Capacity/providers/Microsoft.Authorization/roleAssignments/{{$guid}}?api-version=2022-04-01",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Capacity",
+						"providers",
+						"Microsoft.Authorization",
+						"roleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2022-04-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Reservation Purchaser (Paying Customers Only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleDefinitions/f7b75c60-3036-4b75-91c3-6b41c27c1689\",\n        \"principalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleAssignments/{{$guid}}?api-version=2022-04-01",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Management",
+						"managementGroups",
+						"{{tenant_id}}",
+						"providers",
+						"Microsoft.Authorization",
+						"roleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2022-04-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Savings Plan Purchaser (Paying Customers Only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleDefinitions/3d24a3a0-c154-4f6f-a5ed-adc8e01ddb74\",\n        \"principalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Management/managementGroups/{{tenant_id}}/providers/Microsoft.Authorization/roleAssignments/{{$guid}}?api-version=2022-04-01",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Management",
+						"managementGroups",
+						"{{tenant_id}}",
+						"providers",
+						"Microsoft.Authorization",
+						"roleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2022-04-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Billing Reader (MCA and CSP Customers Only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Properties\": {\n        \"RoleDefinitionId\": \"providers/Microsoft.Billing/billingAccounts/{{billing_account_id}}/billingRoleDefinitions/50000000-aaaa-bbbb-cccc-100000000002\",\n        \"PrincipalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Billing/billingAccounts/{{billing_account_id}}/createBillingRoleAssignment?api-version=2019-10-01-preview",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Billing",
+						"billingAccounts",
+						"{{billing_account_id}}",
+						"createBillingRoleAssignment"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2019-10-01-preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Enrollment Reader (EA Customers Only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Billing/billingAccounts/{{billing_account_id}}/billingRoleDefinitions/24f8edb6-1668-4659-b5e2-40bb5f3a7d7e\",\n        \"principalId\": \"{{service_principal_id}}\",\n        \"principalTenantId\": \"{{tenant_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Billing/billingAccounts/{{billing_account_id}}/billingRoleAssignments/{{$guid}}?api-version=2019-10-01-preview",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Billing",
+						"billingAccounts",
+						"{{billing_account_id}}",
+						"billingRoleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2019-10-01-preview"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign Reservation Administrator (Paying Customers Only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{management_bearer_token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"properties\": {\n        \"roleDefinitionId\": \"providers/Microsoft.Capacity/providers/Microsoft.Authorization/roleDefinitions/a8889054-8d42-49c9-bc1c-52486c10e7cd\",\n        \"principalId\": \"{{service_principal_id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{management_api}}/providers/Microsoft.Capacity/providers/Microsoft.Authorization/roleAssignments/{{$guid}}?api-version=2022-04-01",
+					"host": [
+						"{{management_api}}"
+					],
+					"path": [
+						"providers",
+						"Microsoft.Capacity",
+						"providers",
+						"Microsoft.Authorization",
+						"roleAssignments",
+						"{{$guid}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2022-04-01"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "management_bearer_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "graph_bearer_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "graph_api",
+			"value": "https://graph.microsoft.com",
+			"type": "string"
+		},
+		{
+			"key": "management_api",
+			"value": "https://management.azure.com",
+			"type": "string"
+		},
+		{
+			"key": "app_display_name",
+			"value": "EcoAzureConnection",
+			"type": "string"
+		},
+		{
+			"key": "app_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "service_principal_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "billing_account_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
