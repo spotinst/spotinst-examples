@@ -13,11 +13,11 @@
   "Parameters": {
     "RoleName": {
       "Type": "String",
-      "Default": "SpotByNetApp_Finops_FullPermission"
+      "Default": "Flexera_ECO_Finops_FullPermission"
     },
     "PolicyName": {
       "Type": "String",
-      "Default": "SpotByNetApp_Finops_FullPermission_Policy"
+      "Default": "Flexera_ECO_Finops_FullPermission_Policy"
     }
   },
   "Resources": {
@@ -25,7 +25,7 @@
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "ManagedPolicyName": { "Ref" : "PolicyName" },
-        "Description": "Spot by NetApp Finops Full Policy",
+        "Description": "Fe Finops Full Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -211,7 +211,7 @@
             }
           ]
         },
-        "Description" : "Spot by NetApp FullPermissions Finops IAM Role",
+        "Description" : "Flexera ECO FullPermissions Finops IAM Role",
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
