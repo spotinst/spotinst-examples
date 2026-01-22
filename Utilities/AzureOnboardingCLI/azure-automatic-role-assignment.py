@@ -26,10 +26,12 @@ SPOT_SETUP_CI_PATH = "/cbi/v1/setup/account"
 class Products:
     CORE = 'core'
     COST_INTELLIGENCE = 'cost-intelligence'
+    SPOT_SECURITY = 'spot-security'
 
 
 class BuiltInAzureRoles:
     READER = 'READER'
+    STORAGE_BLOB_DATA_READER = 'Storage Blob Data Reader'
 
 
 class LogLevel:
@@ -277,6 +279,9 @@ def get_roles_for_products(products, custom_role_name, custom_role_json_local_pa
     if Products.COST_INTELLIGENCE in products:
         # cost intelligence requires the Azure built-in READER role
         roles.append(BuiltInAzureRoles.READER)
+
+    if Products.SPOT_SECURITY in products:
+        roles.append(BuiltInAzureRoles.STORAGE_BLOB_DATA_READER)
     
     return roles
 
@@ -509,7 +514,7 @@ def parse_args():
     
     # Spot configuration
     parser.add_argument("--token", required=True, help="Spot organization token.")
-    parser.add_argument("--products", required=False, help="Products to register (e.g. core, cost-intelligence)")
+    parser.add_argument("--products", required=False, help="Products to register (e.g. core, cost-intelligence, spot-security, etc.)")
 
     # Azure resource configuration
     parser.add_argument("--skipResourceCreation", default=False, action="store_true", help="Skip creating any resources in Azure.  Only creates Spot resources.")
