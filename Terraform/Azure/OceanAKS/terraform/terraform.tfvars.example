@@ -64,7 +64,7 @@ vmss_node_pools = {
 	}
 }
 
-ocean_vng_name            = "wes-test-aks-tf-vng"
+ocean_vng_name            = "VNG1"
 ocean_vng_min_count       = 1
 ocean_vng_max_count       = 3
 ocean_vng_spot_percentage = 100
