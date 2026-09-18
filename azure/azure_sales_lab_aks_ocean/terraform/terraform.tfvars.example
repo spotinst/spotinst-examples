@@ -1,0 +1,70 @@
+subscription_id         = "00000000-0000-0000-0000-000000000000"
+tenant_id               = "00000000-0000-0000-0000-000000000000"
+resource_group_name     = "customer-aks-ocean-rg"
+resource_group_location = "eastus"
+cluster_name            = "customer-aks-ocean"
+node_count              = 3
+node_vm_size            = "Standard_D2_v2"
+username                = "azureadmin"
+
+spotinst_account             = "act-xxxxxxxx"
+spotinst_token               = "REPLACE_WITH_SPOT_TOKEN"
+github_owner                 = "your-github-user-or-organization"
+argocd_github_token          = "REPLACE_WITH_GITHUB_TOKEN"
+trident_client_id            = "00000000-0000-0000-0000-000000000000"
+trident_principal_object_id  = "00000000-0000-0000-0000-000000000000"
+trident_client_secret        = "REPLACE_WITH_TRIDENT_CLIENT_SECRET"
+
+# Review the plan carefully: ANF requires AKS to use a customer VNet.
+vnet_name                 = "aks-network"
+vnet_address_space        = "10.20.0.0/16"
+aks_subnet_name           = "aks-nodes"
+aks_subnet_address_prefix = "10.20.0.0/20"
+anf_subnet_name           = "anf-volumes"
+anf_subnet_address_prefix = "10.20.16.0/24"
+anf_account_name          = "aksanf"
+anf_pool_name             = "ultra"
+anf_pool_size_gib         = 4096
+anf_volume_name           = "aks-volumes"
+anf_volume_path           = "aks-volumes"
+anf_volume_size_gib       = 1024
+
+gitops_repository_name                 = "aks-ocean-gitops"
+gitops_repository_description          = "GitOps manifests for AKS and Spot Ocean test workloads"
+argocd_namespace                       = "argocd"
+argocd_chart_version                   = "7.7.16"
+trident_namespace                      = "trident"
+trident_chart_version                  = "100.6.0"
+monitoring_chart_version               = "65.8.1"
+ocean_metrics_exporter_chart_version   = "1.1.1"
+ocean_admission_controller_chart_version = "1.0.3"
+ocean_controller_chart_version         = "0.1.75"
+ocean_rightsizing_cpu_percentile       = 95
+ocean_rightsizing_memory_percentile    = 95
+web_service_type                       = "LoadBalancer"
+
+ocean_node_min_count    = 1
+ocean_node_max_count    = 10
+ocean_spot_percentage   = 100
+
+vmss_node_pools = {
+	poolone = {
+		name       = "poolone"
+		vm_size    = "Standard_D2_v2"
+		node_count = 1
+		min_count  = 1
+		max_count  = 3
+	}
+	pooltwo = {
+		name       = "pooltwo"
+		vm_size    = "Standard_D2_v2"
+		node_count = 1
+		min_count  = 1
+		max_count  = 3
+	}
+}
+
+ocean_vng_name            = "wes-test-aks-tf-vng"
+ocean_vng_min_count       = 1
+ocean_vng_max_count       = 3
+ocean_vng_spot_percentage = 100

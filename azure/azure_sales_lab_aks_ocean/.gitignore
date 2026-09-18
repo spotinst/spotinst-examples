@@ -1,0 +1,16 @@
+.terraform/
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.plan
+terraform.tfvars
+*.auto.tfvars
+.DS_Store.terraform/
+*.tfplan
+tfplan
+terraform.tfstate
+terraform.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+.DS_Store
