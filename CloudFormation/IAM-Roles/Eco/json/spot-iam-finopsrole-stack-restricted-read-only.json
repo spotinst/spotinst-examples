@@ -22,17 +22,37 @@
     "PolicyName": {
       "Type": "String",
       "Default": "SpotByNetApp_Finops_ReadOnly_Policy"
+    },
+    "ExternalId": {
+      "Type": "String"
     }
   },
   "Resources": {
     "SpotFinOpsManagedPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
-        "ManagedPolicyName": { "Ref" : "PolicyName" },
+        "ManagedPolicyName": {
+          "Ref": "PolicyName"
+        },
         "Description": "Spot by NetApp Finops ReadOnly Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
+            {
+              "Action": [
+                "cloudformation:Describe*",
+                "cloudformation:EstimateTemplateCost",
+                "cloudformation:Get*",
+                "cloudformation:List*",
+                "cloudformation:ValidateTemplate",
+                "cloudformation:Detect*"
+              ],
+              "Resource": [
+                "*"
+              ],
+              "Effect": "Allow",
+              "Sid": "ReadOnlyCloudFormation"
+            },
             {
               "Action": [
                 "es:ListElasticsearchInstanceTypes",
@@ -49,7 +69,8 @@
               "Action": [
                 "rds:DescribeReservedDBInstances",
                 "rds:DescribeDBInstances",
-                "rds:DescribeReservedDBInstancesOfferings"
+                "rds:DescribeReservedDBInstancesOfferings",
+                "rds:ListTagsForResource"
               ],
               "Resource": [
                 "*"
@@ -73,7 +94,9 @@
               "Action": [
                 "elasticache:DescribeReservedCacheNodesOfferings",
                 "elasticache:DescribeReservedCacheNodes",
-                "elasticache:DescribeCacheClusters"
+                "elasticache:DescribeCacheClusters",
+                "elasticache:ListAllowedNodeTypeModifications",
+                "elasticache:ListTagsForResource"
               ],
               "Resource": [
                 "*"
@@ -105,8 +128,11 @@
             },
             {
               "Action": [
-                "savingsplans:describe*",
-                "savingsplans:list*"
+                "savingsplans:DescribeSavingsPlanRates",
+                "savingsplans:DescribeSavingsPlans",
+                "savingsplans:DescribeSavingsPlansOfferingRates",
+                "savingsplans:DescribeSavingsPlansOfferings",
+                "savingsplans:ListTagsForResource"
               ],
               "Resource": [
                 "*"
@@ -116,47 +142,90 @@
             },
             {
               "Action": [
-                "aws-portal:ViewBilling",
-                "aws-portal:ViewUsage"
+                "account:GetAccountInformation",
+                "billing:GetBillingData",
+                "billing:GetBillingDetails",
+                "billing:GetBillingNotifications",
+                "billing:GetBillingPreferences",
+                "billing:GetContractInformation",
+                "billing:GetCredits",
+                "billing:GetIAMAccessPreference",
+                "billing:GetSellerOfRecord",
+                "billing:ListBillingViews",
+                "ce:DescribeNotificationSubscription",
+                "ce:DescribeReport",
+                "ce:GetAnomalies",
+                "ce:GetAnomalyMonitors",
+                "ce:GetAnomalySubscriptions",
+                "ce:GetCostAndUsage",
+                "ce:GetCostAndUsageWithResources",
+                "ce:GetCostCategories",
+                "ce:GetCostForecast",
+                "ce:GetDimensionValues",
+                "ce:GetPreferences",
+                "ce:GetReservationCoverage",
+                "ce:GetReservationPurchaseRecommendation",
+                "ce:GetReservationUtilization",
+                "ce:GetRightsizingRecommendation",
+                "ce:GetSavingsPlansCoverage",
+                "ce:GetSavingsPlansPurchaseRecommendation",
+                "ce:GetSavingsPlansUtilization",
+                "ce:GetSavingsPlansUtilizationDetails",
+                "ce:GetTags",
+                "ce:GetUsageForecast",
+                "ce:ListCostAllocationTags",
+                "ce:ListSavingsPlansPurchaseRecommendationGeneration",
+                "consolidatedbilling:GetAccountBillingRole",
+                "consolidatedbilling:ListLinkedAccounts",
+                "cur:GetClassicReport",
+                "cur:GetClassicReportPreferences",
+                "cur:ValidateReportDestination",
+                "freetier:GetFreeTierAlertPreference",
+                "freetier:GetFreeTierUsage",
+                "invoicing:GetInvoiceEmailDeliveryPreferences",
+                "invoicing:GetInvoicePDF",
+                "invoicing:ListInvoiceSummaries",
+                "payments:GetPaymentInstrument",
+                "payments:GetPaymentStatus",
+                "payments:ListPaymentPreferences",
+                "tax:GetTaxInheritance",
+                "tax:GetTaxRegistrationDocument",
+                "tax:ListTaxRegistrations"
               ],
               "Resource": [
                 "*"
               ],
               "Effect": "Allow",
-              "Sid": "BillingdeprecatedJuly6"
+              "Sid": "ReadOnlyViewBilling"
             },
             {
               "Action": [
-                "cur:DescribeReportDefinitions",
-                "ce:Get*",
-                "ce:Describe*",
-                "ce:List*",
-                "account:GetAccountInformation",
-                "billing:Get*",
-                "consolidatedbilling:Get*",
-                "consolidatedbilling:List*",
-                "invoicing:List*",
-                "invoicing:Get*",
-                "tax:ListTaxRegistrations",
-                "cur:Get*",
-                "cur:Validate*",
-                "freetier:Get*"
+                "cur:GetUsageReport",
+                "cur:DescribeReportDefinitions"
               ],
               "Resource": [
                 "*"
               ],
               "Effect": "Allow",
-              "Sid": "BillingPolicy"
+              "Sid": "ReadOnlyViewUsage"
             },
             {
               "Action": [
                 "s3:GetBucketLocation",
-                "s3:ListBucketMultipartUploads",
                 "s3:AbortMultipartUpload",
-                "s3:ListMultipartUploadParts",
-                "s3:PutObject",
+                "s3:ListAccessPoints",
+                "s3:ListAccessPointsForObjectLambda",
+                "s3:ListAllMyBuckets",
                 "s3:ListBucket",
-                "s3:List*",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListBucketVersions",
+                "s3:ListJobs",
+                "s3:ListMultiRegionAccessPoints",
+                "s3:ListMultipartUploadParts",
+                "s3:ListStorageLensConfigurations",
+                "s3:ListStorageLensConfigurations",
+                "s3:ListTagsForResource",
+                "s3:PutObject",
                 "s3:PutObjectTagging",
                 "s3:PutObjectAcl"
               ],
@@ -172,19 +241,40 @@
                 "s3:GetBucketLocation"
               ],
               "Resource": [
-                { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" }]]}
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "CostAndUsageBucket"
+                      }
+                    ]
+                  ]
+                }
               ],
               "Effect": "Allow",
               "Sid": "S3CURBucket"
             },
             {
               "Action": [
-                "s3:get*",
+                "s3:Get*",
                 "s3:List*",
                 "s3:Describe*"
               ],
               "Resource": [
-                { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "CostAndUsageBucket" },"/*"]]}
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "CostAndUsageBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
               ],
               "Effect": "Allow",
               "Sid": "S3CURObject"
@@ -202,21 +292,31 @@
             {
               "Action": "sts:AssumeRole",
               "Principal": {
-                "AWS": ["arn:aws:iam::884866656237:root",
-                        "arn:aws:iam::627743545735:root"]
+                "AWS": [
+                  "arn:aws:iam::884866656237:root",
+                  "arn:aws:iam::627743545735:root"
+                ]
               },
-              "Effect": "Allow"
+              "Effect": "Allow",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": {
+                    "Ref": "ExternalId"
+                  }
+                }
+              }
             }
           ]
         },
-        "Description" : "Spot by NetApp ReadOnly Finops IAM Role",
+        "Description": "Spot by NetApp ReadOnly Finops IAM Role",
         "ManagedPolicyArns": [
           {
             "Ref": "SpotFinOpsManagedPolicy"
-          },
-          "arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess"
+          }
         ],
-        "RoleName" : { "Ref" : "RoleName" }
+        "RoleName": {
+          "Ref": "RoleName"
+        }
       }
     }
   }

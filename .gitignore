@@ -12,7 +12,8 @@ __pycache__
 .venv
 *.egg-info
 *.auto.tfvars
-*.gitignore
+*.tfvars
+!**/*.tfvars.example
 
 # Local .terraform directories
 **/.terraform/*
@@ -20,6 +21,11 @@ __pycache__
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# Terraform plans and local project metadata
+*.tfplan
+*.plan
+**/.terraform/
 
 # CDK asset staging directory
 .cdk.staging
