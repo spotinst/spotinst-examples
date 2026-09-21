@@ -14,3 +14,4 @@ terraform.tfstate.*
 *.tfvars
 !terraform.tfvars.example
 .DS_Store
+*.terraform.lock.hcl
