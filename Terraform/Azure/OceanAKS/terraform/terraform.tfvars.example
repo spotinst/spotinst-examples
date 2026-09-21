@@ -9,11 +9,7 @@ username                = "azureadmin"
 
 spotinst_account             = "act-xxxxxxxx"
 spotinst_token               = "REPLACE_WITH_SPOT_TOKEN"
-github_owner                 = "your-github-user-or-organization"
-argocd_github_token          = "REPLACE_WITH_GITHUB_TOKEN"
-trident_client_id            = "00000000-0000-0000-0000-000000000000"
 trident_principal_object_id  = "00000000-0000-0000-0000-000000000000"
-trident_client_secret        = "REPLACE_WITH_TRIDENT_CLIENT_SECRET"
 
 # Review the plan carefully: ANF requires AKS to use a customer VNet.
 vnet_name                 = "aks-network"
@@ -25,23 +21,8 @@ anf_subnet_address_prefix = "10.20.16.0/24"
 anf_account_name          = "aksanf"
 anf_pool_name             = "ultra"
 anf_pool_size_gib         = 4096
-anf_volume_name           = "aks-volumes"
-anf_volume_path           = "aks-volumes"
-anf_volume_size_gib       = 1024
-
-gitops_repository_name                 = "aks-ocean-gitops"
-gitops_repository_description          = "GitOps manifests for AKS and Spot Ocean test workloads"
-argocd_namespace                       = "argocd"
-argocd_chart_version                   = "7.7.16"
-trident_namespace                      = "trident"
-trident_chart_version                  = "100.6.0"
-monitoring_chart_version               = "65.8.1"
-ocean_metrics_exporter_chart_version   = "1.1.1"
-ocean_admission_controller_chart_version = "1.0.3"
-ocean_controller_chart_version         = "0.1.75"
 ocean_rightsizing_cpu_percentile       = 95
 ocean_rightsizing_memory_percentile    = 95
-web_service_type                       = "LoadBalancer"
 
 ocean_node_min_count    = 1
 ocean_node_max_count    = 10
